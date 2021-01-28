@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:47:41 pm'!
+'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:50:45 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 4!
+!provides: 'CodeCoverage' 1 5!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -543,6 +543,46 @@ parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
 	
 	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
+
+	^ codeCoverageMessageSendNode.! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 17:54:12'!
+parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
+
+	"NOTE: this method is pretty similar to #parseNodeToCoverAll:whenExecuting:.
+	The only difference is here we are wrapping aMessageNode in a block to cover it even when
+	it raises an error. NPM."
+
+	"Generate a parse node that, when compiled and executed, will register that aMessageNode covered sourceRanges
+	in the selector and class of methodNode.
+
+	Implementation Details
+	================
+
+	To create the parse node, I create a template for it and modify it filling in the blanks.
+	I need to parse a method even though I ony use its sole statement because that's what the parser expects."
+
+	| sourceCodeTemplate templateMethodNode codeCoverageMessageSendNode |
+
+	"This is the source code template I will use to create a parse node below.
+	It sends the message valueCoveringAll: to the result of executing aMessageNode wrapped in a block.
+	aMessageNode needs to be wrapped in a block to cover it even when it raises an error."
+	sourceCodeTemplate _ 'm1 [] valueCoveringAll: {1}'
+		format: { self sourceCodeToCreateAll: sourceRanges }.
+
+	"Parse it. The parser will return a MethodNode"
+	templateMethodNode _ self parse: sourceCodeTemplate.
+
+	"Method nodes have a block containing all statements in the method (in this case, there is only one).
+	Grab the message node that sends the #valueCoveringAll: message"
+	codeCoverageMessageSendNode _ templateMethodNode block statements first.
+
+	"The only thing I have to fill in is the expression that, when executed, will cover sourceRanges.
+	To do so I add aMessageNode as the sole statement of the empty block."
+	codeCoverageMessageSendNode receiver statements: { aMessageNode }.
+
+	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
+	tracedSourceRanges addAll: sourceRanges.
 	
 	^ codeCoverageMessageSendNode.! !
 
@@ -748,7 +788,7 @@ visitLiteralVariableNode: aLiteralVariableNode
 	
 	^ self parseNodeToCoverSourceRangeOf: aLiteralVariableNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/11/2021 21:28:26'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 16:38:09'!
 visitMessageNode: aMessageNode
 
 	"Add tracing to message nodes.
@@ -767,12 +807,14 @@ visitMessageNode: aMessageNode
 
 	^ self
 		parseNodeToCoverAll: aMessageNode keywordRanges 
-		whenExecuting: aMessageNode! !
+		whenExecutingMessageNode: aMessageNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:27:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 16:45:31'!
 visitMessageNodeInCascade: aMessageNode
 
-	^ self parseNodeToCoverSourceRangeOf: aMessageNode.! !
+	^ self
+		parseNodeToCoverAll: { self consumeNextSourceRangeFor: aMessageNode }
+		whenExecutingMessageNode: aMessageNode.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/17/2021 21:32:42'!
 visitMethodNode: aMethodNode
@@ -1781,6 +1823,11 @@ raiseError
 
 	Error signal: self errorMessageForTesting ! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 17:08:52'!
+raiseErrorFromBlock
+
+	[ self error: self errorMessageForTesting ] value! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:32:26'!
 return
 	
@@ -2547,18 +2594,17 @@ test037_DoesNotCoverEmptyMethods
 		
 	self assertNumberOfCoveredRangesFor: #emptyMethod is: 0 . ! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:58:25'!
-test046_DoesNotCoverTheMessageThatSignalsAnError
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:00:37'!
+test046_CoversMessagesThatSignalAnError
 
-	"TODO: For now, do not cover the message that signals an error. It has to be handled specially. NPM".
 	self
 		should: [ self collectCoverageForExampleNamed: #raiseError ]
 		raise: Error
 		withMessageText: self errorMessageForTesting.
 		
-	self assert: #raiseError hasNumberOfCoveredRanges: 3 andNumberOfSourceRanges: 4 .
+	self assert: #raiseError hasNumberOfCoveredRanges: 4 andNumberOfSourceRanges: 4 .
 	self assert: #raiseError hasBeenCoveredFrom: 14 to: 18 as: 'Error'.
-	self deny: #raiseError hasBeenCoveredFrom: 20 to: 26 as: 'signal:'.
+	self assert: #raiseError hasBeenCoveredFrom: 20 to: 26 as: 'signal:'.
 	self assert: #raiseError hasBeenCoveredFrom: 28 to: 31 as: 'self'.
 	self assert: #raiseError hasBeenCoveredFrom: 33 to: 54 as: 'errorMessageForTesting'.! !
 
@@ -2573,6 +2619,21 @@ test047_DoesNotCoverTheSelectorArguments
 	self assertNumberOfCoveredRangesFor: #messageWithArgument: is: 2 .
 	self assert: #messageWithArgument: hasBeenCoveredFrom: 36 to: 45 as: 'anArgument'.
 	self assert: #messageWithArgument: hasBeenCoveredFrom: 47 to: 51 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:10:13'!
+test048_CoversBlocksThatSignalAnError
+
+	self
+		should: [ self collectCoverageForExampleNamed: #raiseErrorFromBlock ]
+		raise: Error
+		withMessageText: self errorMessageForTesting.
+
+	self assert: #raiseErrorFromBlock hasNumberOfCoveredRanges: 5 andNumberOfSourceRanges: 5 .
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 25 to: 28 as: 'self'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 30 to: 35 as: 'error:'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 37 to: 40 as: 'self'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 42 to: 63 as: 'errorMessageForTesting'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 67 to: 71 as: 'value'.! !
 
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
@@ -3871,6 +3932,33 @@ basicCompile: code
 isTestCaseClass
 	
 	^ self isKindOf: TestCase class! !
+
+!BlockClosure methodsFor: '*CodeCoverage' stamp: 'NPM 1/28/2021 16:43:57'!
+valueCoveringAll: sourceRanges
+
+	"Convenience method used by CodeCoverageSourceCodeGenerator to report that
+	sourceRanges were covered for the compiled method that sent this message and
+	return the object that triggered the code coverage in one-shot.
+
+	I assume that the calling method is the one being analyzed."
+
+	| compiledMethodBeingAnalyzed codeCoverageAnalyzer |
+
+	compiledMethodBeingAnalyzed := thisContext sender method.
+	codeCoverageAnalyzer := compiledMethodBeingAnalyzed codeCoverageAnalyzer.
+
+	"I have to check that codeCoverageAnalyzer is not null even that is not possible
+	(it is either set or not) because when I tried tested code coverage using
+	the Live Typing tests, the returned code coverage analyzer was null.
+
+	I suspect this is because Live Typing is intercepting bytecode execution and might
+	trigger a race condition.
+
+	I have to investigate further to either validate or reject this hypotesis.
+	For now, as a safety check, I will check this to avoid unwanted errors. NPM"
+	codeCoverageAnalyzer ifNil: [ ^ self value ].
+
+	^ self ensure: [ codeCoverageAnalyzer registerAsCovered: sourceRanges ]! !
 
 !CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 1/16/2021 21:18:29'!
 codeCoverageAnalyzer

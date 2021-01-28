@@ -3,6 +3,12 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased](https://github.com/npapagna/cuis-code-coverage/compare/v1.3...HEAD)
+
+### Added
+
+* Support for covering messages signaling errors. 
+
 ## [1.3](https://github.com/npapagna/cuis-code-coverage/releases/tag/v1.3) - 2021-01-20
 
 ### Added
