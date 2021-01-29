@@ -9,6 +9,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 
 * Support for covering messages signaling errors. 
 * Support for covering temporary variables declarations.
+* Support for covering selector arguments.
 
 ## [1.3](https://github.com/npapagna/cuis-code-coverage/releases/tag/v1.3) - 2021-01-20
 

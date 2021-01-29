@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:51:30 pm'!
+'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:52:45 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 6!
+!provides: 'CodeCoverage' 1 7!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -597,14 +597,21 @@ parseNodeToCoverSourceRangeOf: aParseNode
 		parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
 		whenExecuting: aParseNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
-registerDeclarationSourceRangeOf: aTemporaryDeclarationNode
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/29/2021 02:11:44'!
+register: aSourceRange asDeclarationOf: aParseNode
 
-	"Register the source range of the variable declared by aTemporaryDeclarationNode"
+	"Register the source range where aParseNode is declared"
 
 	declarationSourceRangeByParseNode
-		at: aTemporaryDeclarationNode variableNode
-		put: (self consumeNextSourceRangeFor: aTemporaryDeclarationNode).! !
+		at: aParseNode
+		put: aSourceRange.! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/29/2021 02:12:06'!
+registerDeclarationSourceRangeOf: aParseNode
+
+	self
+		register: (self consumeNextSourceRangeFor: aParseNode)
+		asDeclarationOf: aParseNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/11/2021 21:30:12'!
 sourceCodeToCreateAll: sourceRanges 
@@ -841,10 +848,11 @@ visitMessageNodeInCascade: aMessageNode
 		parseNodeToCoverAll: { self consumeNextSourceRangeFor: aMessageNode }
 		whenExecutingMessageNode: aMessageNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/17/2021 21:32:42'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:12:19'!
 visitMethodNode: aMethodNode
 
-	aMethodNode arguments do: [ :argument | self consumeNextSourceRangeFor: argument ].
+	aMethodNode arguments do: [ :argument |
+		self registerDeclarationSourceRangeOf: argument ].
 	
 	^ super visitMethodNode: aMethodNode! !
 
@@ -886,7 +894,7 @@ visitTempVariableNode: aTempVariableNode
 	
 	^ self parseNodeToCoverSourceRangeOf: aTempVariableNode ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 21:24:20'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:05:35'!
 visitTemporaryDeclarationNode: aTemporaryDeclarationNode
  
 	"Do not add tracing to temporary declarations because they are not executed.
@@ -897,7 +905,9 @@ visitTemporaryDeclarationNode: aTemporaryDeclarationNode
 	I still need to consume the source code interval for the temporary declaration even though it is not used, to keep the
 	semantics of methods in the 'visiting' protocol of my class."
 
-	self registerDeclarationSourceRangeOf: aTemporaryDeclarationNode.
+	self
+		register: (self consumeNextSourceRangeFor: aTemporaryDeclarationNode)
+		asDeclarationOf: aTemporaryDeclarationNode variableNode.
 	
 	"I consume the source code interval for the variable node explicitly (without visiting the parse node),
 	as I don't need to add tracing to it."
@@ -1627,6 +1637,12 @@ manyTemporaryVariables
 	b.
 	! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:18:45'!
+messageArgumentUsedManyTimes: anArgument
+
+	anArgument.
+	anArgument.! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:44:34'!
 messageSendWithBlockReceiverThatIsEvaluated
 
@@ -1649,6 +1665,11 @@ messageSendWithMessageSendReceiver
 messageWithArgument: anArgument
 	
 	anArgument value! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:07:53'!
+messageWithUnusedArgument: anArgument
+
+	[ anArgument ]! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:53:42'!
 multipleAssignments
@@ -1924,7 +1945,7 @@ test039_Informs100PercentCoverageWhenAllOfTheAnalyzedCompiledMethodsOfAClassHave
 		assertCoveragePercentOfClass: self class
 		is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/20/2021 02:13:25'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/29/2021 02:24:23'!
 test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyzedCompiledMethods
 	
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -1934,9 +1955,9 @@ test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyz
 		self foo: true
 	].
 		
-	self assertCoveragePercentOfClass: self class is: 90! !
+	self assertCoveragePercentOfClass: self class is: 91.67! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/20/2021 02:13:25'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/29/2021 02:24:33'!
 test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -1944,7 +1965,7 @@ test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBl
 	self collectCodeCoverageDuring: [ 	self emptyMethod ].
 	self collectCodeCoverageDuring: [ self foo: true ].
 		
-	self assertCoveragePercentOfClass: self class is: 40! !
+	self assertCoveragePercentOfClass: self class is: 41.67! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:21:22'!
 test029_Informs0PercentCoverageWhenNoneOfTheCompiledMethodCollaborationsAreCovered
@@ -1964,23 +1985,23 @@ test030_Informs100PercentCoverageWhenAllOfTheCompiledMethodCollaborationsAreCove
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:39:42'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/29/2021 02:23:51'!
 test030_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
 	
 	self collectCodeCoverageDuring: [ self foo: false ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 80! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 83.33! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:39:53'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/29/2021 02:23:58'!
 test031_DoesNotCountCoveredCollaborationsMoreThanOnce
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
 	
 	self collectCodeCoverageDuring: [ self foo: false. self foo: false ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 80! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 83.33! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:05'!
 test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
@@ -1991,7 +2012,7 @@ test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:16'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/29/2021 02:24:03'!
 test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -1999,7 +2020,7 @@ test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 	
 	self collectCodeCoverageDuring: [ self foo: true. ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 80! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 83.33! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:36'!
 test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
@@ -2653,15 +2674,15 @@ test046_CoversMessagesThatSignalAnError
 	self assert: #raiseError hasBeenCoveredFrom: 28 to: 31 as: 'self'.
 	self assert: #raiseError hasBeenCoveredFrom: 33 to: 54 as: 'errorMessageForTesting'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test047_DoesNotCoverTheSelectorArguments
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:07:03'!
+test047_CoversSelectorArgumentsWhenTheyAreReferenced
 
-	"TODO: For now, do not cover arguments usage in the selector. It has to be handled specially. NPM".
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithArgument:.
 	
 	self collectCodeCoverageDuring: [ self messageWithArgument: #foo ].
 	
-	self assertNumberOfCoveredRangesFor: #messageWithArgument: is: 2 .
+	self assertNumberOfCoveredRangesFor: #messageWithArgument: is: 3 .
+	self assert: #messageWithArgument: hasBeenCoveredFrom: 22 to: 31 as: 'anArgument'.
 	self assert: #messageWithArgument: hasBeenCoveredFrom: 36 to: 45 as: 'anArgument'.
 	self assert: #messageWithArgument: hasBeenCoveredFrom: 47 to: 51 as: 'value'.! !
 
@@ -2700,6 +2721,27 @@ test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVari
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 45 to: 45 as: 'a'.
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 50 to: 50 as: '1'.
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 56 to: 56 as: 'a'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:17:15'!
+test051_DoesNotCoversSelectorArgumentsWhenTheyAreNotReferenced
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithUnusedArgument:.
+
+	self collectCodeCoverageDuring: [ self messageWithUnusedArgument: #foo ].
+
+	self assert: #messageWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:19:48'!
+test052_CoversSelectorArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageArgumentUsedManyTimes:.
+
+	self collectCodeCoverageDuring: [ self messageArgumentUsedManyTimes: #foo ].
+
+	self assert: #messageArgumentUsedManyTimes: hasNumberOfCoveredRanges: 3 andNumberOfSourceRanges: 3.
+	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 31 to: 40 as: 'anArgument'.
+	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 44 to: 53 as: 'anArgument'.
+	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 57 to: 66 as: 'anArgument'.! !
 
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
