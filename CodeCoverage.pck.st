@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:53:00 pm'!
+'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:53:30 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 8!
+!provides: 'CodeCoverage' 1 9!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -690,7 +690,7 @@ visitBacktickNode: aBacktickNode
 
 	^ self parseNodeToCoverSourceRangeOf: aBacktickNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:34:47'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:42:23'!
 visitBlockNode: aBlockNode
 
 	"Add tracing to block nodes.
@@ -1523,6 +1523,16 @@ blockWithArguments
 	
 	[ :a :b | a + b ] value: 1 value: 2! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:43:56'!
+blockWithReadAndWrittenTemporaryVariable
+
+	[ |a| a := 1. a ] value! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:38:08'!
+blockWithReadTemporaryVariable
+
+	[ |a| a ] value! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:32:45'!
 blockWithTemporariesDeclaration
 	
@@ -1539,6 +1549,11 @@ blockWithTemporaryVariables
 blockWithUnusedArgument
 
 	[ :argument | ] value: 1! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:40:14'!
+blockWithWrittenTemporaryVariable
+
+	[ |a| a :=1 ] value! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:35:30'!
 braceNode
@@ -2468,16 +2483,8 @@ test016_5_DoesNotCoverBlockNodesThatAreNotEvaluated
 	self assert: #notEvaluatedBlockNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notEvaluatedBlockNode hasBeenCoveredFrom: 28 to: 28 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test016_6_DoesNotCoverTemporariesDeclarationInABlockNode
-
-	self collectCoverageForExampleNamed: #blockWithTemporariesDeclaration.
-	
-	self assertNumberOfCoveredRangesFor: #blockWithTemporariesDeclaration is: 1 .
-	self assert: #blockWithTemporariesDeclaration hasBeenCoveredFrom: 46 to: 50 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 19:12:54'!
-test016_7_CoversTemporaryVariablesInABlock
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:42:01'!
+test016_7_CoversMultipleTemporaryVariablesInABlock
 
 	self collectCoverageForExampleNamed: #blockWithTemporaryVariables.
 	
@@ -2775,6 +2782,39 @@ test054_CoversBlockArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
 	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 59 to: 66 as: 'argument'.
 	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 70 to: 75 as: 'value:'.
 	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 76 to: 77 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:39:35'!
+test055_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreRead
+
+	self collectCoverageForExampleNamed: #blockWithReadTemporaryVariable.
+
+	self assertNumberOfCoveredRangesFor: #blockWithReadTemporaryVariable is: 3.
+	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 37 to: 37 as: 'a'.
+	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:40:28'!
+test056_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreWritten
+
+	self collectCoverageForExampleNamed: #blockWithWrittenTemporaryVariable.
+
+	self assertNumberOfCoveredRangesFor: #blockWithWrittenTemporaryVariable is: 4.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 43 to: 43 as: 'a'.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: '1'.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 51 to: 55 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:44:07'!
+test057_CoversBlockTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariablesAreReferencedMultipleTimes
+
+	self collectCoverageForExampleNamed: #blockWithReadAndWrittenTemporaryVariable.
+
+	self assertNumberOfCoveredRangesFor: #blockWithReadAndWrittenTemporaryVariable is: 5.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: 'a'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 50 to: 50 as: 'a'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 55 to: 55 as: '1'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 62 to: 66 as: 'value'.! !
 
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage

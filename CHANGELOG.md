@@ -11,6 +11,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Support for covering temporary variables declarations.
 * Support for covering selector arguments.
 * Support for covering block arguments.
+* Support for covering block temporary variables declarations.
 
 ## [1.3](https://github.com/npapagna/cuis-code-coverage/releases/tag/v1.3) - 2021-01-20
 
