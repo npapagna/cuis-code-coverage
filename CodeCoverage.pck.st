@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:52:45 pm'!
+'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:53:00 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 7!
+!provides: 'CodeCoverage' 1 8!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -690,22 +690,20 @@ visitBacktickNode: aBacktickNode
 
 	^ self parseNodeToCoverSourceRangeOf: aBacktickNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/19/2021 18:55:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:34:47'!
 visitBlockNode: aBlockNode
 
 	"Add tracing to block nodes.
 	I consider a block node covered when all of its statements are covered."
 	
-	aBlockNode arguments do: [ :arg | self consumeNextSourceRangeFor: arg ].
+	aBlockNode arguments do: [ :argument | self registerDeclarationSourceRangeOf: argument ].
 	self visitIfNotNil: aBlockNode temporariesDeclaration.
 
 	aBlockNode statements: (self addTracingToAll: aBlockNode statements).
 	
-	
-	aBlockNode = methodNode block
-		ifFalse: [
-	self consumeNextSourceRangeFor: aBlockNode.
-	self consumeNextSourceRangeFor: aBlockNode closureCreationNode ].
+	aBlockNode = methodNode block ifFalse: [
+		self consumeNextSourceRangeFor: aBlockNode.
+		self consumeNextSourceRangeFor: aBlockNode closureCreationNode ].
 	
 	^ aBlockNode.! !
 
@@ -1515,6 +1513,11 @@ block
 	
 	[ 1 ] value! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:33:18'!
+blockWithArgumentUsedManyTimes
+
+	[ :argument | argument + argument ] value: 1! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/19/2021 18:52:22'!
 blockWithArguments
 	
@@ -1531,6 +1534,11 @@ blockWithTemporaryVariables
 	[ | a b |
 		a := 1.
 		b := 2 ] value! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:31:54'!
+blockWithUnusedArgument
+
+	[ :argument | ] value: 1! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:35:30'!
 braceNode
@@ -2482,12 +2490,14 @@ test016_7_CoversTemporaryVariablesInABlock
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 59 to: 59 as: '2'.
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 63 to: 67 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test016_8_DoesNotCoverBlockArguments
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:30:25'!
+test016_8_CoversBlockArgumentsWhenTheyAreReferenced
 
 	self collectCoverageForExampleNamed: #blockWithArguments.
 	
-	self assertNumberOfCoveredRangesFor: #blockWithArguments is: 7.
+	self assertNumberOfCoveredRangesFor: #blockWithArguments is: 9.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 26 to: 26 as: 'a'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 29 to: 29 as: 'b'.
 	self assert: #blockWithArguments hasBeenCoveredFrom: 33 to: 33 as: 'a'.
 	self assert: #blockWithArguments hasBeenCoveredFrom: 35 to: 35 as: '+'.
 	self assert: #blockWithArguments hasBeenCoveredFrom: 37 to: 37 as: 'b'.
@@ -2565,16 +2575,17 @@ test020_DoesNotCoverMessageArgumentsThatAreNotExecuted
 	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 70 to: 73 as: 'self'.
 	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 75 to: 85 as: 'printString'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:28:52'!
 test021_CoversOptimizedMessages
 
 	self collectCoverageForExampleNamed: #optimizedMessage.
 	
-	self assertNumberOfCoveredRangesFor: #optimizedMessage is: 6 .
+	self assertNumberOfCoveredRangesFor: #optimizedMessage is: 7 .
 	self assert: #optimizedMessage hasBeenCoveredFrom: 21 to: 21 as: '1'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 23 to: 25 as: 'to:'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 27 to: 28 as: '10'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 30 to: 32 as: 'do:'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 37 to: 42 as: 'number'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 46 to: 51 as: 'number'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 53 to: 57 as: 'value'.! !
 
@@ -2742,6 +2753,28 @@ test052_CoversSelectorArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
 	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 31 to: 40 as: 'anArgument'.
 	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 44 to: 53 as: 'anArgument'.
 	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 57 to: 66 as: 'anArgument'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:32:22'!
+test053_DoesNotCoverBlockArgumentsWhenTheyAreNotReferenced
+
+	self collectCoverageForExampleNamed: #blockWithUnusedArgument.
+
+	self assert: #blockWithUnusedArgument hasNumberOfCoveredRanges: 2 andNumberOfSourceRanges: 2.
+	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 43 to: 48 as: 'value:'.
+	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 49 to: 50 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:33:52'!
+test054_CoversBlockArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
+
+	self collectCoverageForExampleNamed: #blockWithArgumentUsedManyTimes.
+
+	self assert: #blockWithArgumentUsedManyTimes hasNumberOfCoveredRanges: 6 andNumberOfSourceRanges: 6.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 37 to: 44 as: 'argument'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 48 to: 55 as: 'argument'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 57 to: 57 as: '+'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 59 to: 66 as: 'argument'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 70 to: 75 as: 'value:'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 76 to: 77 as: ' 1'.! !
 
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
