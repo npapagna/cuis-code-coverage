@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:50:45 pm'!
+'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:51:30 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 5!
+!provides: 'CodeCoverage' 1 6!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -19,7 +19,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges'
+	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -455,13 +455,24 @@ value
 
 	methodNode accept: self.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 1/19/2021 18:09:07'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 1/28/2021 21:27:28'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
 
 	methodNode := aMethodNode.
 	rawSourceRanges := aCollectionOfRawSourceRanges.
 	numberOfSourceRangeTraced := 0.
-	tracedSourceRanges := OrderedCollection new.! !
+	tracedSourceRanges := Set new.
+
+	"Holds the source range of the declaration of parse nodes (e.g. temporary variables)"
+	declarationSourceRangeByParseNode := Dictionary new.! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
+addDeclarationSourceRangeOf: aParseNode to: sourceRanges
+
+	declarationSourceRangeByParseNode
+		at: aParseNode
+		ifPresent: [ :declarationSourceRange | sourceRanges add: declarationSourceRange ]
+	! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/3/2021 17:14:05'!
 addTracingToAll: parseNodes 
@@ -502,15 +513,6 @@ parse: sourceCode
 	^ methodNode parserClass
 		parse: sourceCode
 		class: methodNode methodClass! !
-
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/11/2021 21:27:31'!
-parseNodeToCover: aSourceRange whenExecuting: aParseNode
-
-	"See #parseNodeToCoverAll:whenExecuting:"
-
-	^ self
-		parseNodeToCoverAll: {aSourceRange}
-		whenExecuting: aParseNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/19/2021 18:09:37'!
 parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
@@ -586,14 +588,23 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	
 	^ codeCoverageMessageSendNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/11/2021 21:28:26'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:22:34'!
 parseNodeToCoverSourceRangeOf: aParseNode
 
 	"See #parseNodeToCoverAll:whenExecuting:"
 
 	^ self
-		parseNodeToCover: (self consumeNextSourceRangeFor: aParseNode)
+		parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
 		whenExecuting: aParseNode.! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
+registerDeclarationSourceRangeOf: aTemporaryDeclarationNode
+
+	"Register the source range of the variable declared by aTemporaryDeclarationNode"
+
+	declarationSourceRangeByParseNode
+		at: aTemporaryDeclarationNode variableNode
+		put: (self consumeNextSourceRangeFor: aTemporaryDeclarationNode).! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/11/2021 21:30:12'!
 sourceCodeToCreateAll: sourceRanges 
@@ -610,6 +621,19 @@ sourceCodeToCreateAll: sourceRanges
 		contents nextPut: $}
 	]! !
 
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:22:34'!
+sourceRangesToCover: aParseNode
+
+	| sourceRangesToCover |
+	sourceRangesToCover := Set with: (self consumeNextSourceRangeFor: aParseNode).
+
+	"if aParseNode has a declaration (e.g. | a | if aParseNode is a parse node for the temporary
+	variable 'a', add it to sourceRangesToCover so the declaration will be cover as well when aParseNode is
+	used"
+	self addDeclarationSourceRangeOf: aParseNode to: sourceRangesToCover.
+
+	^ sourceRangesToCover! !
+
 !CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 1/10/2021 17:40:05'!
 tracedSourceCode
 	
@@ -620,7 +644,7 @@ tracedSourceRanges
 
 	^ tracedSourceRanges! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/11/2021 21:28:26'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 21:22:34'!
 visitAssignmentNode: anAssignmentNode
 
 	"Add tracing to assignment nodes.
@@ -636,12 +660,13 @@ visitAssignmentNode: anAssignmentNode
 
 	The source code interval for the variable will be considered covered when the assignment is evaluated."
 	
+
 	anAssignmentNode
 		variable: anAssignmentNode variable
 		value: (anAssignmentNode value accept: self).
-		
+
 	^ self
-		parseNodeToCover: (self consumeNextSourceRangeFor: anAssignmentNode variable)
+		parseNodeToCoverAll: (self sourceRangesToCover: anAssignmentNode variable)
 		whenExecuting: anAssignmentNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 20:51:07'!
@@ -861,7 +886,7 @@ visitTempVariableNode: aTempVariableNode
 	
 	^ self parseNodeToCoverSourceRangeOf: aTempVariableNode ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/19/2021 18:30:24'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 21:24:20'!
 visitTemporaryDeclarationNode: aTemporaryDeclarationNode
  
 	"Do not add tracing to temporary declarations because they are not executed.
@@ -872,7 +897,7 @@ visitTemporaryDeclarationNode: aTemporaryDeclarationNode
 	I still need to consume the source code interval for the temporary declaration even though it is not used, to keep the
 	semantics of methods in the 'visiting' protocol of my class."
 
-	self consumeNextSourceRangeFor: aTemporaryDeclarationNode.
+	self registerDeclarationSourceRangeOf: aTemporaryDeclarationNode.
 	
 	"I consume the source code interval for the variable node explicitly (without visiting the parse node),
 	as I don't need to add tracing to it."
@@ -1845,6 +1870,21 @@ temporaryVariable
 	
 	a.! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 19:07:20'!
+temporaryVariableAssignment
+
+	| a |
+
+	a := 1! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 20:59:08'!
+temporaryVariableReadAndAssignment
+
+	| a |
+	a := 1.
+
+	a! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:13:06'!
 unaryMessageSend
 	
@@ -2157,39 +2197,42 @@ test011_1_DoesNotCoverTemporariesDeclarations
 	
 	self assertNumberOfCoveredRangesFor: #temporariesDeclarations is: 0 .! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test011_2_CoversATemporaryVariable
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:51:56'!
+test011_2_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsRead
 
 	self collectCoverageForExampleNamed: #temporaryVariable.
 	
-	self assertNumberOfCoveredRangesFor: #temporaryVariable is: 1 .
+	self assertNumberOfCoveredRangesFor: #temporaryVariable is: 2.
+	self assert: #temporaryVariable hasBeenCoveredFrom: 24 to: 24 as: 'a'.
 	self assert: #temporaryVariable hasBeenCoveredFrom: 31 to: 31 as: 'a'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:57:29'!
 test011_3_CoversAManyTemporaryVariables
 
 	self collectCoverageForExampleNamed: #manyTemporaryVariables.
 	
-	self assertNumberOfCoveredRangesFor: #manyTemporaryVariables is: 2 .
+	self assertNumberOfCoveredRangesFor: #manyTemporaryVariables is: 4 .
+	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 29 to: 29 as: 'a'.
+	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 31 to: 31 as: 'b'.
 	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'a'.
 	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 42 to: 42 as: 'b'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test011_4_CoversMultipleOcurrencesOfTheSameTemporaryVariable
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:56:26'!
+test011_4_CoversMultipleOccurrencesOfTheSameTemporaryVariable
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameTemporaryVariable.
 	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameTemporaryVariable is: 2 .
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameTemporaryVariable is: 3 .
+	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 51 to: 51 as: 'a'.
 	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
 	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 62 to: 62 as: 'a'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:18'!
-test011_5_DoesNotCoverTemporaryVariablesThatWereNotExecuted
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:54:11'!
+test011_5_DoesNotCoverATemporaryVariableOrItsDeclarationWhenTheTemporaryVariableIsNotReadNorWritten
 
 	self collectCoverageForExampleNamed: #notExecutedTemporaryVariable.
 	
-	self assert: #notExecutedTemporaryVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedTemporaryVariable hasBeenCoveredFrom: 44 to: 44 as: 'a'.! !
+	self assert: #notExecutedTemporaryVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test012_1_CoversAVariable
@@ -2404,12 +2447,14 @@ test016_6_DoesNotCoverTemporariesDeclarationInABlockNode
 	self assertNumberOfCoveredRangesFor: #blockWithTemporariesDeclaration is: 1 .
 	self assert: #blockWithTemporariesDeclaration hasBeenCoveredFrom: 46 to: 50 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 19:12:54'!
 test016_7_CoversTemporaryVariablesInABlock
 
 	self collectCoverageForExampleNamed: #blockWithTemporaryVariables.
 	
-	self assertNumberOfCoveredRangesFor: #blockWithTemporaryVariables is: 5.
+	self assertNumberOfCoveredRangesFor: #blockWithTemporaryVariables is: 7.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 36 to: 36 as: 'a'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'b'.
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 44 to: 44 as: 'a'.
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 49 to: 49 as: '1'.
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 54 to: 54 as: 'b'.
@@ -2634,6 +2679,27 @@ test048_CoversBlocksThatSignalAnError
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 37 to: 40 as: 'self'.
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 42 to: 63 as: 'errorMessageForTesting'.
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 67 to: 71 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:57:07'!
+test049_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsWritten
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignment.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignment is: 3.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 33 to: 33 as: 'a'.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 44 to: 45 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 21:05:33'!
+test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariableIsReadOrWrittenMoreThanOnce
+
+	self collectCoverageForExampleNamed: #temporaryVariableReadAndAssignment.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableReadAndAssignment is: 4.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 45 to: 45 as: 'a'.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 50 to: 50 as: '1'.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 56 to: 56 as: 'a'.! !
 
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
@@ -3471,13 +3537,25 @@ reportResultsTo: aCodeCoverageReportBuilder
 
 	self halt.! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/19/2021 18:13:05'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/29/2021 19:10:05'!
 setUpTracedCompiledMethod
 
 	| generator |
 	generator := sourceCodeGenerator valueFor: originalCompiledMethod.
 	
-	tracedCompiledMethod _ methodClass basicCompile: generator tracedSourceCode.
+	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
+	is too big to be compiled with optimizations.
+	
+	At the time of writing this (2021-01-29) trying to analyze the code coverage of ArgentineLaw23555RuleTest>>#testCreation
+	(from the Chalten package (https://github.com/Cuis-Smalltalk/Calendars/commits/master/Chalten, at commit 63ac3888936b008e85679cdc474e4cc0685686bf)
+	fails with the following compiler error:
+	
+	    'genJumpLong: distance index -1042 is out of range -1024 to 1023'
+	
+	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
+	tracedCompiledMethod _  [ methodClass basicCompile: generator tracedSourceCode ]
+		on: Error
+		do: [ :error | MessageNode disableClassCachedStateDuring: [ methodClass basicCompile: generator tracedSourceCode ] ].
 
 	coveredSourceRanges := Set new.
 	tracedSourceRanges := generator tracedSourceRanges.
