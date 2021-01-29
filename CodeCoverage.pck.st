@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4527] on 20 January 2021 at 8:25:25 pm'!
+'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:47:41 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 3!
+!provides: 'CodeCoverage' 1 4!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -3568,7 +3568,7 @@ classesToAnalyze
 	
 	^ self targetClasses difference: self testCaseClasses! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:46:27'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:47:03'!
 compiledMethodsToAnalyze
 	
 	"NPM: I use an IdentitySet to hold the compiled methods to analyze because the equality of compiled methods
@@ -3576,7 +3576,11 @@ compiledMethodsToAnalyze
 	
 	^ self classesToAnalyze
 		inject: IdentitySet new
-		addingAll: [ :classToAnalyze | classToAnalyze methodDict values, classToAnalyze theMetaClass methodDict values]! !
+		into: [ :compiledMethodsToAnalyze :classToAnalyze |
+			compiledMethodsToAnalyze
+				addAll: classToAnalyze methodDict values;
+				addAll: classToAnalyze theMetaClass methodDict values;
+				yourself ]! !
 
 !CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:32'!
 rootSystemCategories
@@ -3597,19 +3601,25 @@ rootSystemCategoryOf: aSystemCategory
 
 	^ (aSystemCategory findTokens: $-) first! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:49:37'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:46:34'!
 targetClasses
 	
 	^ self targetSystemCategories
 		inject: Set new
-		addingAll: [ :systemCategory | systemOrganizer classesAt: systemCategory ]! !
+		into: [ :targetClasses :systemCategory |
+			targetClasses
+				addAll: (systemOrganizer classesAt: systemCategory);
+				yourself ]! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:49:42'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:45:59'!
 targetSystemCategories
 
 	^ self rootSystemCategories
 		inject: Set new
-		addingAll: [ :systemCategory | systemOrganizer categoriesMatching: systemCategory, '*' ]! !
+		into: [ :targetSystemCategories :systemCategory |
+			targetSystemCategories
+				addAll: (systemOrganizer categoriesMatching: systemCategory, '*');
+				yourself ]! !
 
 !CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:28:23'!
 testCaseClasses
