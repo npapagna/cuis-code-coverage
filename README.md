@@ -7,6 +7,27 @@
 
 It analyzes the code coverage of any Smalltalk expression, not only test runs.
 
+## Features
+_(many more to come)_
+
+### Code Coverage Browser
+Easily find which collaborations were not executed using the Code Coverage Browser.  
+Get detailed coverage information at the System Category, Class, Message Category or Message level:
+![Code Coverage](assets/demo-code-highlighting.png)
+
+### Collaborators highlighting
+Collaborators are covered when they were used at least once:
+![Code Coverage](assets/demo-collaborators-highlighting.png)
+
+Temporary variables declarations are covered when they were either read or written at least once:
+![Code Coverage](assets/demo-temporaries-declaration-highlighting.png)
+
+Block collaborators are covered when they were used at least once:
+![Code Coverage](assets/demo-block-collaborators-highlighting.png)
+
+Block temporary variables declarations are covered when they were either read or written at least once:
+![Code Coverage](assets/demo-block-temporaries-declaration-highlighting.png)
+
 ## Installing
 
 1. Make sure you have the latest updates installed: `World menu > Changes > Install New Updates`.
