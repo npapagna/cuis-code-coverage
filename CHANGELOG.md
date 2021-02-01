@@ -3,6 +3,13 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10](https://github.com/npapagna/cuis-code-coverage/compare/v1.9...v1.10) - 2020-01-31
+
+### Fixed
+
+* Mistyped test assertions.
+
+
 ## [1.9](https://github.com/npapagna/cuis-code-coverage/compare/v1.3...v1.9) - 2020-01-29
 
 ### Added

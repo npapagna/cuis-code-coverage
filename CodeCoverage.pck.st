@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 29 January 2021 at 5:53:30 pm'!
+'From Cuis 5.0 [latest update: #4528] on 31 January 2021 at 9:18:10 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 9!
+!provides: 'CodeCoverage' 1 10!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -2719,17 +2719,17 @@ test048_CoversBlocksThatSignalAnError
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 42 to: 63 as: 'errorMessageForTesting'.
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 67 to: 71 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:57:07'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:14'!
 test049_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsWritten
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignment.
 
 	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignment is: 3.
 	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 33 to: 33 as: 'a'.
-	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 40 to: 40 as: 'a'.
-	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 44 to: 45 as: ' 1'.! !
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 39 to: 39 as: 'a'.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 43 to: 44 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 21:05:33'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:24'!
 test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariableIsReadOrWrittenMoreThanOnce
 
 	self collectCoverageForExampleNamed: #temporaryVariableReadAndAssignment.
@@ -2738,7 +2738,7 @@ test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVari
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 40 to: 40 as: 'a'.
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 45 to: 45 as: 'a'.
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 50 to: 50 as: '1'.
-	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 56 to: 56 as: 'a'.! !
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 55 to: 55 as: 'a'.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:17:15'!
 test051_DoesNotCoversSelectorArgumentsWhenTheyAreNotReferenced
