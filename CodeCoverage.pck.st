@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 31 January 2021 at 9:18:10 pm'!
+'From Cuis 5.0 [latest update: #4528] on 2 February 2021 at 8:44:59 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 10!
+!provides: 'CodeCoverage' 1 12!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -19,7 +19,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode'
+	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -119,7 +119,7 @@ CodeCoverageReportSummary class
 
 !classDefinition: #CompiledMethodCoverageReport category: 'CodeCoverage-Model'!
 CodeCoverageReport subclass: #CompiledMethodCoverageReport
-	instanceVariableNames: 'tracedSourceRanges coveredSourceRanges compiledMethodWasExecuted compiledMethod'
+	instanceVariableNames: 'analyzedSourceRanges coveredSourceRanges compiledMethodWasExecuted compiledMethod'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -129,7 +129,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coveredSourceRanges tracedSourceRanges'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coveredSourceRanges tracedSourceRanges sourceCodeGeneratorX'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -445,7 +445,7 @@ denyIsOptimized: aMessageNode
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 17:01:52'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 2/1/2021 22:39:44'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
@@ -453,7 +453,9 @@ value
 	I traverse the method node's AST adding tracing to each parse node.
 	For more information about how each type of parse node is traced, see methods in my 'visiting' protocol."
 
-	methodNode accept: self.! !
+	methodNode accept: self.
+	
+	tracedSourceCode :=  methodNode printString .! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 1/28/2021 21:27:28'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
@@ -641,10 +643,10 @@ sourceRangesToCover: aParseNode
 
 	^ sourceRangesToCover! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 1/10/2021 17:40:05'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 2/1/2021 22:39:50'!
 tracedSourceCode
 	
-	^ methodNode printString ! !
+	^ tracedSourceCode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 1/19/2021 18:13:17'!
 tracedSourceRanges
@@ -1348,14 +1350,14 @@ assert: aSelector hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: ex
 	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).
 	! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:22:03'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/2/2021 20:28:20'!
 assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumberOfSourceRanges: numberOfSourceRanges  
 	
 	| report |
 	report := self reportForExampleNamed: aSelector.
 	
 	"NPM: Uncomment the following line to automatically generate and copy assertions to the clipboard."
-	self generateAssertionsFor: report.
+	"self generateAssertionsFor: report."
 	
 	self
 		assert: numberOfSourceRanges
@@ -2816,6 +2818,17 @@ test057_CoversBlockTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporar
 	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
 	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 62 to: 66 as: 'value'.! !
 
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/1/2021 22:31:32'!
+test058_DoesNotCoverMethodsThatWereNotExecuted
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignment.
+	
+	self collectCodeCoverageDuring: [].
+
+	self assert: #assignment hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
+	self deny: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
+	self deny: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
+
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
 
@@ -3412,18 +3425,14 @@ percentCovered
 		asFloat
 		roundTo: 0.01! !
 
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 18:14:42'!
-for: aCompiledMethod analyzed: tracedSourceRanges evaluated: coveredSourceRanges 
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/2/2021 20:29:22'!
+for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges 
 	
 	^ CompiledMethodCoverageReport
 		for: aCompiledMethod
-		analyzed: tracedSourceRanges
-		evaluated: coveredSourceRanges! !
-
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 02:16:19'!
-forNonExecutedMethod: aCompiledMethod
-	
-	^ CompiledMethodCoverageReport nonExecuted: aCompiledMethod! !
+		executed: aBoolean
+		analyzed: aCollectionOfAnalyzedSourceRanges
+		covered: aCollectionOfCoveredSourceRanges! !
 
 !CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:51:58'!
 toSummarize: codeCoverageReports 
@@ -3484,10 +3493,10 @@ messageCategory
 	
 	^ compiledMethod category! !
 
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 1/19/2021 18:18:03'!
+!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 2/2/2021 20:38:33'!
 numberOfSourceRanges
 	
-	^ tracedSourceRanges size! !
+	^ analyzedSourceRanges size! !
 
 !CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 1/19/2021 21:31:23'!
 systemCategory
@@ -3496,18 +3505,19 @@ systemCategory
 		methodClass
 		category ! !
 
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 1/19/2021 19:28:17'!
+!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 2/2/2021 20:38:33'!
 uncoveredSourceRanges
 	
-	^ tracedSourceRanges difference: coveredSourceRanges ! !
+	^ analyzedSourceRanges difference: coveredSourceRanges ! !
 
-!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 1/19/2021 18:16:37'!
-initializeMethod: aCompiledMethod analyzed: aQuantity evaluated: sourceRanges executed: aBoolean  
-	
+!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 2/2/2021 20:38:33'!
+initializeFor: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges 
+
 	compiledMethod := aCompiledMethod.
-	tracedSourceRanges := aQuantity.
-	coveredSourceRanges := sourceRanges.
-	compiledMethodWasExecuted := aBoolean ! !
+	compiledMethodWasExecuted := aBoolean. 
+	analyzedSourceRanges := aCollectionOfAnalyzedSourceRanges.
+	coveredSourceRanges := aCollectionOfCoveredSourceRanges.
+	! !
 
 !CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 1/19/2021 18:17:05'!
 coverageRatio
@@ -3528,33 +3538,16 @@ isFor: aCompiledMethod
 	
 	^ compiledMethod == aCompiledMethod ! !
 
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 18:15:30'!
-for: aCompiledMethod analyzed: tracedSourceRanges evaluated: coveredSourceRanges 
-	
-	^ self
-		for: aCompiledMethod
-		analyzed: tracedSourceRanges
-		evaluated: coveredSourceRanges
-		executed: true ! !
-
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 18:16:19'!
-for: aCompiledMethod analyzed: aQuantity evaluated: sourceRanges executed: aBoolean
+!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/2/2021 20:33:06'!
+for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges 
 
 	^ self
 		new
-		initializeMethod: aCompiledMethod
-		analyzed: aQuantity
-		evaluated: sourceRanges
-		executed: aBoolean! !
-
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 18:25:14'!
-nonExecuted: aCompiledMethod
-	
-	^ self
-		for: aCompiledMethod
-		analyzed: {}
-		evaluated: {}
-		executed: false ! !
+		initializeFor: aCompiledMethod
+		executed: aBoolean
+		analyzed: aCollectionOfAnalyzedSourceRanges
+		covered: aCollectionOfCoveredSourceRanges
+		! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'accessing' stamp: 'NPM 1/10/2021 16:24:19'!
 currentCompiledMethod
@@ -3589,7 +3582,7 @@ run: aSelector with: arguments in: aReceiver
 		arguments: arguments
 		! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 1/11/2021 16:46:34'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 2/2/2021 19:49:56'!
 initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 
 	originalCompiledMethod := aCompiledMethod.
@@ -3599,7 +3592,9 @@ initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCode
 	"methodClass and selector are cached in instance variables to reduce as much as
 	possible the overhead I put on the execution of the traced compiled method."
 	methodClass := originalCompiledMethod methodClass.
-	selector := originalCompiledMethod selector.! !
+	selector := originalCompiledMethod selector.
+	
+	coveredSourceRanges := Set new.! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 1/10/2021 13:46:48'!
 install
@@ -3631,16 +3626,14 @@ uninstall
 	
 	self tearDownTracedCompiledMethod! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 1/19/2021 18:14:28'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 2/2/2021 20:35:26'!
 codeCoverageReport
 
-	^ tracedCompiledMethod
-		ifNil: [ CodeCoverageReport forNonExecutedMethod: originalCompiledMethod ]
-		ifNotNil: [
-			CodeCoverageReport
-				for: originalCompiledMethod
-				analyzed: tracedSourceRanges
-				evaluated: coveredSourceRanges ]! !
+	^ CodeCoverageReport
+		for: originalCompiledMethod
+		executed: self compiledMethodWasExecuted
+		analyzed: sourceCodeGenerator tracedSourceRanges
+		covered: coveredSourceRanges! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 1/11/2021 21:31:21'!
 registerAsCovered: sourceRanges
@@ -3652,12 +3645,9 @@ reportResultsTo: aCodeCoverageReportBuilder
 
 	self halt.! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/29/2021 19:10:05'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 2/2/2021 20:35:56'!
 setUpTracedCompiledMethod
 
-	| generator |
-	generator := sourceCodeGenerator valueFor: originalCompiledMethod.
-	
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
 	is too big to be compiled with optimizations.
 	
@@ -3668,12 +3658,8 @@ setUpTracedCompiledMethod
 	    'genJumpLong: distance index -1042 is out of range -1024 to 1023'
 	
 	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
-	tracedCompiledMethod _  [ methodClass basicCompile: generator tracedSourceCode ]
-		on: Error
-		do: [ :error | MessageNode disableClassCachedStateDuring: [ methodClass basicCompile: generator tracedSourceCode ] ].
-
-	coveredSourceRanges := Set new.
-	tracedSourceRanges := generator tracedSourceRanges.
+	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
+	
 	tracedCompiledMethod codeCoverageAnalyzer: self. ! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/10/2021 17:55:45'!
@@ -3686,6 +3672,11 @@ analyzes: aCompiledMethod
 
 	^ originalCompiledMethod == aCompiledMethod ! !
 
+!CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 2/2/2021 20:35:26'!
+compiledMethodWasExecuted
+
+	^ tracedCompiledMethod isNil not! !
+
 !CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/11/2021 21:30:40'!
 hasCodeCoverageInformation
 
@@ -3696,16 +3687,8 @@ isInstalled
 
 	^ self installedCompiledMethod ~= self! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 1/10/2021 16:03:36'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 2/2/2021 20:43:17'!
 for: aCompiledMethod using: aCodeCoverageAnalyzer
-	
-	^ self
-		for: aCompiledMethod 
-		using: aCodeCoverageAnalyzer
-		generatingSourceCodeWith: CodeCoverageSourceCodeGenerator! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 1/10/2021 16:14:30'!
-for: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 	
 	"Create an instance of myself to analyze code coverage of aCompiledMethod.
 	aTracedSourceCodeGenerator is used to generate the traced version of aCompiledMethod that will report code coverage
@@ -3720,7 +3703,7 @@ for: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCod
 		new
 		initializeFor: aCompiledMethod
 		using: aCodeCoverageAnalyzer
-		generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator! !
+		generatingSourceCodeWith: (CodeCoverageSourceCodeGenerator valueFor: aCompiledMethod)! !
 
 !CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:46:35'!
 installOn: aCompiledMethod using: aCodeCoverageAnalyzer
@@ -4125,6 +4108,16 @@ basicCompile: code
 isTestCaseClass
 	
 	^ self isKindOf: TestCase class! !
+
+!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 2/2/2021 20:14:10'!
+safelyBasicCompile: sourceCode 
+	
+	"I try to compile sourceCode the default way (with compiled optimizations turned in).
+	If that fails, I try to compile it without compiler optimizations."
+	
+	^  [ self basicCompile: sourceCode ]
+		on: Error
+		do: [ :error | MessageNode disableClassCachedStateDuring: [ self basicCompile: sourceCode ] ].! !
 
 !BlockClosure methodsFor: '*CodeCoverage' stamp: 'NPM 1/28/2021 16:43:57'!
 valueCoveringAll: sourceRanges
