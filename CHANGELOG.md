@@ -8,6 +8,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 ### Added
 
 * Support for considering uncovered methods that has not been executed.
+* Support for covering boolean temporary variable declarations.
 
 ## [1.10](https://github.com/npapagna/cuis-code-coverage/compare/v1.9...v1.10) - 2020-01-31
 

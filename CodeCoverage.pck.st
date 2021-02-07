@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 2 February 2021 at 8:44:59 pm'!
+'From Cuis 5.0 [latest update: #4528] on 6 February 2021 at 9:20:38 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 12!
+!provides: 'CodeCoverage' 1 14!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -119,7 +119,7 @@ CodeCoverageReportSummary class
 
 !classDefinition: #CompiledMethodCoverageReport category: 'CodeCoverage-Model'!
 CodeCoverageReport subclass: #CompiledMethodCoverageReport
-	instanceVariableNames: 'analyzedSourceRanges coveredSourceRanges compiledMethodWasExecuted compiledMethod'
+	instanceVariableNames: 'analyzedSourceRanges coveredSourceRanges compiledMethodWasExecuted compiledMethod halfCoveredSourceRanges'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -129,12 +129,22 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coveredSourceRanges tracedSourceRanges sourceCodeGeneratorX'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
 !classDefinition: 'CompiledMethodCoverageAnalyzer class' category: 'CodeCoverage-Model'!
 CompiledMethodCoverageAnalyzer class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageReportBuilder category: 'CodeCoverage-Model'!
+Object subclass: #CompiledMethodCoverageReportBuilder
+	instanceVariableNames: 'coveredSourceRanges compiledMethod analyzedSourceRanges coveredBooleanSourceRanges'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageReportBuilder class' category: 'CodeCoverage-Model'!
+CompiledMethodCoverageReportBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #CodeCoverageTestClass1 category: 'CodeCoverage-Tests'!
@@ -516,30 +526,45 @@ parse: sourceCode
 		parse: sourceCode
 		class: methodNode methodClass! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/19/2021 18:09:37'!
-parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:18:38'!
+parseNodeCovering: aParseNode whenExecuting: anotherParseNode 
+	
+	"Generate a parse node that, when compiled and executed, will register that anotherParseNode covered aParseNode.
+	If aParseNode has a declaration (e.g. when aParseNode is a temporary variable), it will be covered too."
+	
+	^ declarationSourceRangeByParseNode
+		at: aParseNode
+		ifPresent: [ :declarationSourceRange |
+			self
+				parseNodeToCover: (self consumeNextSourceRangeFor: aParseNode)
+				declaredAt: declarationSourceRange
+				withResultOf: anotherParseNode ]
+		ifAbsent: [
+			self
+				parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
+				whenExecuting: anotherParseNode ]! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:29:20'!
+parseNodeFrom: sourceCodeTemplate toCoverAll: sourceRanges whenExecuting: aParseNode
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges
-	in the selector and class of methodNode.
+	in the selector and class of my methodNode instance variable.
 	
 	Implementation Details
 	================
 	
 	To create the parse node, I create a template for it and modify it filling in the blanks.
-	I need to parse a method even though I ony use its sole statement because that's what the parser expects."
-
-	| sourceCodeTemplate templateMethodNode codeCoverageMessageSendNode |
+	I need to parse a method even though I ony use its sole statement because that's what the parser expects.
 	
-	"This is the source code template I will use to create a parse node below.
-	It sends the message coverAll: to the result of executing aParseNode."
-	sourceCodeTemplate _ 'm1 nil coverAll: {1}'
-		format: { self sourceCodeToCreateAll: sourceRanges }.
+	I expect sourceCodeTemplate to be the source code of a method whose sole statement is a message send."
 
-	"Parse it. The parser will return a MethodNode"
+	| templateMethodNode codeCoverageMessageSendNode |
+	
+	"Parse sourceCodeTemplate. The parser will return a MethodNode"
 	templateMethodNode _ self parse: sourceCodeTemplate.
 	
 	"Method nodes have a block containing all statements in the method (in this case, there is only one).
-	Grab the message node that sends the #coverAll: message"
+	Grab the message node that sends the sole message in sourceCodeTemplate."
 	codeCoverageMessageSendNode _ templateMethodNode block statements first.
 	
 	"The only thing I have to fill in is the expression that, when executed, will cover sourceRanges"  
@@ -550,10 +575,45 @@ parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
 
 	^ codeCoverageMessageSendNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 17:54:12'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:30:20'!
+parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf: aParseNode
+
+	"Generate a parse node that, when compiled and executed, will register that aParseNode covered aSourceRange
+	and aDeclarationSourceRange."
+
+	| sourceCodeTemplate |
+	
+	"This is the source code template I will use to create a parse node below.
+	It will send the message coverAll: to the result of executing aParseNode."
+	sourceCodeTemplate _ 'm1 nil cover: {1} declaredAt: {2}'
+		format: { aSourceRange storeString. aDeclarationSourceRange storeString }.
+
+	^ self
+		parseNodeFrom: sourceCodeTemplate
+		toCoverAll: {aSourceRange. aDeclarationSourceRange}
+		whenExecuting: aParseNode! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:30:39'!
+parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
+
+	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
+
+	| sourceCodeTemplate |
+	
+	"This is the source code template I will use to create a parse node below.
+	It will send the message coverAll: to the result of executing aParseNode."
+	sourceCodeTemplate _ 'm1 nil coverAll: {1}'
+		format: { self sourceCodeToCreateAll: sourceRanges }.
+
+	^ self
+		parseNodeFrom: sourceCodeTemplate 
+		toCoverAll: sourceRanges
+		whenExecuting: aParseNode! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:31:18'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
-	"NOTE: this method is pretty similar to #parseNodeToCoverAll:whenExecuting:.
+	"NOTE: this method is pretty similar to #parseNodeFrom:toCoverAll:whenExecuting:.
 	The only difference is here we are wrapping aMessageNode in a block to cover it even when
 	it raises an error. NPM."
 
@@ -653,7 +713,7 @@ tracedSourceRanges
 
 	^ tracedSourceRanges! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 21:22:34'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 2/6/2021 20:06:23'!
 visitAssignmentNode: anAssignmentNode
 
 	"Add tracing to assignment nodes.
@@ -668,14 +728,13 @@ visitAssignmentNode: anAssignmentNode
 	This is totally fine. Visiting a node is useful when I don't know its type, but in this case only VariableNodes are accepted for the left hand side.
 
 	The source code interval for the variable will be considered covered when the assignment is evaluated."
-	
 
 	anAssignmentNode
 		variable: anAssignmentNode variable
 		value: (anAssignmentNode value accept: self).
 
 	^ self
-		parseNodeToCoverAll: (self sourceRangesToCover: anAssignmentNode variable)
+		parseNodeCovering: anAssignmentNode variable
 		whenExecuting: anAssignmentNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 20:51:07'!
@@ -1339,18 +1398,29 @@ test012_DoesNotAllowRequestingTheCodeCoverageReportForACompiledMethodThatWasNotA
 	
 	self assertRaisesCompiledMethodWasNotAnalizedError:  [ codeCoverageAnalyzer report reportForCompiledMethod: Object>>#value ]! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:20:00'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 21:16:27'!
 assert: aSelector hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
 	
 	| compiledMethod report |
 	compiledMethod := self class >> aSelector.
 	report := self reportForExampleNamed: aSelector.
 	
-	self assert: (report coveredSourceRanges includes: (sourceRangeStart to: sourceRangeEnd)).
+	self assert: (report isCovered: (sourceRangeStart to: sourceRangeEnd)).
 	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).
 	! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/2/2021 20:28:20'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 20:55:52'!
+assert: aSelector hasBeenHalfCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
+	
+	| compiledMethod report |
+	compiledMethod := self class >> aSelector.
+	report := self reportForExampleNamed: aSelector.
+	
+	self assert: (report isHalfCovered: (sourceRangeStart to: sourceRangeEnd)).
+	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).
+	! !
+
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 18:34:11'!
 assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumberOfSourceRanges: numberOfSourceRanges  
 	
 	| report |
@@ -1364,7 +1434,7 @@ assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumbe
 		equals: report numberOfSourceRanges.
 	self
 		assert: numberOfCoveredSourceRanges
-		equals: report numberOfCoveredSourceRanges! !
+		equals: report totalCoveredSourceRanges! !
 
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:19:41'!
 assertCoveragePercentOfClass: aClass is: aPercentage
@@ -1916,6 +1986,53 @@ temporaryVariable
 	
 	a.! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/6/2021 21:13:38'!
+temporaryVariableAssignedToBooleanAndThenNonBoolean
+
+	| a |
+	
+	a _ true.
+	a _ 1.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 21:57:24'!
+temporaryVariableAssignedToFalse
+
+	| a |
+	
+	a _ false! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/6/2021 21:09:46'!
+temporaryVariableAssignedToNonBooleanAndThenBoolean
+
+	| a |
+	
+	a _ 1.
+	a _ true.
+! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 21:47:01'!
+temporaryVariableAssignedToTrue
+
+	| a |
+	
+	a _ true! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 21:58:12'!
+temporaryVariableAssignedToTrueAndFalse
+
+	| a |
+	
+	a _ true.
+	a _ false.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 22:06:07'!
+temporaryVariableAssignedToTrueMoreThanOnce
+
+	| a |
+	
+	a _ true.
+	a _ true.! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 19:07:20'!
 temporaryVariableAssignment
 
@@ -2054,6 +2171,80 @@ test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
 	self collectCoverageForExampleNamed: #emptyMethod.
 	
 	self assertPercentCoverageForExampleNamed: #emptyMethod is: 100! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 20:56:58'!
+test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrue is: 3.
+	self assert: #temporaryVariableAssignedToTrue hasBeenHalfCoveredFrom: 37 to: 37 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrue hasBeenCoveredFrom: 44 to: 44 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrue hasBeenCoveredFrom: 48 to: 51 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrue is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 20:57:43'!
+test060_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToFalse is: 3.
+	self assert: #temporaryVariableAssignedToFalse hasBeenHalfCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #temporaryVariableAssignedToFalse hasBeenCoveredFrom: 45 to: 45 as: 'a'.
+	self assert: #temporaryVariableAssignedToFalse hasBeenCoveredFrom: 49 to: 53 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToFalse is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 20:58:27'!
+test061_FullyCoversABooleanTemporaryVariableDeclarationThatHasBeenAssignedToTrueAndFalse
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrueAndFalse is: 5.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 45 to: 45 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 52 to: 52 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 56 to: 59 as: 'true'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 63 to: 63 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 67 to: 71 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:09:21'!
+test062_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanTemporaryVariables
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrueMoreThanOnce is: 5.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 49 to: 49 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 56 to: 56 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 60 to: 63 as: 'true'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 67 to: 67 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 71 to: 74 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce is: 83.33.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:15:41'!
+test063_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 5.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 57 to: 57 as: 'a'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 64 to: 64 as: 'a'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 68 to: 71 as: 'true'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 75 to: 75 as: 'a'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 79 to: 79 as: '1'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:16:03'!
+test064_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 5.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 57 to: 57 as: 'a'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 64 to: 64 as: 'a'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 68 to: 68 as: '1'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 72 to: 72 as: 'a'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 76 to: 79 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 100.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test001_1_CoversALiteralVariable
@@ -3425,14 +3616,15 @@ percentCovered
 		asFloat
 		roundTo: 0.01! !
 
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/2/2021 20:29:22'!
-for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges 
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 18:21:56'!
+for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
 	
 	^ CompiledMethodCoverageReport
 		for: aCompiledMethod
 		executed: aBoolean
 		analyzed: aCollectionOfAnalyzedSourceRanges
-		covered: aCollectionOfCoveredSourceRanges! !
+		covered: aCollectionOfCoveredSourceRanges
+		halfCovered: aCollectionOfHalfCoveredSourceRanges! !
 
 !CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:51:58'!
 toSummarize: codeCoverageReports 
@@ -3463,83 +3655,96 @@ withAll: anArray
 		new
 		initializeWithAll: anArray ! !
 
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 20:52:31'!
+compiledMethod
+
+	^ compiledMethod! !
+
 !CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/11/2021 19:02:14'!
 coveredSourceRanges
 
 	^ coveredSourceRanges! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:21:43'!
+messageCategory
+	
+	^ compiledMethod category! !
 
 !CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:36'!
 methodClass
 	
 	^ compiledMethod methodClass! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/11/2021 19:02:31'!
-numberOfCoveredSourceRanges
-	
-	^ coveredSourceRanges size! !
-
 !CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:51'!
 selector
 	
 	^ compiledMethod selector! !
 
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 1/17/2021 20:52:31'!
-compiledMethod
-
-	^ compiledMethod! !
-
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 1/19/2021 21:21:43'!
-messageCategory
-	
-	^ compiledMethod category! !
-
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 2/2/2021 20:38:33'!
-numberOfSourceRanges
-	
-	^ analyzedSourceRanges size! !
-
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 1/19/2021 21:31:23'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:31:23'!
 systemCategory
 	
 	^ compiledMethod
 		methodClass
 		category ! !
 
-!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 2/2/2021 20:38:33'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/2/2021 20:38:33'!
 uncoveredSourceRanges
 	
 	^ analyzedSourceRanges difference: coveredSourceRanges ! !
 
-!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 2/2/2021 20:38:33'!
-initializeFor: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges 
+!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 2/6/2021 21:05:02'!
+initializeFor: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
 
 	compiledMethod := aCompiledMethod.
 	compiledMethodWasExecuted := aBoolean. 
 	analyzedSourceRanges := aCollectionOfAnalyzedSourceRanges.
 	coveredSourceRanges := aCollectionOfCoveredSourceRanges.
+	halfCoveredSourceRanges := aCollectionOfHalfCoveredSourceRanges.
 	! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 1/19/2021 18:17:05'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/6/2021 20:06:54'!
 coverageRatio
 	
 	compiledMethodWasExecuted ifFalse: [ ^ 0 ].
 	
 	self numberOfSourceRanges  isZero ifTrue: [ ^ 1 ].
-	
-	^ self numberOfCoveredSourceRanges / self numberOfSourceRanges ! !
 
-!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/11/2021 19:03:26'!
-isCovered: aSourceRange 
+	^ self totalCoveredSourceRanges / self totalOfAnalyzedSourceRanges! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/2/2021 20:38:33'!
+numberOfSourceRanges
 	
-	^ coveredSourceRanges includes: aSourceRange ! !
+	^ analyzedSourceRanges size! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/6/2021 21:05:02'!
+totalCoveredSourceRanges
+	
+	^ coveredSourceRanges size + halfCoveredSourceRanges size! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/6/2021 21:05:02'!
+totalOfAnalyzedSourceRanges
+	
+	" I  have to count the half-covered source ranges twice to calculate my #coverageRatio"
+	
+	^ self numberOfSourceRanges + halfCoveredSourceRanges size.! !
+
+!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 2/6/2021 21:17:10'!
+isCovered: aSourceRange
+
+	^ coveredSourceRanges includes: aSourceRange! !
 
 !CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/16/2021 20:09:07'!
 isFor: aCompiledMethod 
 	
 	^ compiledMethod == aCompiledMethod ! !
 
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/2/2021 20:33:06'!
-for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges 
+!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 2/6/2021 21:05:02'!
+isHalfCovered: aSourceRange 
+	
+	^ halfCoveredSourceRanges includes: aSourceRange! !
+
+!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 18:22:22'!
+for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
 
 	^ self
 		new
@@ -3547,6 +3752,7 @@ for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRan
 		executed: aBoolean
 		analyzed: aCollectionOfAnalyzedSourceRanges
 		covered: aCollectionOfCoveredSourceRanges
+		halfCovered: aCollectionOfHalfCoveredSourceRanges
 		! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'accessing' stamp: 'NPM 1/10/2021 16:24:19'!
@@ -3582,7 +3788,7 @@ run: aSelector with: arguments in: aReceiver
 		arguments: arguments
 		! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 2/2/2021 19:49:56'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 2/6/2021 17:17:01'!
 initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 
 	originalCompiledMethod := aCompiledMethod.
@@ -3594,7 +3800,9 @@ initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCode
 	methodClass := originalCompiledMethod methodClass.
 	selector := originalCompiledMethod selector.
 	
-	coveredSourceRanges := Set new.! !
+	coverageReportBuilder := CompiledMethodCoverageReportBuilder
+		for: originalCompiledMethod
+		withSourceRanges: sourceCodeGenerator tracedSourceRanges.! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 1/10/2021 13:46:48'!
 install
@@ -3626,26 +3834,12 @@ uninstall
 	
 	self tearDownTracedCompiledMethod! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 2/2/2021 20:35:26'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 2/6/2021 20:06:35'!
 codeCoverageReport
 
-	^ CodeCoverageReport
-		for: originalCompiledMethod
-		executed: self compiledMethodWasExecuted
-		analyzed: sourceCodeGenerator tracedSourceRanges
-		covered: coveredSourceRanges! !
+	^ coverageReportBuilder value: self compiledMethodWasExecuted! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 1/11/2021 21:31:21'!
-registerAsCovered: sourceRanges
-
-	coveredSourceRanges addAll: sourceRanges ! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 1/17/2021 20:13:45'!
-reportResultsTo: aCodeCoverageReportBuilder
-
-	self halt.! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 2/2/2021 20:35:56'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 2/6/2021 17:05:07'!
 setUpTracedCompiledMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -3660,7 +3854,7 @@ setUpTracedCompiledMethod
 	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
 	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
 	
-	tracedCompiledMethod codeCoverageAnalyzer: self. ! !
+	tracedCompiledMethod codeCoverageAnalyzer: coverageReportBuilder. ! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/10/2021 17:55:45'!
 tearDownTracedCompiledMethod
@@ -3676,11 +3870,6 @@ analyzes: aCompiledMethod
 compiledMethodWasExecuted
 
 	^ tracedCompiledMethod isNil not! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/11/2021 21:30:40'!
-hasCodeCoverageInformation
-
-	^ coveredSourceRanges isEmpty not! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 13:35:33'!
 isInstalled
@@ -3755,6 +3944,79 @@ shouldOnlyBeCreatedForCompiledMethodsErrorMessage
 shouldOnlyBeInstalledOnceErrorMessage
 	
 	^ self class name, ' should only be installed once.'! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/6/2021 20:07:45'!
+coveredBooleanSourceRanges
+	
+	^ (coveredBooleanSourceRanges associations
+		select: [ :each | each value size = 2]
+		thenCollect: [ :each | each key ])! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/6/2021 20:08:05'!
+partiallyCoveredBooleanRanges
+	
+	^ coveredBooleanSourceRanges keys
+		difference: self coveredBooleanSourceRanges! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/6/2021 18:21:36'!
+value: compiledMethodWasExecuted 
+
+	^ CodeCoverageReport
+		for: compiledMethod
+		executed: compiledMethodWasExecuted
+		analyzed: analyzedSourceRanges
+		covered: (coveredSourceRanges, self coveredBooleanSourceRanges)
+		halfCovered: self partiallyCoveredBooleanRanges.! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 2/6/2021 17:21:54'!
+initializeFor: aCompiledMethod with: tracedSourceRanges 
+
+	compiledMethod := aCompiledMethod.
+	analyzedSourceRanges := tracedSourceRanges.
+	coveredSourceRanges := Set new.
+	coveredBooleanSourceRanges := Dictionary new.! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/6/2021 21:18:29'!
+register: anObject declaredAt: declarationSourceRange covering: aSourceRange
+
+	"If declarationSourceRange is already tracked as a boolean declaration, remove it as
+	now it holds both boolean and non-boolean objects"
+	coveredBooleanSourceRanges removeKey: declarationSourceRange ifAbsent: [].
+	
+	self registerAsCovered: {declarationSourceRange. aSourceRange}! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/6/2021 17:12:23'!
+registerAsCovered: sourceRanges
+
+	coveredSourceRanges addAll: sourceRanges ! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/6/2021 17:29:15'!
+registerBoolean: aValue declaredAt: aSourceRange
+
+	(coveredBooleanSourceRanges at: aSourceRange ifAbsentPut: [ Set new ])
+		add: aValue! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/6/2021 21:19:13'!
+registerBoolean: aBoolean declaredAt: declarationSourceRange covering: aSourceRange 
+	
+	"If declarationSourceRange was previously assigned non-boolean objects, don't consider it a boolean
+	declaration."
+	(coveredSourceRanges includes: declarationSourceRange)
+		ifTrue: [ ^ self register: aBoolean declaredAt: declarationSourceRange covering: aSourceRange ].
+	
+	self
+		registerBoolean: aBoolean declaredAt: declarationSourceRange;
+		registerAsCovered: {aSourceRange}
+		
+	! !
+
+!CompiledMethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
+for: aCompiledMethod withSourceRanges: sourceRanges
+	
+	^ self
+		new
+		initializeFor: aCompiledMethod
+		with: sourceRanges! !
 
 !CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/16/2021 21:01:44'!
 m1
@@ -3994,18 +4256,18 @@ for: anItem report: aCodeCoverageReport
 		initializeFor: anItem
 		with: aCodeCoverageReport ! !
 
-!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 1/16/2021 19:45:26'!
-coverAll: sourceRanges 
+!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/6/2021 20:40:34'!
+codeCoverageAnalyzerDo: aBlock 
 	
 	"Convenience method used by CodeCoverageSourceCodeGenerator to report that
 	sourceRanges were covered for the compiled method that sent this message and
 	return the object that triggered the code coverage in one-shot.
 	
-	I assume that the calling method is the one being analyzed."
+	I assume that the calling method that called me is the one being analyzed."
 	
 	| compiledMethodBeingAnalyzed codeCoverageAnalyzer |
 	
-	compiledMethodBeingAnalyzed := thisContext sender method.
+	compiledMethodBeingAnalyzed := thisContext sender sender method.
 	codeCoverageAnalyzer := compiledMethodBeingAnalyzed codeCoverageAnalyzer.
 
 	"I have to check that codeCoverageAnalyzer is not null even that is not possible
@@ -4019,9 +4281,24 @@ coverAll: sourceRanges
 	For now, as a safety check, I will check this to avoid unwanted errors. NPM"
 	codeCoverageAnalyzer ifNil: [ ^ self ].
 	
-	codeCoverageAnalyzer registerAsCovered: sourceRanges.
+	aBlock value: codeCoverageAnalyzer.
 	
 	^ self! !
+
+!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/6/2021 21:00:31'!
+cover: aSourceRange declaredAt: declarationSourceRange 
+
+	^ self codeCoverageAnalyzerDo: [ :analyzer |
+		analyzer
+			register: self
+			declaredAt: declarationSourceRange
+			covering: aSourceRange ]! !
+
+!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/6/2021 20:14:53'!
+coverAll: sourceRanges 
+	
+	^ self codeCoverageAnalyzerDo: [ :analyzer |
+		analyzer  registerAsCovered: sourceRanges ]! !
 
 !Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 01:15:28'!
 runClassTestsWithCodeCoverage
@@ -4083,6 +4360,15 @@ runWithCodeCoverage: aTestSuite
 		run: aTestSuite
 		analyzingCodeCoverageWith: (CodeCoverageAnalyzerBuilder valueFrom: aTestSuite)
 	! !
+
+!Boolean methodsFor: '*CodeCoverage' stamp: 'NPM 2/6/2021 20:16:23'!
+cover: aSourceRange declaredAt: declarationSourceRange 
+	
+	^ self codeCoverageAnalyzerDo: [ :analyzer | 
+		analyzer
+			registerBoolean: self
+			declaredAt: declarationSourceRange
+			covering: aSourceRange ]! !
 
 !Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:33:51'!
 basicCompile: code
