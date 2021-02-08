@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 6 February 2021 at 9:20:38 pm'!
+'From Cuis 5.0 [latest update: #4528] on 7 February 2021 at 11:55:49 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 14!
+!provides: 'CodeCoverage' 1 15!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -650,14 +650,14 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	
 	^ codeCoverageMessageSendNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:22:34'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/7/2021 23:54:05'!
 parseNodeToCoverSourceRangeOf: aParseNode
 
-	"See #parseNodeToCoverAll:whenExecuting:"
+	"See #parseNodeCovering:whenExecuting:"
 
 	^ self
-		parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
-		whenExecuting: aParseNode.! !
+		parseNodeCovering: aParseNode
+		whenExecuting: aParseNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/29/2021 02:11:44'!
 register: aSourceRange asDeclarationOf: aParseNode
@@ -1529,6 +1529,13 @@ collectCoverageForExampleNamed: aSelector
 	
 	self collectCodeCoverageDuring: [ self perform: aSelector ].! !
 
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 2/7/2021 23:21:35'!
+collectCoverageForExampleNamed: aSelector with: argument
+
+	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
+	
+	self collectCodeCoverageDuring: [ self perform: aSelector with: argument ].! !
+
 !CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/20/2021 02:20:00'!
 reportForExampleNamed: aSelector
 
@@ -1765,6 +1772,11 @@ messageWithArgument: anArgument
 messageWithUnusedArgument: anArgument
 
 	[ anArgument ]! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/7/2021 23:33:49'!
+methodWithOneArgument: arg
+
+	arg value! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:53:42'!
 multipleAssignments
@@ -2087,7 +2099,7 @@ test039_Informs100PercentCoverageWhenAllOfTheAnalyzedCompiledMethodsOfAClassHave
 		assertCoveragePercentOfClass: self class
 		is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/29/2021 02:24:23'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 2/7/2021 23:45:34'!
 test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyzedCompiledMethods
 	
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -2097,9 +2109,9 @@ test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyz
 		self foo: true
 	].
 		
-	self assertCoveragePercentOfClass: self class is: 91.67! !
+	self assertCoveragePercentOfClass: self class is: 85.71000000000001 ! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/29/2021 02:24:33'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 2/7/2021 23:44:18'!
 test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -2107,7 +2119,7 @@ test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBl
 	self collectCodeCoverageDuring: [ 	self emptyMethod ].
 	self collectCodeCoverageDuring: [ self foo: true ].
 		
-	self assertCoveragePercentOfClass: self class is: 41.67! !
+	self assertCoveragePercentOfClass: self class is: 35.71! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:21:22'!
 test029_Informs0PercentCoverageWhenNoneOfTheCompiledMethodCollaborationsAreCovered
@@ -2127,23 +2139,23 @@ test030_Informs100PercentCoverageWhenAllOfTheCompiledMethodCollaborationsAreCove
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/29/2021 02:23:51'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 2/7/2021 23:42:14'!
 test030_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
 	
 	self collectCodeCoverageDuring: [ self foo: false ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 83.33! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 71.43! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/29/2021 02:23:58'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 2/7/2021 23:42:29'!
 test031_DoesNotCountCoveredCollaborationsMoreThanOnce
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
 	
 	self collectCodeCoverageDuring: [ self foo: false. self foo: false ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 83.33! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 71.43! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:05'!
 test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
@@ -2154,7 +2166,7 @@ test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/29/2021 02:24:03'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 2/7/2021 23:42:38'!
 test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -2162,7 +2174,7 @@ test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 	
 	self collectCodeCoverageDuring: [ self foo: true. ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 83.33! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 71.43! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:36'!
 test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
@@ -2245,6 +2257,92 @@ test064_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToANonBoole
 	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 72 to: 72 as: 'a'.
 	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 76 to: 79 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/7/2021 23:38:19'!
+test065_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #methodWithOneArgument: with: true.
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 3.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/7/2021 23:45:59'!
+test066_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #methodWithOneArgument: with: false.
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 3.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/7/2021 23:49:31'!
+test067_FullyCoversABooleanArgumentThatHasBeenAssignedToTrueAndFalse
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: true;
+			methodWithOneArgument: false ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 3.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/7/2021 23:51:56'!
+test068_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanArguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: true;
+			methodWithOneArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 3.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/7/2021 23:52:18'!
+test069_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: true;
+			methodWithOneArgument: 1 ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 3.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/7/2021 23:52:39'!
+test070_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: 1;
+			methodWithOneArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 3.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test001_1_CoversALiteralVariable
