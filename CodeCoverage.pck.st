@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 7 February 2021 at 11:55:49 pm'!
+'From Cuis 5.0 [latest update: #4528] on 8 February 2021 at 12:22:21 am'!
 'Description '!
-!provides: 'CodeCoverage' 1 15!
+!provides: 'CodeCoverage' 1 16!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -1592,6 +1592,21 @@ block
 	
 	[ 1 ] value! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:16:11'!
+blockWithArgument: anArgument
+
+	[ :arg | arg printString ] value: anArgument! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:13:38'!
+blockWithArgumentAssignedToFalse
+
+	[ :arg | arg printString ] value: false! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:12:29'!
+blockWithArgumentAssignedToTrue
+
+	[ :arg | arg printString ] value: true! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:33:18'!
 blockWithArgumentUsedManyTimes
 
@@ -2343,6 +2358,108 @@ test070_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenTo
 	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
 	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 34 to: 38 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:13:21'!
+test071_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgumentAssignedToTrue is: 5.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenHalfCoveredFrom: 38 to: 40 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 44 to: 46 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 48 to: 58 as: 'printString'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 62 to: 67 as: 'value:'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 69 to: 72 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToTrue is: 83.33.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:15:06'!
+test072_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgumentAssignedToFalse is: 5.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenHalfCoveredFrom: 39 to: 41 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 45 to: 47 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 49 to: 59 as: 'printString'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 63 to: 68 as: 'value:'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 70 to: 74 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToFalse is: 83.33.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:17:30'!
+test073_FullyCoversABooleanBlockArgumentThatHasBeenAssignedToTrueAndFalse
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: true;
+			blockWithArgument: false ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:20:08'!
+test074_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanArguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: true;
+			blockWithArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:02'!
+test075_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: true;
+			blockWithArgument: 1 ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:18'!
+test076_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: 1;
+			blockWithArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test001_1_CoversALiteralVariable
