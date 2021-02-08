@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 8 February 2021 at 9:42:15 am'!
+'From Cuis 5.0 [latest update: #4528] on 8 February 2021 at 9:47:50 am'!
 'Description '!
-!provides: 'CodeCoverage' 1 18!
+!provides: 'CodeCoverage' 1 19!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -3691,6 +3691,11 @@ coveredCodeColor
 
 	^ `Color lightGreen alpha: 0.4`! !
 
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/8/2021 09:47:10'!
+halfCoveredCodeColor
+	
+	^ Color yellow alpha: 0.3! !
+
 !CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:39:34'!
 highlight: sourceRanges with: aColor 
 	
@@ -3702,13 +3707,17 @@ highlight: sourceRanges with: aColor
 				to: sourceRange last ]
 	! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:37:18'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/8/2021 09:43:07'!
 highlightCodeCoverageResults
 
 	self
 		highlight: codeCoverageReport coveredSourceRanges
 		with: self coveredCodeColor.
-		
+	
+	self
+		highlight: codeCoverageReport halfCoveredSourceRanges
+		with: self halfCoveredCodeColor.
+			
 	self
 		highlight: codeCoverageReport uncoveredSourceRanges
 		with: self uncoveredCodeColor.! !
@@ -4106,10 +4115,10 @@ systemCategory
 		methodClass
 		category ! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/2/2021 20:38:33'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/8/2021 09:45:00'!
 uncoveredSourceRanges
 	
-	^ analyzedSourceRanges difference: coveredSourceRanges ! !
+	^ analyzedSourceRanges difference: (coveredSourceRanges, halfCoveredSourceRanges)! !
 
 !CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 2/6/2021 21:05:02'!
 initializeFor: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
@@ -4161,6 +4170,11 @@ isFor: aCompiledMethod
 isHalfCovered: aSourceRange 
 	
 	^ halfCoveredSourceRanges includes: aSourceRange! !
+
+!CompiledMethodCoverageReport methodsFor: 'as yet unclassified' stamp: 'NPM 2/8/2021 09:43:26'!
+halfCoveredSourceRanges
+	
+	^ halfCoveredSourceRanges! !
 
 !CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 18:22:22'!
 for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
