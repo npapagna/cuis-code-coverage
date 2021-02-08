@@ -11,6 +11,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Support for covering boolean temporary variable declarations.
 * Support for covering boolean arguments.
 * Support for covering block boolean arguments.
+* Support for covering boolean block temporary variable declarations.
 
 ## [1.10](https://github.com/npapagna/cuis-code-coverage/compare/v1.9...v1.10) - 2020-01-31
 

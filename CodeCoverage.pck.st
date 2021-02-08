@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 8 February 2021 at 12:22:21 am'!
+'From Cuis 5.0 [latest update: #4528] on 8 February 2021 at 8:11:14 am'!
 'Description '!
-!provides: 'CodeCoverage' 1 16!
+!provides: 'CodeCoverage' 1 17!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -1567,6 +1567,11 @@ tearDownCodeCoverageAnalyzer
 
 	codeCoverageAnalyzer ifNotNil: [ codeCoverageAnalyzer stopTrackingCodeCoverage ]! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 08:03:46'!
+assignBlockTemporary: aValue
+
+	[ |a| a _ aValue ] value! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:57:15'!
 assignVariableToItself
 	
@@ -2460,6 +2465,104 @@ test076_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToANonBooleanAndTh
 	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
 	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:05:08'!
+test077_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #assignBlockTemporary: with: true.
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 5.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 35 to: 35 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 42 to: 47 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 51 to: 55 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 71.43.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:05:21'!
+test078_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #assignBlockTemporary: with: false.
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 5.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 35 to: 35 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 42 to: 47 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 51 to: 55 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 71.43.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:06:45'!
+test079_FullyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrueAndFalse
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: true;
+			assignBlockTemporary: false ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 5.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 35 to: 35 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 42 to: 47 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 51 to: 55 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:08:09'!
+test080_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanTemporaryVariables
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: true;
+			assignBlockTemporary: true ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 5.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 35 to: 35 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 42 to: 47 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 51 to: 55 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 71.43.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:09:12'!
+test081_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: true;
+			assignBlockTemporary: 1 ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 5.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 35 to: 35 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 42 to: 47 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 51 to: 55 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:09:30'!
+test082_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: 1;
+			assignBlockTemporary: true ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 5.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 35 to: 35 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 42 to: 47 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 51 to: 55 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test001_1_CoversALiteralVariable
