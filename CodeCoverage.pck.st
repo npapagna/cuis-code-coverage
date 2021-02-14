@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 14 February 2021 at 12:55:12 pm'!
+'From Cuis 5.0 [latest update: #4528] on 14 February 2021 at 1:49:21 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 21!
+!provides: 'CodeCoverage' 1 22!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -119,7 +119,7 @@ CodeCoverageReportSummary class
 
 !classDefinition: #CompiledMethodCoverageReport category: 'CodeCoverage-Model'!
 CodeCoverageReport subclass: #CompiledMethodCoverageReport
-	instanceVariableNames: 'analyzedSourceRanges coveredSourceRanges compiledMethodWasExecuted compiledMethod halfCoveredSourceRanges'
+	instanceVariableNames: 'compiledMethod compiledMethodWasExecuted coverageRatioBySourceRange'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -1485,7 +1485,7 @@ deny: aSymbol hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expect
 	self assert: (report uncoveredSourceRanges includes: (sourceRangeStart to: sourceRangeEnd)).
 	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:27:51'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 13:06:02'!
 generateAssertionsFor: report 
 	
 	"NPM: for use during development only.
@@ -1493,7 +1493,7 @@ generateAssertionsFor: report
 	Hacky, but it does the job."
 	
 	| assertions assertionsSourceCode sortedSourceRanges sourceCode sourceCodeByRange sourceRanges |
-	sourceRanges := report coveredSourceRanges, report uncoveredSourceRanges.
+	sourceRanges := report fullyCoveredSourceRanges, report uncoveredSourceRanges.
 	sortedSourceRanges := sourceRanges asOrderedCollection sort: [ :sourceRange :otherSourceRange | sourceRange first < otherSourceRange first ].
 	
 	sourceCode := report compiledMethod sourceCode.
@@ -3717,15 +3717,15 @@ highlight: sourceRanges with: aColor
 				to: sourceRange last ]
 	! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/8/2021 09:43:07'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/14/2021 13:06:18'!
 highlightCodeCoverageResults
 
 	self
-		highlight: codeCoverageReport coveredSourceRanges
+		highlight: codeCoverageReport fullyCoveredSourceRanges
 		with: self coveredCodeColor.
 	
 	self
-		highlight: codeCoverageReport halfCoveredSourceRanges
+		highlight: codeCoverageReport partiallyCoveredSourceRanges
 		with: self halfCoveredCodeColor.
 			
 	self
@@ -4053,15 +4053,13 @@ percentCovered
 	^ (self coverageRatio * 100)
 		roundTo: 0.01! !
 
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 18:21:56'!
-for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/14/2021 13:38:35'!
+for: aCompiledMethod executed: aBoolean with: coverageResults   
 	
 	^ CompiledMethodCoverageReport
 		for: aCompiledMethod
 		executed: aBoolean
-		analyzed: aCollectionOfAnalyzedSourceRanges
-		covered: aCollectionOfCoveredSourceRanges
-		halfCovered: aCollectionOfHalfCoveredSourceRanges! !
+		with: coverageResults! !
 
 !CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:51:58'!
 toSummarize: codeCoverageReports 
@@ -4097,15 +4095,10 @@ compiledMethod
 
 	^ compiledMethod! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/11/2021 19:02:14'!
-coveredSourceRanges
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:53'!
+fullyCoveredSourceRanges
 
-	^ coveredSourceRanges! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/8/2021 09:43:26'!
-halfCoveredSourceRanges
-	
-	^ halfCoveredSourceRanges! !
+	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio = 1 ]! !
 
 !CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:21:43'!
 messageCategory
@@ -4116,6 +4109,19 @@ messageCategory
 methodClass
 	
 	^ compiledMethod methodClass! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:08:38'!
+partiallyCoveredSourceRanges
+	
+	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio |
+		0 < coverageRatio and: [ coverageRatio < 1 ]]! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:07:40'!
+selectSourceRangesByCoverageRatio: aBlock
+	
+	^ coverageRatioBySourceRange associations
+		select: [ :sourceRangeAndCoverageRatio | aBlock value: sourceRangeAndCoverageRatio value ]
+		thenCollect: [ :sourceRangeAndCoverageRatio | sourceRangeAndCoverageRatio key ]! !
 
 !CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:51'!
 selector
@@ -4129,71 +4135,55 @@ systemCategory
 		methodClass
 		category ! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/8/2021 09:45:00'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:46'!
 uncoveredSourceRanges
 	
-	^ analyzedSourceRanges difference: (coveredSourceRanges, halfCoveredSourceRanges)! !
+	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio isZero ]! !
 
-!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 2/6/2021 21:05:02'!
-initializeFor: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
+!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 2/14/2021 13:41:45'!
+initializeFor: aCompiledMethod executed: aBoolean with: coverageResults   
 
 	compiledMethod := aCompiledMethod.
 	compiledMethodWasExecuted := aBoolean. 
-	analyzedSourceRanges := aCollectionOfAnalyzedSourceRanges.
-	coveredSourceRanges := aCollectionOfCoveredSourceRanges.
-	halfCoveredSourceRanges := aCollectionOfHalfCoveredSourceRanges.
-	! !
+	coverageRatioBySourceRange := coverageResults! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:13:46'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:14:00'!
 coverageRatio
 	
 	compiledMethodWasExecuted ifFalse: [ ^ 0 ].
 	
-	self numberOfSourceRanges  isZero ifTrue: [ ^ 1 ].
+	coverageRatioBySourceRange ifEmpty: [ ^ 1 ].
 
-	^ self totalCoverageRatio / self numberOfSourceRanges! !
+	^ (coverageRatioBySourceRange values sum) / coverageRatioBySourceRange size! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:50:31'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:13:23'!
 coverageRatioOf: aSourceRange
 
-	(halfCoveredSourceRanges includes: aSourceRange)
-		ifTrue: [ ^ 0.5 ].
-		
-	(coveredSourceRanges includes: aSourceRange)
-		ifTrue: [ ^ 1 ].
-		
-	^ 0! !
+	^ coverageRatioBySourceRange at: aSourceRange! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/2/2021 20:38:33'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:10:50'!
 numberOfSourceRanges
 	
-	^ analyzedSourceRanges size! !
+	^ coverageRatioBySourceRange size! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:53:17'!
-totalCoverageRatio
-	
-	^ (coveredSourceRanges, halfCoveredSourceRanges) sum: [ :sourceRange | self coverageRatioOf: sourceRange ]! !
-
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/6/2021 21:05:02'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:05:11'!
 totalCoveredSourceRanges
 	
-	^ coveredSourceRanges size + halfCoveredSourceRanges size! !
+	^ coverageRatioBySourceRange size - self uncoveredSourceRanges size! !
 
 !CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/16/2021 20:09:07'!
 isFor: aCompiledMethod 
 	
 	^ compiledMethod == aCompiledMethod ! !
 
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 18:22:22'!
-for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
+!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/14/2021 13:39:00'!
+for: aCompiledMethod executed: aBoolean with: coverageResults   
 
 	^ self
 		new
 		initializeFor: aCompiledMethod
 		executed: aBoolean
-		analyzed: aCollectionOfAnalyzedSourceRanges
-		covered: aCollectionOfCoveredSourceRanges
-		halfCovered: aCollectionOfHalfCoveredSourceRanges
+		with: coverageResults
 		! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'accessing' stamp: 'NPM 1/10/2021 16:24:19'!
@@ -4386,36 +4376,56 @@ shouldOnlyBeInstalledOnceErrorMessage
 	
 	^ self class name, ' should only be installed once.'! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/6/2021 20:07:45'!
-coveredBooleanSourceRanges
+!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:28:13'!
+fullyCoveredBooleanSourceRanges
 	
-	^ (coveredBooleanSourceRanges associations
-		select: [ :each | each value size = 2]
-		thenCollect: [ :each | each key ])! !
+	^ coveredBooleanSourceRanges associations
+		select: [ :sourceRangeAndCoveredValues | sourceRangeAndCoveredValues value size = 2]
+		thenCollect: [ :sourceRangeAndCoveredValues | sourceRangeAndCoveredValues key ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/6/2021 20:08:05'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:27:35'!
 partiallyCoveredBooleanRanges
 	
 	^ coveredBooleanSourceRanges keys
-		difference: self coveredBooleanSourceRanges! !
+		difference: self fullyCoveredBooleanSourceRanges! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/6/2021 18:21:36'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/14/2021 13:38:12'!
 value: compiledMethodWasExecuted 
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
-		analyzed: analyzedSourceRanges
-		covered: (coveredSourceRanges, self coveredBooleanSourceRanges)
-		halfCovered: self partiallyCoveredBooleanRanges.! !
+		with: self coverageResults.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 2/6/2021 17:21:54'!
-initializeFor: aCompiledMethod with: tracedSourceRanges 
+!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 2/14/2021 13:30:07'!
+initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
-	analyzedSourceRanges := tracedSourceRanges.
+	analyzedSourceRanges := aCollecitonOfAnalizedSourceRanges.
 	coveredSourceRanges := Set new.
 	coveredBooleanSourceRanges := Dictionary new.! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/14/2021 13:34:03'!
+coverageResults
+	
+	| coverageRatioBySourceRange |
+	coverageRatioBySourceRange := Dictionary new.
+	
+	(self fullyCoveredSourceRanges)
+		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 1 ].
+		
+	self partiallyCoveredBooleanRanges
+		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0.5 ].
+		
+	(self uncoveredSourceRanges)
+		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0 ].
+	
+	^ coverageRatioBySourceRange! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/14/2021 13:31:07'!
+fullyCoveredSourceRanges
+
+	^ coveredSourceRanges, self fullyCoveredBooleanSourceRanges! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/8/2021 09:33:15'!
 register: anObject covering: aSourceRange
@@ -4469,6 +4479,11 @@ removeBooleanSourceRangeIfPresent: aSourceRange
 	coveredBooleanSourceRanges
 		removeKey: aSourceRange
 		ifAbsent: [].! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/14/2021 13:33:51'!
+uncoveredSourceRanges
+
+	^ analyzedSourceRanges difference: (self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges)! !
 
 !CompiledMethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
 for: aCompiledMethod withSourceRanges: sourceRanges
