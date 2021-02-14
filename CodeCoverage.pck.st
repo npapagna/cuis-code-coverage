@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 14 February 2021 at 12:36:53 pm'!
+'From Cuis 5.0 [latest update: #4528] on 14 February 2021 at 12:55:12 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 20!
+!provides: 'CodeCoverage' 1 21!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -1398,27 +1398,37 @@ test012_DoesNotAllowRequestingTheCodeCoverageReportForACompiledMethodThatWasNotA
 	
 	self assertRaisesCompiledMethodWasNotAnalizedError:  [ codeCoverageAnalyzer report reportForCompiledMethod: Object>>#value ]! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 21:16:27'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:54:21'!
+assert: aSelector at: aSourceRange hasSourceCode: expectedSourceCode coverageRatio: aRatio 
+	
+	| compiledMethod report |
+	compiledMethod := self class>>aSelector.
+	report := coverageReport reportForCompiledMethod: compiledMethod.
+	
+	self
+		assert: expectedSourceCode
+		equals: (compiledMethod sourceCode copyFrom: aSourceRange first to: aSourceRange last).
+	self
+		assert: aRatio
+		equals: (report coverageRatioOf: aSourceRange).! !
+
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:50:07'!
 assert: aSelector hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
 	
-	| compiledMethod report |
-	compiledMethod := self class >> aSelector.
-	report := self reportForExampleNamed: aSelector.
-	
-	self assert: (report isCovered: (sourceRangeStart to: sourceRangeEnd)).
-	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).
-	! !
+	self
+		assert: aSelector
+		at: (sourceRangeStart to: sourceRangeEnd)
+		hasSourceCode: expectedSourceCode
+		coverageRatio: 1! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 20:55:52'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:50:07'!
 assert: aSelector hasBeenHalfCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
 	
-	| compiledMethod report |
-	compiledMethod := self class >> aSelector.
-	report := self reportForExampleNamed: aSelector.
-	
-	self assert: (report isHalfCovered: (sourceRangeStart to: sourceRangeEnd)).
-	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).
-	! !
+	self
+		assert: aSelector
+		at: (sourceRangeStart to: sourceRangeEnd)
+		hasSourceCode: expectedSourceCode
+		coverageRatio: 0.5! !
 
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 18:34:11'!
 assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumberOfSourceRanges: numberOfSourceRanges  
@@ -4143,35 +4153,36 @@ coverageRatio
 
 	^ self totalCoverageRatio / self numberOfSourceRanges! !
 
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:50:31'!
+coverageRatioOf: aSourceRange
+
+	(halfCoveredSourceRanges includes: aSourceRange)
+		ifTrue: [ ^ 0.5 ].
+		
+	(coveredSourceRanges includes: aSourceRange)
+		ifTrue: [ ^ 1 ].
+		
+	^ 0! !
+
 !CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/2/2021 20:38:33'!
 numberOfSourceRanges
 	
 	^ analyzedSourceRanges size! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:11:44'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:53:17'!
 totalCoverageRatio
 	
-	^ coveredSourceRanges size + (1/2 * halfCoveredSourceRanges size)! !
+	^ (coveredSourceRanges, halfCoveredSourceRanges) sum: [ :sourceRange | self coverageRatioOf: sourceRange ]! !
 
 !CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/6/2021 21:05:02'!
 totalCoveredSourceRanges
 	
 	^ coveredSourceRanges size + halfCoveredSourceRanges size! !
 
-!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 2/6/2021 21:17:10'!
-isCovered: aSourceRange
-
-	^ coveredSourceRanges includes: aSourceRange! !
-
 !CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/16/2021 20:09:07'!
 isFor: aCompiledMethod 
 	
 	^ compiledMethod == aCompiledMethod ! !
-
-!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 2/6/2021 21:05:02'!
-isHalfCovered: aSourceRange 
-	
-	^ halfCoveredSourceRanges includes: aSourceRange! !
 
 !CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 18:22:22'!
 for: aCompiledMethod executed: aBoolean analyzed: aCollectionOfAnalyzedSourceRanges covered: aCollectionOfCoveredSourceRanges halfCovered: aCollectionOfHalfCoveredSourceRanges  
