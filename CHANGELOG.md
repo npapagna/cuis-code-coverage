@@ -13,6 +13,8 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Support for covering block boolean arguments.
 * Support for covering boolean block temporary variable declarations.
 * Support for covering boolean selectors.
+* Support for covering boolean instance variables within a compiled method (covering an instance variable across 
+  different compiled methods is not supported yet).
 * Partially covered boolean parse nodes highlighting (yellow).
 
 ## [1.10](https://github.com/npapagna/cuis-code-coverage/compare/v1.9...v1.10) - 2020-01-31

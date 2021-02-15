@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 15 February 2021 at 5:29:25 pm'!
+'From Cuis 5.0 [latest update: #4528] on 15 February 2021 at 6:34:06 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 23!
+!provides: 'CodeCoverage' 1 25!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -455,7 +455,7 @@ denyIsOptimized: aMessageNode
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 2/1/2021 22:39:44'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 2/15/2021 18:25:12'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
@@ -526,23 +526,51 @@ parse: sourceCode
 		parse: sourceCode
 		class: methodNode methodClass! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:18:38'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/15/2021 18:19:25'!
 parseNodeCovering: aParseNode whenExecuting: anotherParseNode 
 	
 	"Generate a parse node that, when compiled and executed, will register that anotherParseNode covered aParseNode.
 	If aParseNode has a declaration (e.g. when aParseNode is a temporary variable), it will be covered too."
-	
-	^ declarationSourceRangeByParseNode
+
+	declarationSourceRangeByParseNode
 		at: aParseNode
 		ifPresent: [ :declarationSourceRange |
-			self
+			^ self
 				parseNodeToCover: (self consumeNextSourceRangeFor: aParseNode)
 				declaredAt: declarationSourceRange
-				withResultOf: anotherParseNode ]
-		ifAbsent: [
-			self
-				parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
-				whenExecuting: anotherParseNode ]! !
+				withResultOf: anotherParseNode ].
+		
+	aParseNode isInstanceVariableNode ifTrue: [
+		^ self
+			parseNodeCoveringInstanceVariable: aParseNode
+			whenExecuting: anotherParseNode ].	
+		
+	^ self
+		parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
+		whenExecuting: anotherParseNode! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/15/2021 18:24:23'!
+parseNodeCoveringInstanceVariable: anInstanceVariableNode whenExecuting: aParseNode
+
+	"Instance variables have no declaration source range because, unlike temporary variables,
+	they are defined in the class creation message.
+
+	To be able to track all objects assigned to an instance variable in the compiled method across multiple assignments,
+	I consider the first appearance of an instance variable as its declaration source range."
+	
+	| declarationSourceRange usageSourceRange |
+	usageSourceRange := self consumeNextSourceRangeFor: anInstanceVariableNode.
+	
+	declarationSourceRange := declarationSourceRangeByParseNode
+		at: anInstanceVariableNode
+		ifAbsentPut: [ usageSourceRange ].
+	
+	^ self
+		parseNodeToCover: usageSourceRange
+		declaredAt: declarationSourceRange
+		withResultOf: aParseNode
+	
+	! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:29:20'!
 parseNodeFrom: sourceCodeTemplate toCoverAll: sourceRanges whenExecuting: aParseNode
@@ -1292,7 +1320,7 @@ test001_IsNotRunningWhenCreated
 	
 	self denyCodeCoverageAnalyzerIsRunning.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 17:21:57'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 2/15/2021 18:27:15'!
 test002_IsRunningWhenStarted
 
 	self setupCodeCoverageAnalyzerForM1Method.
@@ -1430,13 +1458,13 @@ assert: aSelector hasBeenHalfCoveredFrom: sourceRangeStart to: sourceRangeEnd as
 		hasSourceCode: expectedSourceCode
 		coverageRatio: 0.5! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/6/2021 18:34:11'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/15/2021 17:34:46'!
 assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumberOfSourceRanges: numberOfSourceRanges  
 	
 	| report |
 	report := self reportForExampleNamed: aSelector.
 	
-	"NPM: Uncomment the following line to automatically generate and copy assertions to the clipboard."
+	"NPM: Uncomment or evaluate the following line to automatically generate and copy assertions to the clipboard."
 	"self generateAssertionsFor: report."
 	
 	self
@@ -1485,7 +1513,7 @@ deny: aSymbol hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expect
 	self assert: (report uncoveredSourceRanges includes: (sourceRangeStart to: sourceRangeEnd)).
 	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 13:06:02'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/15/2021 17:50:43'!
 generateAssertionsFor: report 
 	
 	"NPM: for use during development only.
@@ -1493,7 +1521,7 @@ generateAssertionsFor: report
 	Hacky, but it does the job."
 	
 	| assertions assertionsSourceCode sortedSourceRanges sourceCode sourceCodeByRange sourceRanges |
-	sourceRanges := report fullyCoveredSourceRanges, report uncoveredSourceRanges.
+	sourceRanges := report fullyCoveredSourceRanges, report partiallyCoveredSourceRanges, report uncoveredSourceRanges.
 	sortedSourceRanges := sourceRanges asOrderedCollection sort: [ :sourceRange :otherSourceRange | sourceRange first < otherSourceRange first ].
 	
 	sourceCode := report compiledMethod sourceCode.
@@ -1735,6 +1763,40 @@ implicitSelfReturnWhenSelfIsReferenced
 instanceVariable
 	
 	instanceVariable.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:59:25'!
+instanceVariableAssignedToABooleanAndThenToANonBoolean
+
+	instanceVariable _ true.
+	instanceVariable _ 1.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:57:37'!
+instanceVariableAssignedToANonBooleanAndThenToABoolean
+
+	instanceVariable _ 1.
+	instanceVariable _ true.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:33:58'!
+instanceVariableAssignedToFalse
+
+	instanceVariable _ false! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:33:53'!
+instanceVariableAssignedToTrue
+
+	instanceVariable _ true! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:51:47'!
+instanceVariableAssignedToTrueAndFalse
+
+	instanceVariable _ true.
+	instanceVariable _ false.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:54:11'!
+instanceVariableAssignedToTrueMoreThanOnce
+	
+	instanceVariable _ true.
+	instanceVariable _ true.! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:30:09'!
 keywordMessageSend
@@ -2024,6 +2086,11 @@ raiseErrorFromBlock
 return
 	
 	^ 1! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 08:17:34'!
+returnMessageResultInstanceVariable
+	
+	^ messageResult ! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 21:17:30'!
 temporariesDeclarations
@@ -2654,8 +2721,8 @@ test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsABooleanAndThenANonBoolean
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:26:08'!
-test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:33:02'!
+test088_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
 	
@@ -2669,6 +2736,93 @@ test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:44:13'!
+test090_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrue is: 2.
+	self assert: #instanceVariableAssignedToTrue hasBeenHalfCoveredFrom: 34 to: 49 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:51:00'!
+test091_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToFalse is: 2.
+	self assert: #instanceVariableAssignedToFalse hasBeenHalfCoveredFrom: 35 to: 50 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:52:23'!
+test092_FullyCoversABooleanInstanceVariableDeclarationThatHasBeenAssignedToTrueAndFalse
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrueAndFalse is: 4.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 42 to: 57 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 61 to: 64 as: 'true'.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 68 to: 83 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 87 to: 91 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:55:19'!
+test093_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanInstanceVariables
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrueMoreThanOnce is: 4.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 47 to: 62 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 66 to: 69 as: 'true'.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 73 to: 88 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 92 to: 95 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:59:54'!
+test094_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 4.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 58 to: 73 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 77 to: 80 as: 'true'.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 84 to: 99 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 103 to: 103 as: '1'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:58:21'!
+test095_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean.
+	 
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 4.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 58 to: 73 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 77 to: 77 as: '1'.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 81 to: 96 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 100 to: 103 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 18:33:48'!
+test096_DoesNotCoverABooleanInstanceVariableAssignedInDifferentMethods
+
+	self setupCodeCoverageAnalyzerForAll: { self class>>#instanceVariableAssignedToTrue. self class>>#instanceVariableAssignedToFalse }.
+	
+	self collectCodeCoverageDuring: [
+		self
+			instanceVariableAssignedToTrue;
+			instanceVariableAssignedToFalse ].
+	 
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrue is: 2.
+	self assert: #instanceVariableAssignedToTrue hasBeenHalfCoveredFrom: 34 to: 49 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToFalse is: 2.
+	self assert: #instanceVariableAssignedToFalse hasBeenHalfCoveredFrom: 35 to: 50 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test001_1_CoversALiteralVariable
@@ -3480,11 +3634,6 @@ test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 	self
 		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
 		is: 66.67! !
-
-!CodeCoverageTest methodsFor: 'as yet unclassified' stamp: 'NPM 2/8/2021 08:17:34'!
-returnMessageResultInstanceVariable
-	
-	^ messageResult ! !
 
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:50:57'!
 assertRaisesCannotBeCreatedError: aBlock
