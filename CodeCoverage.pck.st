@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 15 February 2021 at 6:34:06 pm'!
+'From Cuis 5.0 [latest update: #4528] on 16 February 2021 at 9:00:56 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 25!
+!provides: 'CodeCoverage' 1 26!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -687,14 +687,16 @@ parseNodeToCoverSourceRangeOf: aParseNode
 		parseNodeCovering: aParseNode
 		whenExecuting: aParseNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/29/2021 02:11:44'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/16/2021 20:37:07'!
 register: aSourceRange asDeclarationOf: aParseNode
 
 	"Register the source range where aParseNode is declared"
 
 	declarationSourceRangeByParseNode
 		at: aParseNode
-		put: aSourceRange.! !
+		put: aSourceRange.
+		
+	tracedSourceRanges add: aSourceRange.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/29/2021 02:12:06'!
 registerDeclarationSourceRangeOf: aParseNode
@@ -779,12 +781,12 @@ visitBacktickNode: aBacktickNode
 
 	^ self parseNodeToCoverSourceRangeOf: aBacktickNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:42:23'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 2/16/2021 20:35:42'!
 visitBlockNode: aBlockNode
 
 	"Add tracing to block nodes.
 	I consider a block node covered when all of its statements are covered."
-	
+
 	aBlockNode arguments do: [ :argument | self registerDeclarationSourceRangeOf: argument ].
 	self visitIfNotNil: aBlockNode temporariesDeclaration.
 
@@ -1458,7 +1460,7 @@ assert: aSelector hasBeenHalfCoveredFrom: sourceRangeStart to: sourceRangeEnd as
 		hasSourceCode: expectedSourceCode
 		coverageRatio: 0.5! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/15/2021 17:34:46'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/16/2021 20:50:30'!
 assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumberOfSourceRanges: numberOfSourceRanges  
 	
 	| report |
@@ -1686,10 +1688,10 @@ blockWithTemporaryVariables
 		a := 1.
 		b := 2 ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:31:54'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:31:45'!
 blockWithUnusedArgument
 
-	[ :argument | ] value: 1! !
+	[ :a | ] value: 1! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:40:14'!
 blockWithWrittenTemporaryVariable
@@ -1736,6 +1738,9 @@ emptyBlock
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/11/2021 17:29:25'!
 emptyMethod! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:43:30'!
+emptyMethodWithUnusedArgument: arg! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/11/2021 20:05:08'!
 errorMessageForTesting
@@ -2092,11 +2097,6 @@ returnMessageResultInstanceVariable
 	
 	^ messageResult ! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 21:17:30'!
-temporariesDeclarations
-	
-	| a |! !
-
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:50:47'!
 temporaryVariable
 	
@@ -2170,6 +2170,11 @@ temporaryVariableReadAndAssignment
 unaryMessageSend
 	
 	Object new! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:51:38'!
+unusedTemporaryVariableDeclaration
+	
+	| a |! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/10/2021 16:57:28'!
 value
@@ -2289,6 +2294,819 @@ test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
 	self collectCoverageForExampleNamed: #emptyMethod.
 	
 	self assertPercentCoverageForExampleNamed: #emptyMethod is: 100! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test001_1_CoversALiteralVariable
+
+	self collectCoverageForExampleNamed: #literalVariable.
+	
+	self assertNumberOfCoveredRangesFor: #literalVariable is: 1 .
+	self assert: #literalVariable hasBeenCoveredFrom: 20 to: 25 as: 'Object'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test001_2_CoversManyLiteralVariables
+
+	self collectCoverageForExampleNamed: #manyLiteralVariables.
+	
+	self assertNumberOfCoveredRangesFor: #manyLiteralVariables is: 2 .
+	self assert: #manyLiteralVariables hasBeenCoveredFrom: 25 to: 30 as: 'Object'.
+	self assert: #manyLiteralVariables hasBeenCoveredFrom: 34 to: 44 as: 'ProtoObject'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test001_3_CoversMultipleOcurrencesOfTheSameLiteralVariable
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameLiteralVariables.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameLiteralVariables is: 2 .
+	self assert: #multipleOcurrencesOfTheSameLiteralVariables hasBeenCoveredFrom: 48 to: 53 as: 'Object'.
+	self assert: #multipleOcurrencesOfTheSameLiteralVariables hasBeenCoveredFrom: 57 to: 62 as: 'Object'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:22:40'!
+test001_4_DoesNotCoverLiteralVariablesThatWereNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedLiteralVariable.
+	
+	self assert: #notExecutedLiteralVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedLiteralVariable hasBeenCoveredFrom: 33 to: 38 as: 'Object'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test002_CoversAnUnaryMessageSend
+
+	self collectCoverageForExampleNamed: #unaryMessageSend.
+	
+	self assertNumberOfCoveredRangesFor: #unaryMessageSend is: 2 .
+	self assert: #unaryMessageSend hasBeenCoveredFrom: 21 to: 26 as: 'Object'.
+	self assert: #unaryMessageSend hasBeenCoveredFrom: 28 to: 30 as: 'new'.
+	! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:51'!
+test003_DoesNotCoverMessageSendsThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedMessageSend.
+	
+	self assert: #notExecutedMessageSend hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
+	self deny: #notExecutedMessageSend hasBeenCoveredFrom: 29 to: 34 as: 'Object'.
+	self deny: #notExecutedMessageSend hasBeenCoveredFrom: 36 to: 38 as: 'new'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test004_CoversMultipleOcurrencesOfTheSameMessageSend
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameMessageSend.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameMessageSend is: 4 .
+	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 43 to: 48 as: 'Object'.
+	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 50 to: 52 as: 'new'.
+	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 56 to: 61 as: 'Object'.
+	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 63 to: 65 as: 'new'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test005_CoversABinaryMessageSend
+
+	self collectCoverageForExampleNamed: #binaryMessageSend.
+	
+	self assertNumberOfCoveredRangesFor: #binaryMessageSend is: 3 .
+	self assert: #binaryMessageSend hasBeenCoveredFrom: 22 to: 26 as: 'Array'.
+	self assert: #binaryMessageSend hasBeenCoveredFrom: 28 to: 32 as: 'with:'.
+	self assert: #binaryMessageSend hasBeenCoveredFrom: 34 to: 39 as: 'Object'.
+	! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test006_CoversAKeywordMessageSend
+
+	self collectCoverageForExampleNamed: #keywordMessageSend.
+	
+	self assertNumberOfCoveredRangesFor: #keywordMessageSend is: 5 .
+	self assert: #keywordMessageSend hasBeenCoveredFrom: 23 to: 27 as: 'Array'.
+	self assert: #keywordMessageSend hasBeenCoveredFrom: 29 to: 33 as: 'with:'.
+	self assert: #keywordMessageSend hasBeenCoveredFrom: 35 to: 40 as: 'Object'.
+	self assert: #keywordMessageSend hasBeenCoveredFrom: 42 to: 46 as: 'with:'.
+	self assert: #keywordMessageSend hasBeenCoveredFrom: 48 to: 58 as: 'ProtoObject'.
+	! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test007_CoversMultipleOcurrencesOfTheReceiverInAMessageSend
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheReceiverInAMessageSend.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheReceiverInAMessageSend is: 5 .
+	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 50 to: 54 as: 'Array'.
+	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 56 to: 60 as: 'with:'.
+	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 62 to: 66 as: 'Array'.
+	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 68 to: 72 as: 'with:'.
+	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 74 to: 78 as: 'Array'.
+	! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test008_CoversMultipleOcurrencesOfAnArgumentInAMessageSend
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfAnArgumentInAMessageSend.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfAnArgumentInAMessageSend is: 5 .
+	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 49 to: 53 as: 'Array'.
+	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 55 to: 59 as: 'with:'.
+	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 61 to: 66 as: 'Object'.
+	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 68 to: 72 as: 'with:'.
+	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 74 to: 79 as: 'Object'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test009_1_CoversALiteral
+
+	self collectCoverageForExampleNamed: #literal.
+	
+	self assertNumberOfCoveredRangesFor: #literal is: 1 .
+	self assert: #literal hasBeenCoveredFrom: 11 to: 12 as: '	1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test009_2_CoversManyLiterals
+
+	self collectCoverageForExampleNamed: #manyLiterals.
+	
+	self assertNumberOfCoveredRangesFor: #manyLiterals is: 2 .
+	self assert: #manyLiterals hasBeenCoveredFrom: 17 to: 17 as: '1'.
+	self assert: #manyLiterals hasBeenCoveredFrom: 21 to: 21 as: '2'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test009_3_CoversMultipleOcurrencesOfTheSameLiteral
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameLiteral.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameLiteral is: 2 .
+	self assert: #multipleOcurrencesOfTheSameLiteral hasBeenCoveredFrom: 39 to: 39 as: '1'.
+	self assert: #multipleOcurrencesOfTheSameLiteral hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:33'!
+test009_4_DoesNotCoverLiteralsThatWereNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedLiteral.
+	
+	self assert: #notExecutedLiteral hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedLiteral hasBeenCoveredFrom: 25 to: 25 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test010_1_CoversAnInstanceVariable
+
+	self collectCoverageForExampleNamed: #instanceVariable.
+	
+	self assertNumberOfCoveredRangesFor: #instanceVariable is: 1 .
+	self assert: #instanceVariable hasBeenCoveredFrom: 21 to: 36 as: 'instanceVariable'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test010_2_CoversMultipleInstanceVariables
+
+	self collectCoverageForExampleNamed: #multipleInstanceVariables.
+	
+	self assertNumberOfCoveredRangesFor: #multipleInstanceVariables is: 2 .
+	self assert: #multipleInstanceVariables hasBeenCoveredFrom: 30 to: 45 as: 'instanceVariable'.
+	self assert: #multipleInstanceVariables hasBeenCoveredFrom: 49 to: 69 as: 'otherInstanceVariable'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test010_3_CoversMultipleOcurrencesOfTheSameInstanceVariable
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameInstanceVariable.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameInstanceVariable is: 2 .
+	self assert: #multipleOcurrencesOfTheSameInstanceVariable hasBeenCoveredFrom: 48 to: 63 as: 'instanceVariable'.
+	self assert: #multipleOcurrencesOfTheSameInstanceVariable hasBeenCoveredFrom: 67 to: 82 as: 'instanceVariable'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:25'!
+test010_4_DoesNotCoverInstanceVariablesThatWereNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedInstanceVariable.
+	
+	self assert: #notExecutedInstanceVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedInstanceVariable hasBeenCoveredFrom: 34 to: 49 as: 'instanceVariable'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/16/2021 20:52:27'!
+test011_1_DoesNotCoverTemporariesDeclarations
+
+	self collectCoverageForExampleNamed: #unusedTemporaryVariableDeclaration.
+	
+	self assert: #unusedTemporaryVariableDeclaration hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #unusedTemporaryVariableDeclaration hasBeenCoveredFrom: 41 to: 41 as: 'a'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:51:56'!
+test011_2_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsRead
+
+	self collectCoverageForExampleNamed: #temporaryVariable.
+	
+	self assertNumberOfCoveredRangesFor: #temporaryVariable is: 2.
+	self assert: #temporaryVariable hasBeenCoveredFrom: 24 to: 24 as: 'a'.
+	self assert: #temporaryVariable hasBeenCoveredFrom: 31 to: 31 as: 'a'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:57:29'!
+test011_3_CoversAManyTemporaryVariables
+
+	self collectCoverageForExampleNamed: #manyTemporaryVariables.
+	
+	self assertNumberOfCoveredRangesFor: #manyTemporaryVariables is: 4 .
+	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 29 to: 29 as: 'a'.
+	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 31 to: 31 as: 'b'.
+	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 42 to: 42 as: 'b'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:56:26'!
+test011_4_CoversMultipleOccurrencesOfTheSameTemporaryVariable
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameTemporaryVariable.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameTemporaryVariable is: 3 .
+	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 51 to: 51 as: 'a'.
+	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
+	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 62 to: 62 as: 'a'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:54:11'!
+test011_5_DoesNotCoverATemporaryVariableOrItsDeclarationWhenTheTemporaryVariableIsNotReadNorWritten
+
+	self collectCoverageForExampleNamed: #notExecutedTemporaryVariable.
+	
+	self assert: #notExecutedTemporaryVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test012_1_CoversAVariable
+
+	self collectCoverageForExampleNamed: #variableNode.
+	
+	self assertNumberOfCoveredRangesFor: #variableNode is: 1 .
+	self assert: #variableNode hasBeenCoveredFrom: 17 to: 20 as: 'true'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test012_2_CoversMutipleVariables
+
+	self collectCoverageForExampleNamed: #mutipleVariableNodes.
+	
+	self assertNumberOfCoveredRangesFor: #mutipleVariableNodes is: 2 .
+	self assert: #mutipleVariableNodes hasBeenCoveredFrom: 25 to: 28 as: 'true'.
+	self assert: #mutipleVariableNodes hasBeenCoveredFrom: 32 to: 36 as: 'false'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test012_3_CoversMultipleOcurrencesOftheSameVariable
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOftheSameVariable.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOftheSameVariable is: 2 .
+	self assert: #multipleOcurrencesOftheSameVariable hasBeenCoveredFrom: 40 to: 43 as: 'true'.
+	self assert: #multipleOcurrencesOftheSameVariable hasBeenCoveredFrom: 47 to: 50 as: 'true'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:10'!
+test012_4_DoesNotCoverVariablesThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedVariable.
+	
+	self assert: #notExecutedVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedVariable hasBeenCoveredFrom: 26 to: 29 as: 'true'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test013_1_DoesNotCoverImplicitSelfReturns
+
+	self collectCoverageForExampleNamed: #implicitSelfReturn.
+	
+	self assertNumberOfCoveredRangesFor: #implicitSelfReturn is: 0 .! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test013_2_CoversReturnNodes
+
+	self collectCoverageForExampleNamed: #return.
+	
+	self assertNumberOfCoveredRangesFor: #return is: 1 .
+	self assert: #return hasBeenCoveredFrom: 12 to: 13 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:03'!
+test013_3_DoesNotCoversReturnNodesThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedReturnNode.
+	
+	self assert: #notExecutedReturnNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedReturnNode hasBeenCoveredFrom: 30 to: 30 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:51'!
+test013_4_CoversTheExecutedOcurrenceOfMultipleReturnNodes
+
+	self collectCoverageForExampleNamed: #multipleReturnNodes.
+	
+	self assert: #multipleReturnNodes hasNumberOfCoveredRanges: 1 andNumberOfSourceRanges: 2.
+	self deny: #multipleReturnNodes hasBeenCoveredFrom: 28 to: 28 as: '1'.
+	self assert: #multipleReturnNodes hasBeenCoveredFrom: 37 to: 38 as: ' 2'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:37'!
+test013_5_CoversTheExecutedOcurrenceOfTheSameReturnNode
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameReturnNodes.
+	
+	self assert: #multipleOcurrencesOfTheSameReturnNodes hasNumberOfCoveredRanges: 1 andNumberOfSourceRanges: 2.
+	self deny: #multipleOcurrencesOfTheSameReturnNodes hasBeenCoveredFrom: 47 to: 47 as: '1'.
+	self assert: #multipleOcurrencesOfTheSameReturnNodes hasBeenCoveredFrom: 56 to: 57 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test014_1_CoversAnAssignment
+
+	self collectCoverageForExampleNamed: #assignment.
+	
+	self assertNumberOfCoveredRangesFor: #assignment is: 2 .
+	self assert: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
+	self assert: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test014_2_CoversMultipleAssignments
+
+	self collectCoverageForExampleNamed: #multipleAssignments.
+	
+	self assertNumberOfCoveredRangesFor: #multipleAssignments is: 4 .
+	self assert: #multipleAssignments hasBeenCoveredFrom: 24 to: 39 as: 'instanceVariable'.
+	self assert: #multipleAssignments hasBeenCoveredFrom: 44 to: 44 as: '1'.
+	self assert: #multipleAssignments hasBeenCoveredFrom: 48 to: 68 as: 'otherInstanceVariable'.
+	self assert: #multipleAssignments hasBeenCoveredFrom: 73 to: 73 as: '2'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test014_3_CoversMultipleOcurrencesOfTheSameAssignment
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameAssignment.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameAssignment is: 4 .
+	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 42 to: 57 as: 'instanceVariable'.
+	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 62 to: 62 as: '1'.
+	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 66 to: 81 as: 'instanceVariable'.
+	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 86 to: 86 as: '2'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:28'!
+test014_4_DoesNotCoverAssignmentsThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedAssignment.
+	
+	self assert: #notExecutedAssignment hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
+	self deny: #notExecutedAssignment hasBeenCoveredFrom: 28 to: 43 as: 'instanceVariable'.
+	self deny: #notExecutedAssignment hasBeenCoveredFrom: 48 to: 48 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test014_5_CoversTheUsageOfTheVariableThatIsBeingAssigned
+
+	self collectCoverageForExampleNamed: #assignVariableToItself.
+	
+	self assertNumberOfCoveredRangesFor: #assignVariableToItself is: 2 .
+	self assert: #assignVariableToItself hasBeenCoveredFrom: 27 to: 42 as: 'instanceVariable'.
+	self assert: #assignVariableToItself hasBeenCoveredFrom: 47 to: 62 as: 'instanceVariable'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test015_1_CoversABacktickNode
+
+	self collectCoverageForExampleNamed: #backtick.
+	
+	self assertNumberOfCoveredRangesFor: #backtick is: 1 .
+	self assert: #backtick hasBeenCoveredFrom: 13 to: 24 as: '`Object new`'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test015_2_CoversMultipleBacktickNodes
+
+	self collectCoverageForExampleNamed: #multipleBacktickNodes.
+	
+	self assertNumberOfCoveredRangesFor: #multipleBacktickNodes is: 2 .
+	self assert: #multipleBacktickNodes hasBeenCoveredFrom: 26 to: 37 as: '`Object new`'.
+	self assert: #multipleBacktickNodes hasBeenCoveredFrom: 41 to: 51 as: '`Array new`'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test015_3_CoversMultipleOcurrencesOftheSameBacktickNode
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBacktickNode.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameBacktickNode is: 2 .
+	self assert: #multipleOcurrencesOfTheSameBacktickNode hasBeenCoveredFrom: 44 to: 55 as: '`Object new`'.
+	self assert: #multipleOcurrencesOfTheSameBacktickNode hasBeenCoveredFrom: 59 to: 70 as: '`Object new`'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:22'!
+test015_5_DoesNotCoverBackticksNodesThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedBacktickNode.
+	
+	self assert: #notExecutedBacktickNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedBacktickNode hasBeenCoveredFrom: 30 to: 41 as: '`Object new`'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test016_1_CoversTheEvaluationOfAnEmptyBlock
+
+	self collectCoverageForExampleNamed: #emptyBlock.
+	
+	self assertNumberOfCoveredRangesFor: #emptyBlock is: 1 .
+	self assert: #emptyBlock hasBeenCoveredFrom: 18 to: 22 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test016_2_CoversTheEvaluationOfABlock
+
+	self collectCoverageForExampleNamed: #block.
+	
+	self assertNumberOfCoveredRangesFor: #block is: 2 .
+	self assert: #block hasBeenCoveredFrom: 12 to: 12 as: '1'.
+	self assert: #block hasBeenCoveredFrom: 16 to: 20 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test016_3_CoversTheEvaluationOfMultipleBlocks
+
+	self collectCoverageForExampleNamed: #multipleEmptyBlocks.
+	
+	self assertNumberOfCoveredRangesFor: #multipleEmptyBlocks is: 4 .
+	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 26 to: 26 as: '1'.
+	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 30 to: 34 as: 'value'.
+	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 40 to: 40 as: '2'.
+	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test016_4_CoversMultipleOcurrencesOfTheSameBlockNode
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBlockNode.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameBlockNode is: 4 .
+	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 43 to: 43 as: '1'.
+	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 47 to: 51 as: 'value'.
+	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 57 to: 57 as: '1'.
+	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 61 to: 65 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:03'!
+test016_5_DoesNotCoverBlockNodesThatAreNotEvaluated
+
+	self collectCoverageForExampleNamed: #notEvaluatedBlockNode.
+	
+	self assert: #notEvaluatedBlockNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notEvaluatedBlockNode hasBeenCoveredFrom: 28 to: 28 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:42:01'!
+test016_7_CoversMultipleTemporaryVariablesInABlock
+
+	self collectCoverageForExampleNamed: #blockWithTemporaryVariables.
+	
+	self assertNumberOfCoveredRangesFor: #blockWithTemporaryVariables is: 7.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 36 to: 36 as: 'a'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'b'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 44 to: 44 as: 'a'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 49 to: 49 as: '1'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 54 to: 54 as: 'b'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 59 to: 59 as: '2'.
+	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 63 to: 67 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:30:25'!
+test016_8_CoversBlockArgumentsWhenTheyAreReferenced
+
+	self collectCoverageForExampleNamed: #blockWithArguments.
+	
+	self assertNumberOfCoveredRangesFor: #blockWithArguments is: 9.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 26 to: 26 as: 'a'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 29 to: 29 as: 'b'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 33 to: 33 as: 'a'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 35 to: 35 as: '+'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 37 to: 37 as: 'b'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 41 to: 46 as: 'value:'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 48 to: 48 as: '1'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 50 to: 55 as: 'value:'.
+	self assert: #blockWithArguments hasBeenCoveredFrom: 56 to: 57 as: ' 2'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test017_1_CoversABraceNode
+
+	self collectCoverageForExampleNamed: #braceNode.
+	
+	self assertNumberOfCoveredRangesFor: #braceNode is: 1 .
+	self assert: #braceNode hasBeenCoveredFrom: 14 to: 18 as: '{ 1 }'.
+	! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test017_2_CoversMultipleBraceNodes
+
+	self collectCoverageForExampleNamed: #multipleBraceNodes.
+	
+	self assertNumberOfCoveredRangesFor: #multipleBraceNodes is: 2 .
+	self assert: #multipleBraceNodes hasBeenCoveredFrom: 23 to: 27 as: '{ 1 }'.
+	self assert: #multipleBraceNodes hasBeenCoveredFrom: 31 to: 35 as: '{ 2 }'.
+	! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test017_3_CoversMultipleOcurrencesOfTheSameBraceNode
+
+	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBraceNode.
+	
+	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameBraceNode is: 2 .
+	self assert: #multipleOcurrencesOfTheSameBraceNode hasBeenCoveredFrom: 41 to: 45 as: '{ 1 }'.
+	self assert: #multipleOcurrencesOfTheSameBraceNode hasBeenCoveredFrom: 49 to: 53 as: '{ 1 }'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:55:49'!
+test017_4_DoesNotCoverBraceNodesThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedBraceNode.
+	
+	self assert: #notExecutedBraceNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #notExecutedBraceNode hasBeenCoveredFrom: 27 to: 31 as: '{ 1 }'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test018_1_CoversACascadeMessageSend
+
+	self collectCoverageForExampleNamed: #cascade.
+	
+	self assertNumberOfCoveredRangesFor: #cascade is: 3 .
+	self assert: #cascade hasBeenCoveredFrom: 12 to: 17 as: 'Object'.
+	self assert: #cascade hasBeenCoveredFrom: 21 to: 23 as: 'new'.
+	self assert: #cascade hasBeenCoveredFrom: 28 to: 32 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test019_CoversCollaborationsWithImplicitSelfReturnsWhenSelfIsReferenced
+
+	self collectCoverageForExampleNamed: #implicitSelfReturnWhenSelfIsReferenced.
+	
+	self assertNumberOfCoveredRangesFor: #implicitSelfReturnWhenSelfIsReferenced is: 2 .
+	self assert: #implicitSelfReturnWhenSelfIsReferenced hasBeenCoveredFrom: 43 to: 46 as: 'self'.
+	self assert: #implicitSelfReturnWhenSelfIsReferenced hasBeenCoveredFrom: 48 to: 52 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:55:27'!
+test020_DoesNotCoverMessageArgumentsThatAreNotExecuted
+
+	self collectCoverageForExampleNamed: #notExecutedMessageArgument.
+	
+	self assert: #notExecutedMessageArgument hasNumberOfCoveredRanges: 3 andNumberOfSourceRanges: 7.
+	self assert: #notExecutedMessageArgument hasBeenCoveredFrom: 31 to: 35 as: 'Array'.
+	self assert: #notExecutedMessageArgument hasBeenCoveredFrom: 39 to: 43 as: 'with:'.
+	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 47 to: 50 as: 'self'.
+	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 52 to: 56 as: 'value'.
+	self assert: #notExecutedMessageArgument hasBeenCoveredFrom: 62 to: 66 as: 'with:'.
+	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 70 to: 73 as: 'self'.
+	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 75 to: 85 as: 'printString'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:28:52'!
+test021_CoversOptimizedMessages
+
+	self collectCoverageForExampleNamed: #optimizedMessage.
+	
+	self assertNumberOfCoveredRangesFor: #optimizedMessage is: 7 .
+	self assert: #optimizedMessage hasBeenCoveredFrom: 21 to: 21 as: '1'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 23 to: 25 as: 'to:'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 27 to: 28 as: '10'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 30 to: 32 as: 'do:'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 37 to: 42 as: 'number'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 46 to: 51 as: 'number'.
+	self assert: #optimizedMessage hasBeenCoveredFrom: 53 to: 57 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test022_CoversTheReceiverOfACascadeNodeWhenItIsAMessageSend
+
+	self collectCoverageForExampleNamed: #cascadeNodeWithMessageSendReceiver.
+	
+	self assertNumberOfCoveredRangesFor: #cascadeNodeWithMessageSendReceiver is: 4 .
+	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 38 to: 54 as: 'OrderedCollection'.
+	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 56 to: 58 as: 'new'.
+	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 62 to: 67 as: 'add: 1'.
+	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 72 to: 77 as: 'add: 2'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test023_CoversTheReceiverOfACascadeNodeWhenItIsABlockThatIsEvaluated
+
+	self collectCoverageForExampleNamed: #cascadeNodeWithBlockReceiverThatIsEvaluated.
+	
+	self assertNumberOfCoveredRangesFor: #cascadeNodeWithBlockReceiverThatIsEvaluated is: 4 .
+	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 49 to: 52 as: 'self'.
+	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 54 to: 58 as: 'value'.
+	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 64 to: 68 as: 'class'.
+	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 73 to: 77 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:50:13'!
+test024_DoesNotCoverTheReceiverOfACascadeNodeWhenItIsABlockThatIsNotExecuted
+
+	self collectCoverageForExampleNamed: #cascadeNodeWithBlockReceiverThatIsNotEvaluated.
+	
+	self assert: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasNumberOfCoveredRanges: 2 andNumberOfSourceRanges: 4.
+	self assert: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 67 to: 71 as: 'class'.
+	self assert: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 76 to: 79 as: 'hash'.
+	self deny: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 52 to: 55 as: 'self'.
+	self deny: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 57 to: 61 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test025_CoversTheReceiverOfAMessageSendWhenItIsAMessageSend
+
+	self collectCoverageForExampleNamed: #messageSendWithMessageSendReceiver.
+	
+	self assertNumberOfCoveredRangesFor: #messageSendWithMessageSendReceiver is: 3 .
+	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 39 to: 55 as: 'OrderedCollection'.
+	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 57 to: 59 as: 'new'.
+	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 64 to: 68 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test026_CoversTheReceiverOfAMessageSendWhenItIsABlockThatIsEvaluated
+
+	self collectCoverageForExampleNamed: #messageSendWithBlockReceiverThatIsEvaluated.
+	
+	self assertNumberOfCoveredRangesFor: #messageSendWithBlockReceiverThatIsEvaluated is: 3 .
+	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 49 to: 54 as: 'Object'.
+	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 56 to: 58 as: 'new'.
+	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 64 to: 68 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:48:12'!
+test027_DoesNotCoverTheReceiverOfAMessageSendWhenItIsABlockThatIsNotEvaluated
+
+	self collectCoverageForExampleNamed: #messageSendWithBlockReceiverThatIsNotEvaluated.
+	
+	self assert: #messageSendWithBlockReceiverThatIsNotEvaluated hasNumberOfCoveredRanges: 1 andNumberOfSourceRanges: 3.
+	self assert: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 67 to: 71 as: 'class'.
+	self deny: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 52 to: 57 as: 'Object'.
+	self deny: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 59 to: 61 as: 'new'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test028_DoesNotCoverSuper
+
+	"TODO: Don't cover the super receiver in message sends for now, as it has to be handled separately. NPM"
+	
+	self collectCoverageForExampleNamed: #value.
+	
+	self assertNumberOfCoveredRangesFor: #value is: 1 .
+	self assert: #value hasBeenCoveredFrom: 381 to: 385 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+test037_DoesNotCoverEmptyMethods
+
+	"TODO: do this for now. This case will probably have to be handled separately. NPM"
+	
+	self collectCoverageForExampleNamed: #emptyMethod.
+		
+	self assertNumberOfCoveredRangesFor: #emptyMethod is: 0 . ! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:00:37'!
+test046_CoversMessagesThatSignalAnError
+
+	self
+		should: [ self collectCoverageForExampleNamed: #raiseError ]
+		raise: Error
+		withMessageText: self errorMessageForTesting.
+		
+	self assert: #raiseError hasNumberOfCoveredRanges: 4 andNumberOfSourceRanges: 4 .
+	self assert: #raiseError hasBeenCoveredFrom: 14 to: 18 as: 'Error'.
+	self assert: #raiseError hasBeenCoveredFrom: 20 to: 26 as: 'signal:'.
+	self assert: #raiseError hasBeenCoveredFrom: 28 to: 31 as: 'self'.
+	self assert: #raiseError hasBeenCoveredFrom: 33 to: 54 as: 'errorMessageForTesting'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:07:03'!
+test047_CoversSelectorArgumentsWhenTheyAreReferenced
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithArgument:.
+	
+	self collectCodeCoverageDuring: [ self messageWithArgument: #foo ].
+	
+	self assertNumberOfCoveredRangesFor: #messageWithArgument: is: 3 .
+	self assert: #messageWithArgument: hasBeenCoveredFrom: 22 to: 31 as: 'anArgument'.
+	self assert: #messageWithArgument: hasBeenCoveredFrom: 36 to: 45 as: 'anArgument'.
+	self assert: #messageWithArgument: hasBeenCoveredFrom: 47 to: 51 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:10:13'!
+test048_CoversBlocksThatSignalAnError
+
+	self
+		should: [ self collectCoverageForExampleNamed: #raiseErrorFromBlock ]
+		raise: Error
+		withMessageText: self errorMessageForTesting.
+
+	self assert: #raiseErrorFromBlock hasNumberOfCoveredRanges: 5 andNumberOfSourceRanges: 5 .
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 25 to: 28 as: 'self'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 30 to: 35 as: 'error:'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 37 to: 40 as: 'self'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 42 to: 63 as: 'errorMessageForTesting'.
+	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 67 to: 71 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:14'!
+test049_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsWritten
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignment.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignment is: 3.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 33 to: 33 as: 'a'.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 39 to: 39 as: 'a'.
+	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 43 to: 44 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:24'!
+test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariableIsReadOrWrittenMoreThanOnce
+
+	self collectCoverageForExampleNamed: #temporaryVariableReadAndAssignment.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableReadAndAssignment is: 4.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 45 to: 45 as: 'a'.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 50 to: 50 as: '1'.
+	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 55 to: 55 as: 'a'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:17:15'!
+test051_DoesNotCoversSelectorArgumentsWhenTheyAreNotReferenced
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithUnusedArgument:.
+
+	self collectCodeCoverageDuring: [ self messageWithUnusedArgument: #foo ].
+
+	self assert: #messageWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:19:48'!
+test052_CoversSelectorArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageArgumentUsedManyTimes:.
+
+	self collectCodeCoverageDuring: [ self messageArgumentUsedManyTimes: #foo ].
+
+	self assert: #messageArgumentUsedManyTimes: hasNumberOfCoveredRanges: 3 andNumberOfSourceRanges: 3.
+	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 31 to: 40 as: 'anArgument'.
+	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 44 to: 53 as: 'anArgument'.
+	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 57 to: 66 as: 'anArgument'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/16/2021 20:39:38'!
+test053_DoesNotCoverBlockArgumentsWhenTheyAreNotReferenced
+
+	self collectCoverageForExampleNamed: #blockWithUnusedArgument.
+
+	self assert: #blockWithUnusedArgument hasNumberOfCoveredRanges: 2 andNumberOfSourceRanges: 3.
+	self deny: #blockWithUnusedArgument hasBeenCoveredFrom: 30 to: 30 as: 'a'.
+	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 36 to: 41 as: 'value:'.
+	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 42 to: 43 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:33:52'!
+test054_CoversBlockArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
+
+	self collectCoverageForExampleNamed: #blockWithArgumentUsedManyTimes.
+
+	self assert: #blockWithArgumentUsedManyTimes hasNumberOfCoveredRanges: 6 andNumberOfSourceRanges: 6.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 37 to: 44 as: 'argument'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 48 to: 55 as: 'argument'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 57 to: 57 as: '+'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 59 to: 66 as: 'argument'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 70 to: 75 as: 'value:'.
+	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 76 to: 77 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:39:35'!
+test055_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreRead
+
+	self collectCoverageForExampleNamed: #blockWithReadTemporaryVariable.
+
+	self assertNumberOfCoveredRangesFor: #blockWithReadTemporaryVariable is: 3.
+	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 37 to: 37 as: 'a'.
+	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:40:28'!
+test056_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreWritten
+
+	self collectCoverageForExampleNamed: #blockWithWrittenTemporaryVariable.
+
+	self assertNumberOfCoveredRangesFor: #blockWithWrittenTemporaryVariable is: 4.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 43 to: 43 as: 'a'.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: '1'.
+	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 51 to: 55 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:44:07'!
+test057_CoversBlockTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariablesAreReferencedMultipleTimes
+
+	self collectCoverageForExampleNamed: #blockWithReadAndWrittenTemporaryVariable.
+
+	self assertNumberOfCoveredRangesFor: #blockWithReadAndWrittenTemporaryVariable is: 5.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: 'a'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 50 to: 50 as: 'a'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 55 to: 55 as: '1'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
+	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 62 to: 66 as: 'value'.! !
+
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/1/2021 22:31:32'!
+test058_DoesNotCoverMethodsThatWereNotExecuted
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignment.
+	
+	self collectCodeCoverageDuring: [].
+
+	self assert: #assignment hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
+	self deny: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
+	self deny: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
+test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
+
+	self setupCodeCoverageAnalyzerForAll: {CodeCoverageTestClass1>>#m1}.
+	
+	self collectCodeCoverageDuring: [ CodeCoverageTestClass1 new m1 ].
+		
+	self assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1
+	       category is: 100! !
+
+!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:16:09'!
+test044_Informs0PercentCoverageWhenNoneOfTheAnalizedClassesInASystemCategoryHaveBeenCovered
+
+	self setupCodeCoverageAnalyzerForAll: {CodeCoverageTestClass1>>#m1}.
+	
+	self collectCodeCoverageDuring: [ ].
+		
+	self
+		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
+		is: 0! !
+
+!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:16:16'!
+test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
+
+	self setupCodeCoverageAnalyzerForAll: {
+		CodeCoverageTestClass1>>#m1.
+		CodeCoverageTestClass2>>#m2.
+		CodeCoverageTestClass2>>#m3 }.
+	
+	self collectCodeCoverageDuring: [
+		CodeCoverageTestClass1 new m1.
+		CodeCoverageTestClass2 new m2 ].
+		
+	self
+		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
+		is: 66.67! !
 
 !CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:32'!
 test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
@@ -2824,816 +3642,13 @@ test096_DoesNotCoverABooleanInstanceVariableAssignedInDifferentMethods
 	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test001_1_CoversALiteralVariable
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/16/2021 20:53:55'!
+test097_DoesNotCoverUnusedMethodArguments
 
-	self collectCoverageForExampleNamed: #literalVariable.
-	
-	self assertNumberOfCoveredRangesFor: #literalVariable is: 1 .
-	self assert: #literalVariable hasBeenCoveredFrom: 20 to: 25 as: 'Object'.! !
+	self collectCoverageForExampleNamed: #emptyMethodWithUnusedArgument: with: 1.
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test001_2_CoversManyLiteralVariables
-
-	self collectCoverageForExampleNamed: #manyLiteralVariables.
-	
-	self assertNumberOfCoveredRangesFor: #manyLiteralVariables is: 2 .
-	self assert: #manyLiteralVariables hasBeenCoveredFrom: 25 to: 30 as: 'Object'.
-	self assert: #manyLiteralVariables hasBeenCoveredFrom: 34 to: 44 as: 'ProtoObject'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test001_3_CoversMultipleOcurrencesOfTheSameLiteralVariable
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameLiteralVariables.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameLiteralVariables is: 2 .
-	self assert: #multipleOcurrencesOfTheSameLiteralVariables hasBeenCoveredFrom: 48 to: 53 as: 'Object'.
-	self assert: #multipleOcurrencesOfTheSameLiteralVariables hasBeenCoveredFrom: 57 to: 62 as: 'Object'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:22:40'!
-test001_4_DoesNotCoverLiteralVariablesThatWereNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedLiteralVariable.
-	
-	self assert: #notExecutedLiteralVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedLiteralVariable hasBeenCoveredFrom: 33 to: 38 as: 'Object'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test002_CoversAnUnaryMessageSend
-
-	self collectCoverageForExampleNamed: #unaryMessageSend.
-	
-	self assertNumberOfCoveredRangesFor: #unaryMessageSend is: 2 .
-	self assert: #unaryMessageSend hasBeenCoveredFrom: 21 to: 26 as: 'Object'.
-	self assert: #unaryMessageSend hasBeenCoveredFrom: 28 to: 30 as: 'new'.
-	! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:51'!
-test003_DoesNotCoverMessageSendsThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedMessageSend.
-	
-	self assert: #notExecutedMessageSend hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
-	self deny: #notExecutedMessageSend hasBeenCoveredFrom: 29 to: 34 as: 'Object'.
-	self deny: #notExecutedMessageSend hasBeenCoveredFrom: 36 to: 38 as: 'new'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test004_CoversMultipleOcurrencesOfTheSameMessageSend
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameMessageSend.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameMessageSend is: 4 .
-	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 43 to: 48 as: 'Object'.
-	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 50 to: 52 as: 'new'.
-	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 56 to: 61 as: 'Object'.
-	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 63 to: 65 as: 'new'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test005_CoversABinaryMessageSend
-
-	self collectCoverageForExampleNamed: #binaryMessageSend.
-	
-	self assertNumberOfCoveredRangesFor: #binaryMessageSend is: 3 .
-	self assert: #binaryMessageSend hasBeenCoveredFrom: 22 to: 26 as: 'Array'.
-	self assert: #binaryMessageSend hasBeenCoveredFrom: 28 to: 32 as: 'with:'.
-	self assert: #binaryMessageSend hasBeenCoveredFrom: 34 to: 39 as: 'Object'.
-	! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test006_CoversAKeywordMessageSend
-
-	self collectCoverageForExampleNamed: #keywordMessageSend.
-	
-	self assertNumberOfCoveredRangesFor: #keywordMessageSend is: 5 .
-	self assert: #keywordMessageSend hasBeenCoveredFrom: 23 to: 27 as: 'Array'.
-	self assert: #keywordMessageSend hasBeenCoveredFrom: 29 to: 33 as: 'with:'.
-	self assert: #keywordMessageSend hasBeenCoveredFrom: 35 to: 40 as: 'Object'.
-	self assert: #keywordMessageSend hasBeenCoveredFrom: 42 to: 46 as: 'with:'.
-	self assert: #keywordMessageSend hasBeenCoveredFrom: 48 to: 58 as: 'ProtoObject'.
-	! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test007_CoversMultipleOcurrencesOfTheReceiverInAMessageSend
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheReceiverInAMessageSend.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheReceiverInAMessageSend is: 5 .
-	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 50 to: 54 as: 'Array'.
-	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 56 to: 60 as: 'with:'.
-	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 62 to: 66 as: 'Array'.
-	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 68 to: 72 as: 'with:'.
-	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 74 to: 78 as: 'Array'.
-	! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test008_CoversMultipleOcurrencesOfAnArgumentInAMessageSend
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfAnArgumentInAMessageSend.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfAnArgumentInAMessageSend is: 5 .
-	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 49 to: 53 as: 'Array'.
-	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 55 to: 59 as: 'with:'.
-	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 61 to: 66 as: 'Object'.
-	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 68 to: 72 as: 'with:'.
-	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 74 to: 79 as: 'Object'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test009_1_CoversALiteral
-
-	self collectCoverageForExampleNamed: #literal.
-	
-	self assertNumberOfCoveredRangesFor: #literal is: 1 .
-	self assert: #literal hasBeenCoveredFrom: 11 to: 12 as: '	1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test009_2_CoversManyLiterals
-
-	self collectCoverageForExampleNamed: #manyLiterals.
-	
-	self assertNumberOfCoveredRangesFor: #manyLiterals is: 2 .
-	self assert: #manyLiterals hasBeenCoveredFrom: 17 to: 17 as: '1'.
-	self assert: #manyLiterals hasBeenCoveredFrom: 21 to: 21 as: '2'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test009_3_CoversMultipleOcurrencesOfTheSameLiteral
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameLiteral.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameLiteral is: 2 .
-	self assert: #multipleOcurrencesOfTheSameLiteral hasBeenCoveredFrom: 39 to: 39 as: '1'.
-	self assert: #multipleOcurrencesOfTheSameLiteral hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:33'!
-test009_4_DoesNotCoverLiteralsThatWereNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedLiteral.
-	
-	self assert: #notExecutedLiteral hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedLiteral hasBeenCoveredFrom: 25 to: 25 as: '1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test010_1_CoversAnInstanceVariable
-
-	self collectCoverageForExampleNamed: #instanceVariable.
-	
-	self assertNumberOfCoveredRangesFor: #instanceVariable is: 1 .
-	self assert: #instanceVariable hasBeenCoveredFrom: 21 to: 36 as: 'instanceVariable'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test010_2_CoversMultipleInstanceVariables
-
-	self collectCoverageForExampleNamed: #multipleInstanceVariables.
-	
-	self assertNumberOfCoveredRangesFor: #multipleInstanceVariables is: 2 .
-	self assert: #multipleInstanceVariables hasBeenCoveredFrom: 30 to: 45 as: 'instanceVariable'.
-	self assert: #multipleInstanceVariables hasBeenCoveredFrom: 49 to: 69 as: 'otherInstanceVariable'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test010_3_CoversMultipleOcurrencesOfTheSameInstanceVariable
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameInstanceVariable.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameInstanceVariable is: 2 .
-	self assert: #multipleOcurrencesOfTheSameInstanceVariable hasBeenCoveredFrom: 48 to: 63 as: 'instanceVariable'.
-	self assert: #multipleOcurrencesOfTheSameInstanceVariable hasBeenCoveredFrom: 67 to: 82 as: 'instanceVariable'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:25'!
-test010_4_DoesNotCoverInstanceVariablesThatWereNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedInstanceVariable.
-	
-	self assert: #notExecutedInstanceVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedInstanceVariable hasBeenCoveredFrom: 34 to: 49 as: 'instanceVariable'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test011_1_DoesNotCoverTemporariesDeclarations
-
-	self collectCoverageForExampleNamed: #temporariesDeclarations.
-	
-	self assertNumberOfCoveredRangesFor: #temporariesDeclarations is: 0 .! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:51:56'!
-test011_2_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsRead
-
-	self collectCoverageForExampleNamed: #temporaryVariable.
-	
-	self assertNumberOfCoveredRangesFor: #temporaryVariable is: 2.
-	self assert: #temporaryVariable hasBeenCoveredFrom: 24 to: 24 as: 'a'.
-	self assert: #temporaryVariable hasBeenCoveredFrom: 31 to: 31 as: 'a'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:57:29'!
-test011_3_CoversAManyTemporaryVariables
-
-	self collectCoverageForExampleNamed: #manyTemporaryVariables.
-	
-	self assertNumberOfCoveredRangesFor: #manyTemporaryVariables is: 4 .
-	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 29 to: 29 as: 'a'.
-	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 31 to: 31 as: 'b'.
-	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'a'.
-	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 42 to: 42 as: 'b'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:56:26'!
-test011_4_CoversMultipleOccurrencesOfTheSameTemporaryVariable
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameTemporaryVariable.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameTemporaryVariable is: 3 .
-	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 51 to: 51 as: 'a'.
-	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
-	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 62 to: 62 as: 'a'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:54:11'!
-test011_5_DoesNotCoverATemporaryVariableOrItsDeclarationWhenTheTemporaryVariableIsNotReadNorWritten
-
-	self collectCoverageForExampleNamed: #notExecutedTemporaryVariable.
-	
-	self assert: #notExecutedTemporaryVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test012_1_CoversAVariable
-
-	self collectCoverageForExampleNamed: #variableNode.
-	
-	self assertNumberOfCoveredRangesFor: #variableNode is: 1 .
-	self assert: #variableNode hasBeenCoveredFrom: 17 to: 20 as: 'true'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test012_2_CoversMutipleVariables
-
-	self collectCoverageForExampleNamed: #mutipleVariableNodes.
-	
-	self assertNumberOfCoveredRangesFor: #mutipleVariableNodes is: 2 .
-	self assert: #mutipleVariableNodes hasBeenCoveredFrom: 25 to: 28 as: 'true'.
-	self assert: #mutipleVariableNodes hasBeenCoveredFrom: 32 to: 36 as: 'false'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test012_3_CoversMultipleOcurrencesOftheSameVariable
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOftheSameVariable.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOftheSameVariable is: 2 .
-	self assert: #multipleOcurrencesOftheSameVariable hasBeenCoveredFrom: 40 to: 43 as: 'true'.
-	self assert: #multipleOcurrencesOftheSameVariable hasBeenCoveredFrom: 47 to: 50 as: 'true'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:10'!
-test012_4_DoesNotCoverVariablesThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedVariable.
-	
-	self assert: #notExecutedVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedVariable hasBeenCoveredFrom: 26 to: 29 as: 'true'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test013_1_DoesNotCoverImplicitSelfReturns
-
-	self collectCoverageForExampleNamed: #implicitSelfReturn.
-	
-	self assertNumberOfCoveredRangesFor: #implicitSelfReturn is: 0 .! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test013_2_CoversReturnNodes
-
-	self collectCoverageForExampleNamed: #return.
-	
-	self assertNumberOfCoveredRangesFor: #return is: 1 .
-	self assert: #return hasBeenCoveredFrom: 12 to: 13 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:03'!
-test013_3_DoesNotCoversReturnNodesThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedReturnNode.
-	
-	self assert: #notExecutedReturnNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedReturnNode hasBeenCoveredFrom: 30 to: 30 as: '1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:51'!
-test013_4_CoversTheExecutedOcurrenceOfMultipleReturnNodes
-
-	self collectCoverageForExampleNamed: #multipleReturnNodes.
-	
-	self assert: #multipleReturnNodes hasNumberOfCoveredRanges: 1 andNumberOfSourceRanges: 2.
-	self deny: #multipleReturnNodes hasBeenCoveredFrom: 28 to: 28 as: '1'.
-	self assert: #multipleReturnNodes hasBeenCoveredFrom: 37 to: 38 as: ' 2'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:37'!
-test013_5_CoversTheExecutedOcurrenceOfTheSameReturnNode
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameReturnNodes.
-	
-	self assert: #multipleOcurrencesOfTheSameReturnNodes hasNumberOfCoveredRanges: 1 andNumberOfSourceRanges: 2.
-	self deny: #multipleOcurrencesOfTheSameReturnNodes hasBeenCoveredFrom: 47 to: 47 as: '1'.
-	self assert: #multipleOcurrencesOfTheSameReturnNodes hasBeenCoveredFrom: 56 to: 57 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test014_1_CoversAnAssignment
-
-	self collectCoverageForExampleNamed: #assignment.
-	
-	self assertNumberOfCoveredRangesFor: #assignment is: 2 .
-	self assert: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
-	self assert: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test014_2_CoversMultipleAssignments
-
-	self collectCoverageForExampleNamed: #multipleAssignments.
-	
-	self assertNumberOfCoveredRangesFor: #multipleAssignments is: 4 .
-	self assert: #multipleAssignments hasBeenCoveredFrom: 24 to: 39 as: 'instanceVariable'.
-	self assert: #multipleAssignments hasBeenCoveredFrom: 44 to: 44 as: '1'.
-	self assert: #multipleAssignments hasBeenCoveredFrom: 48 to: 68 as: 'otherInstanceVariable'.
-	self assert: #multipleAssignments hasBeenCoveredFrom: 73 to: 73 as: '2'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test014_3_CoversMultipleOcurrencesOfTheSameAssignment
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameAssignment.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameAssignment is: 4 .
-	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 42 to: 57 as: 'instanceVariable'.
-	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 62 to: 62 as: '1'.
-	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 66 to: 81 as: 'instanceVariable'.
-	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 86 to: 86 as: '2'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:28'!
-test014_4_DoesNotCoverAssignmentsThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedAssignment.
-	
-	self assert: #notExecutedAssignment hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
-	self deny: #notExecutedAssignment hasBeenCoveredFrom: 28 to: 43 as: 'instanceVariable'.
-	self deny: #notExecutedAssignment hasBeenCoveredFrom: 48 to: 48 as: '1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test014_5_CoversTheUsageOfTheVariableThatIsBeingAssigned
-
-	self collectCoverageForExampleNamed: #assignVariableToItself.
-	
-	self assertNumberOfCoveredRangesFor: #assignVariableToItself is: 2 .
-	self assert: #assignVariableToItself hasBeenCoveredFrom: 27 to: 42 as: 'instanceVariable'.
-	self assert: #assignVariableToItself hasBeenCoveredFrom: 47 to: 62 as: 'instanceVariable'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test015_1_CoversABacktickNode
-
-	self collectCoverageForExampleNamed: #backtick.
-	
-	self assertNumberOfCoveredRangesFor: #backtick is: 1 .
-	self assert: #backtick hasBeenCoveredFrom: 13 to: 24 as: '`Object new`'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test015_2_CoversMultipleBacktickNodes
-
-	self collectCoverageForExampleNamed: #multipleBacktickNodes.
-	
-	self assertNumberOfCoveredRangesFor: #multipleBacktickNodes is: 2 .
-	self assert: #multipleBacktickNodes hasBeenCoveredFrom: 26 to: 37 as: '`Object new`'.
-	self assert: #multipleBacktickNodes hasBeenCoveredFrom: 41 to: 51 as: '`Array new`'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test015_3_CoversMultipleOcurrencesOftheSameBacktickNode
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBacktickNode.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameBacktickNode is: 2 .
-	self assert: #multipleOcurrencesOfTheSameBacktickNode hasBeenCoveredFrom: 44 to: 55 as: '`Object new`'.
-	self assert: #multipleOcurrencesOfTheSameBacktickNode hasBeenCoveredFrom: 59 to: 70 as: '`Object new`'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:22'!
-test015_5_DoesNotCoverBackticksNodesThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedBacktickNode.
-	
-	self assert: #notExecutedBacktickNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedBacktickNode hasBeenCoveredFrom: 30 to: 41 as: '`Object new`'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test016_1_CoversTheEvaluationOfAnEmptyBlock
-
-	self collectCoverageForExampleNamed: #emptyBlock.
-	
-	self assertNumberOfCoveredRangesFor: #emptyBlock is: 1 .
-	self assert: #emptyBlock hasBeenCoveredFrom: 18 to: 22 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test016_2_CoversTheEvaluationOfABlock
-
-	self collectCoverageForExampleNamed: #block.
-	
-	self assertNumberOfCoveredRangesFor: #block is: 2 .
-	self assert: #block hasBeenCoveredFrom: 12 to: 12 as: '1'.
-	self assert: #block hasBeenCoveredFrom: 16 to: 20 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test016_3_CoversTheEvaluationOfMultipleBlocks
-
-	self collectCoverageForExampleNamed: #multipleEmptyBlocks.
-	
-	self assertNumberOfCoveredRangesFor: #multipleEmptyBlocks is: 4 .
-	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 26 to: 26 as: '1'.
-	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 30 to: 34 as: 'value'.
-	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 40 to: 40 as: '2'.
-	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test016_4_CoversMultipleOcurrencesOfTheSameBlockNode
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBlockNode.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameBlockNode is: 4 .
-	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 43 to: 43 as: '1'.
-	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 47 to: 51 as: 'value'.
-	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 57 to: 57 as: '1'.
-	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 61 to: 65 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:03'!
-test016_5_DoesNotCoverBlockNodesThatAreNotEvaluated
-
-	self collectCoverageForExampleNamed: #notEvaluatedBlockNode.
-	
-	self assert: #notEvaluatedBlockNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notEvaluatedBlockNode hasBeenCoveredFrom: 28 to: 28 as: '1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:42:01'!
-test016_7_CoversMultipleTemporaryVariablesInABlock
-
-	self collectCoverageForExampleNamed: #blockWithTemporaryVariables.
-	
-	self assertNumberOfCoveredRangesFor: #blockWithTemporaryVariables is: 7.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 36 to: 36 as: 'a'.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'b'.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 44 to: 44 as: 'a'.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 49 to: 49 as: '1'.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 54 to: 54 as: 'b'.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 59 to: 59 as: '2'.
-	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 63 to: 67 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:30:25'!
-test016_8_CoversBlockArgumentsWhenTheyAreReferenced
-
-	self collectCoverageForExampleNamed: #blockWithArguments.
-	
-	self assertNumberOfCoveredRangesFor: #blockWithArguments is: 9.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 26 to: 26 as: 'a'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 29 to: 29 as: 'b'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 33 to: 33 as: 'a'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 35 to: 35 as: '+'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 37 to: 37 as: 'b'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 41 to: 46 as: 'value:'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 48 to: 48 as: '1'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 50 to: 55 as: 'value:'.
-	self assert: #blockWithArguments hasBeenCoveredFrom: 56 to: 57 as: ' 2'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test017_1_CoversABraceNode
-
-	self collectCoverageForExampleNamed: #braceNode.
-	
-	self assertNumberOfCoveredRangesFor: #braceNode is: 1 .
-	self assert: #braceNode hasBeenCoveredFrom: 14 to: 18 as: '{ 1 }'.
-	! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test017_2_CoversMultipleBraceNodes
-
-	self collectCoverageForExampleNamed: #multipleBraceNodes.
-	
-	self assertNumberOfCoveredRangesFor: #multipleBraceNodes is: 2 .
-	self assert: #multipleBraceNodes hasBeenCoveredFrom: 23 to: 27 as: '{ 1 }'.
-	self assert: #multipleBraceNodes hasBeenCoveredFrom: 31 to: 35 as: '{ 2 }'.
-	! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test017_3_CoversMultipleOcurrencesOfTheSameBraceNode
-
-	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBraceNode.
-	
-	self assertNumberOfCoveredRangesFor: #multipleOcurrencesOfTheSameBraceNode is: 2 .
-	self assert: #multipleOcurrencesOfTheSameBraceNode hasBeenCoveredFrom: 41 to: 45 as: '{ 1 }'.
-	self assert: #multipleOcurrencesOfTheSameBraceNode hasBeenCoveredFrom: 49 to: 53 as: '{ 1 }'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:55:49'!
-test017_4_DoesNotCoverBraceNodesThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedBraceNode.
-	
-	self assert: #notExecutedBraceNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #notExecutedBraceNode hasBeenCoveredFrom: 27 to: 31 as: '{ 1 }'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test018_1_CoversACascadeMessageSend
-
-	self collectCoverageForExampleNamed: #cascade.
-	
-	self assertNumberOfCoveredRangesFor: #cascade is: 3 .
-	self assert: #cascade hasBeenCoveredFrom: 12 to: 17 as: 'Object'.
-	self assert: #cascade hasBeenCoveredFrom: 21 to: 23 as: 'new'.
-	self assert: #cascade hasBeenCoveredFrom: 28 to: 32 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test019_CoversCollaborationsWithImplicitSelfReturnsWhenSelfIsReferenced
-
-	self collectCoverageForExampleNamed: #implicitSelfReturnWhenSelfIsReferenced.
-	
-	self assertNumberOfCoveredRangesFor: #implicitSelfReturnWhenSelfIsReferenced is: 2 .
-	self assert: #implicitSelfReturnWhenSelfIsReferenced hasBeenCoveredFrom: 43 to: 46 as: 'self'.
-	self assert: #implicitSelfReturnWhenSelfIsReferenced hasBeenCoveredFrom: 48 to: 52 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:55:27'!
-test020_DoesNotCoverMessageArgumentsThatAreNotExecuted
-
-	self collectCoverageForExampleNamed: #notExecutedMessageArgument.
-	
-	self assert: #notExecutedMessageArgument hasNumberOfCoveredRanges: 3 andNumberOfSourceRanges: 7.
-	self assert: #notExecutedMessageArgument hasBeenCoveredFrom: 31 to: 35 as: 'Array'.
-	self assert: #notExecutedMessageArgument hasBeenCoveredFrom: 39 to: 43 as: 'with:'.
-	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 47 to: 50 as: 'self'.
-	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 52 to: 56 as: 'value'.
-	self assert: #notExecutedMessageArgument hasBeenCoveredFrom: 62 to: 66 as: 'with:'.
-	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 70 to: 73 as: 'self'.
-	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 75 to: 85 as: 'printString'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:28:52'!
-test021_CoversOptimizedMessages
-
-	self collectCoverageForExampleNamed: #optimizedMessage.
-	
-	self assertNumberOfCoveredRangesFor: #optimizedMessage is: 7 .
-	self assert: #optimizedMessage hasBeenCoveredFrom: 21 to: 21 as: '1'.
-	self assert: #optimizedMessage hasBeenCoveredFrom: 23 to: 25 as: 'to:'.
-	self assert: #optimizedMessage hasBeenCoveredFrom: 27 to: 28 as: '10'.
-	self assert: #optimizedMessage hasBeenCoveredFrom: 30 to: 32 as: 'do:'.
-	self assert: #optimizedMessage hasBeenCoveredFrom: 37 to: 42 as: 'number'.
-	self assert: #optimizedMessage hasBeenCoveredFrom: 46 to: 51 as: 'number'.
-	self assert: #optimizedMessage hasBeenCoveredFrom: 53 to: 57 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test022_CoversTheReceiverOfACascadeNodeWhenItIsAMessageSend
-
-	self collectCoverageForExampleNamed: #cascadeNodeWithMessageSendReceiver.
-	
-	self assertNumberOfCoveredRangesFor: #cascadeNodeWithMessageSendReceiver is: 4 .
-	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 38 to: 54 as: 'OrderedCollection'.
-	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 56 to: 58 as: 'new'.
-	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 62 to: 67 as: 'add: 1'.
-	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 72 to: 77 as: 'add: 2'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test023_CoversTheReceiverOfACascadeNodeWhenItIsABlockThatIsEvaluated
-
-	self collectCoverageForExampleNamed: #cascadeNodeWithBlockReceiverThatIsEvaluated.
-	
-	self assertNumberOfCoveredRangesFor: #cascadeNodeWithBlockReceiverThatIsEvaluated is: 4 .
-	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 49 to: 52 as: 'self'.
-	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 54 to: 58 as: 'value'.
-	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 64 to: 68 as: 'class'.
-	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 73 to: 77 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:50:13'!
-test024_DoesNotCoverTheReceiverOfACascadeNodeWhenItIsABlockThatIsNotExecuted
-
-	self collectCoverageForExampleNamed: #cascadeNodeWithBlockReceiverThatIsNotEvaluated.
-	
-	self assert: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasNumberOfCoveredRanges: 2 andNumberOfSourceRanges: 4.
-	self assert: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 67 to: 71 as: 'class'.
-	self assert: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 76 to: 79 as: 'hash'.
-	self deny: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 52 to: 55 as: 'self'.
-	self deny: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 57 to: 61 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test025_CoversTheReceiverOfAMessageSendWhenItIsAMessageSend
-
-	self collectCoverageForExampleNamed: #messageSendWithMessageSendReceiver.
-	
-	self assertNumberOfCoveredRangesFor: #messageSendWithMessageSendReceiver is: 3 .
-	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 39 to: 55 as: 'OrderedCollection'.
-	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 57 to: 59 as: 'new'.
-	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 64 to: 68 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test026_CoversTheReceiverOfAMessageSendWhenItIsABlockThatIsEvaluated
-
-	self collectCoverageForExampleNamed: #messageSendWithBlockReceiverThatIsEvaluated.
-	
-	self assertNumberOfCoveredRangesFor: #messageSendWithBlockReceiverThatIsEvaluated is: 3 .
-	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 49 to: 54 as: 'Object'.
-	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 56 to: 58 as: 'new'.
-	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 64 to: 68 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:48:12'!
-test027_DoesNotCoverTheReceiverOfAMessageSendWhenItIsABlockThatIsNotEvaluated
-
-	self collectCoverageForExampleNamed: #messageSendWithBlockReceiverThatIsNotEvaluated.
-	
-	self assert: #messageSendWithBlockReceiverThatIsNotEvaluated hasNumberOfCoveredRanges: 1 andNumberOfSourceRanges: 3.
-	self assert: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 67 to: 71 as: 'class'.
-	self deny: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 52 to: 57 as: 'Object'.
-	self deny: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 59 to: 61 as: 'new'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test028_DoesNotCoverSuper
-
-	"TODO: Don't cover the super receiver in message sends for now, as it has to be handled separately. NPM"
-	
-	self collectCoverageForExampleNamed: #value.
-	
-	self assertNumberOfCoveredRangesFor: #value is: 1 .
-	self assert: #value hasBeenCoveredFrom: 381 to: 385 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
-test037_DoesNotCoverEmptyMethods
-
-	"TODO: do this for now. This case will probably have to be handled separately. NPM"
-	
-	self collectCoverageForExampleNamed: #emptyMethod.
-		
-	self assertNumberOfCoveredRangesFor: #emptyMethod is: 0 . ! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:00:37'!
-test046_CoversMessagesThatSignalAnError
-
-	self
-		should: [ self collectCoverageForExampleNamed: #raiseError ]
-		raise: Error
-		withMessageText: self errorMessageForTesting.
-		
-	self assert: #raiseError hasNumberOfCoveredRanges: 4 andNumberOfSourceRanges: 4 .
-	self assert: #raiseError hasBeenCoveredFrom: 14 to: 18 as: 'Error'.
-	self assert: #raiseError hasBeenCoveredFrom: 20 to: 26 as: 'signal:'.
-	self assert: #raiseError hasBeenCoveredFrom: 28 to: 31 as: 'self'.
-	self assert: #raiseError hasBeenCoveredFrom: 33 to: 54 as: 'errorMessageForTesting'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:07:03'!
-test047_CoversSelectorArgumentsWhenTheyAreReferenced
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithArgument:.
-	
-	self collectCodeCoverageDuring: [ self messageWithArgument: #foo ].
-	
-	self assertNumberOfCoveredRangesFor: #messageWithArgument: is: 3 .
-	self assert: #messageWithArgument: hasBeenCoveredFrom: 22 to: 31 as: 'anArgument'.
-	self assert: #messageWithArgument: hasBeenCoveredFrom: 36 to: 45 as: 'anArgument'.
-	self assert: #messageWithArgument: hasBeenCoveredFrom: 47 to: 51 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:10:13'!
-test048_CoversBlocksThatSignalAnError
-
-	self
-		should: [ self collectCoverageForExampleNamed: #raiseErrorFromBlock ]
-		raise: Error
-		withMessageText: self errorMessageForTesting.
-
-	self assert: #raiseErrorFromBlock hasNumberOfCoveredRanges: 5 andNumberOfSourceRanges: 5 .
-	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 25 to: 28 as: 'self'.
-	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 30 to: 35 as: 'error:'.
-	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 37 to: 40 as: 'self'.
-	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 42 to: 63 as: 'errorMessageForTesting'.
-	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 67 to: 71 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:14'!
-test049_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsWritten
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignment.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignment is: 3.
-	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 33 to: 33 as: 'a'.
-	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 39 to: 39 as: 'a'.
-	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 43 to: 44 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:24'!
-test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariableIsReadOrWrittenMoreThanOnce
-
-	self collectCoverageForExampleNamed: #temporaryVariableReadAndAssignment.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableReadAndAssignment is: 4.
-	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 40 to: 40 as: 'a'.
-	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 45 to: 45 as: 'a'.
-	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 50 to: 50 as: '1'.
-	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 55 to: 55 as: 'a'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:17:15'!
-test051_DoesNotCoversSelectorArgumentsWhenTheyAreNotReferenced
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithUnusedArgument:.
-
-	self collectCodeCoverageDuring: [ self messageWithUnusedArgument: #foo ].
-
-	self assert: #messageWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:19:48'!
-test052_CoversSelectorArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageArgumentUsedManyTimes:.
-
-	self collectCodeCoverageDuring: [ self messageArgumentUsedManyTimes: #foo ].
-
-	self assert: #messageArgumentUsedManyTimes: hasNumberOfCoveredRanges: 3 andNumberOfSourceRanges: 3.
-	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 31 to: 40 as: 'anArgument'.
-	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 44 to: 53 as: 'anArgument'.
-	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 57 to: 66 as: 'anArgument'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:32:22'!
-test053_DoesNotCoverBlockArgumentsWhenTheyAreNotReferenced
-
-	self collectCoverageForExampleNamed: #blockWithUnusedArgument.
-
-	self assert: #blockWithUnusedArgument hasNumberOfCoveredRanges: 2 andNumberOfSourceRanges: 2.
-	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 43 to: 48 as: 'value:'.
-	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 49 to: 50 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:33:52'!
-test054_CoversBlockArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
-
-	self collectCoverageForExampleNamed: #blockWithArgumentUsedManyTimes.
-
-	self assert: #blockWithArgumentUsedManyTimes hasNumberOfCoveredRanges: 6 andNumberOfSourceRanges: 6.
-	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 37 to: 44 as: 'argument'.
-	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 48 to: 55 as: 'argument'.
-	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 57 to: 57 as: '+'.
-	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 59 to: 66 as: 'argument'.
-	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 70 to: 75 as: 'value:'.
-	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 76 to: 77 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:39:35'!
-test055_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreRead
-
-	self collectCoverageForExampleNamed: #blockWithReadTemporaryVariable.
-
-	self assertNumberOfCoveredRangesFor: #blockWithReadTemporaryVariable is: 3.
-	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 37 to: 37 as: 'a'.
-	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
-	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:40:28'!
-test056_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreWritten
-
-	self collectCoverageForExampleNamed: #blockWithWrittenTemporaryVariable.
-
-	self assertNumberOfCoveredRangesFor: #blockWithWrittenTemporaryVariable is: 4.
-	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
-	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 43 to: 43 as: 'a'.
-	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: '1'.
-	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 51 to: 55 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:44:07'!
-test057_CoversBlockTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariablesAreReferencedMultipleTimes
-
-	self collectCoverageForExampleNamed: #blockWithReadAndWrittenTemporaryVariable.
-
-	self assertNumberOfCoveredRangesFor: #blockWithReadAndWrittenTemporaryVariable is: 5.
-	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: 'a'.
-	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 50 to: 50 as: 'a'.
-	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 55 to: 55 as: '1'.
-	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
-	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 62 to: 66 as: 'value'.! !
-
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/1/2021 22:31:32'!
-test058_DoesNotCoverMethodsThatWereNotExecuted
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #assignment.
-	
-	self collectCodeCoverageDuring: [].
-
-	self assert: #assignment hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.
-	self deny: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
-	self deny: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
-
-!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
-test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
-
-	self setupCodeCoverageAnalyzerForAll: {CodeCoverageTestClass1>>#m1}.
-	
-	self collectCodeCoverageDuring: [ CodeCoverageTestClass1 new m1 ].
-		
-	self assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1
-	       category is: 100! !
-
-!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:16:09'!
-test044_Informs0PercentCoverageWhenNoneOfTheAnalizedClassesInASystemCategoryHaveBeenCovered
-
-	self setupCodeCoverageAnalyzerForAll: {CodeCoverageTestClass1>>#m1}.
-	
-	self collectCodeCoverageDuring: [ ].
-		
-	self
-		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
-		is: 0! !
-
-!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:16:16'!
-test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
-
-	self setupCodeCoverageAnalyzerForAll: {
-		CodeCoverageTestClass1>>#m1.
-		CodeCoverageTestClass2>>#m2.
-		CodeCoverageTestClass2>>#m3 }.
-	
-	self collectCodeCoverageDuring: [
-		CodeCoverageTestClass1 new m1.
-		CodeCoverageTestClass2 new m2 ].
-		
-	self
-		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
-		is: 66.67! !
+	self assert: #emptyMethodWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #emptyMethodWithUnusedArgument: hasBeenCoveredFrom: 32 to: 34 as: 'arg'.! !
 
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:50:57'!
 assertRaisesCannotBeCreatedError: aBlock
@@ -4590,7 +4605,7 @@ usagesOf: aDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/15/2021 17:20:00'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/16/2021 20:35:49'!
 value: compiledMethodWasExecuted 
 
 	^ CodeCoverageReport
