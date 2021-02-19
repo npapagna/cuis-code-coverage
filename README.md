@@ -28,6 +28,31 @@ Block collaborators are covered when they were used at least once:
 Block temporary variables declarations are covered when they were either read or written at least once:
 ![Code Coverage](assets/demo-block-temporaries-declaration-highlighting.png)
 
+### Boolean Highlighting
+With Boolean Highlighting you can easily spot arguments, variables or message sends that only referenced `true` or `false`
+(considered 50% covered), or both (considered 100% covered). 
+
+Temporary variables are covered as boolean when they were only assigned to true or false:
+![Code Coverage](assets/demo-boolean-temporary-variables.png)
+
+The same works for instance variables:
+![Code Coverage](assets/demo-boolean-instance-variables.png)
+
+And class variables:
+![Code Coverage](assets/demo-boolean-class-variables.png)
+
+Block variables are supported as well:
+![Code Coverage](assets/demo-boolean-block-temporary-variables.png)
+
+Boolean highlighting is also available for message arguments:
+![Code Coverage](assets/demo-boolean-message-arguments.png)
+
+And block arguments:
+![Code Coverage](assets/demo-boolean-block-arguments.png)
+
+It even supports arbitrary messages that return boolean objects:
+![Code Coverage](assets/demo-boolean-message-sends.png)
+
 ## Installing
 
 1. Make sure you have the latest updates installed: `World menu > Changes > Install New Updates`.
