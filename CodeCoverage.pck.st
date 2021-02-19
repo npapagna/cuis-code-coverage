@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 16 February 2021 at 9:00:56 pm'!
+'From Cuis 5.0 [latest update: #4528] on 19 February 2021 at 1:49:46 am'!
 'Description '!
-!provides: 'CodeCoverage' 1 26!
+!provides: 'CodeCoverage' 1 27!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -50,7 +50,7 @@ CodeCoverageAnalyzerTest class
 !classDefinition: #CodeCoverageTest category: 'CodeCoverage-Tests'!
 TestCase subclass: #CodeCoverageTest
 	instanceVariableNames: 'codeCoverageAnalyzer instanceVariable otherInstanceVariable coverageReport messageResult'
-	classVariableNames: ''
+	classVariableNames: 'ClassVariable'
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
 !classDefinition: 'CodeCoverageTest class' category: 'CodeCoverage-Tests'!
@@ -517,6 +517,11 @@ consumeNextSourceRangeFor: aParseNode
 	
 ! !
 
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/19/2021 01:48:11'!
+isInstanceOrClassVariable: aParseNode
+
+	^ aParseNode isInstanceVariableNode or: [ aParseNode isLiteralVariableNode ]! !
+
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/9/2021 16:13:35'!
 parse: sourceCode
 
@@ -526,7 +531,7 @@ parse: sourceCode
 		parse: sourceCode
 		class: methodNode methodClass! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/15/2021 18:19:25'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/19/2021 01:48:40'!
 parseNodeCovering: aParseNode whenExecuting: anotherParseNode 
 	
 	"Generate a parse node that, when compiled and executed, will register that anotherParseNode covered aParseNode.
@@ -539,18 +544,18 @@ parseNodeCovering: aParseNode whenExecuting: anotherParseNode
 				parseNodeToCover: (self consumeNextSourceRangeFor: aParseNode)
 				declaredAt: declarationSourceRange
 				withResultOf: anotherParseNode ].
-		
-	aParseNode isInstanceVariableNode ifTrue: [
+
+	(self isInstanceOrClassVariable: aParseNode) ifTrue: [
 		^ self
-			parseNodeCoveringInstanceVariable: aParseNode
+			parseNodeCoveringInstancerOrClassVariable: aParseNode
 			whenExecuting: anotherParseNode ].	
 		
 	^ self
 		parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
 		whenExecuting: anotherParseNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/15/2021 18:24:23'!
-parseNodeCoveringInstanceVariable: anInstanceVariableNode whenExecuting: aParseNode
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/19/2021 01:48:40'!
+parseNodeCoveringInstancerOrClassVariable: anInstanceVariableNode whenExecuting: aParseNode
 
 	"Instance variables have no declaration source range because, unlike temporary variables,
 	they are defined in the class creation message.
@@ -1731,6 +1736,40 @@ cascadeNodeWithMessageSendReceiver
 		add: 1;
 		add: 2! !
 
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:43'!
+classVariableAssignedToABooleanAndThenToANonBoolean
+
+	ClassVariable _ true.
+	ClassVariable _ 1.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:43:13'!
+classVariableAssignedToABooleanMoreThanOnce
+
+	ClassVariable _ true.
+	ClassVariable _ true.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:54'!
+classVariableAssignedToANonBooleanAndThenToABoolean
+
+	ClassVariable _ 1.
+	ClassVariable _ true.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:18'!
+classVariableAssignedToFalse
+
+	ClassVariable _ false! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:07'!
+classVariableAssignedToTrue
+
+	ClassVariable _ true! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:41:35'!
+classVariableAssignedToTrueAndFalse
+
+	ClassVariable _ true.
+	ClassVariable _ false.! !
+
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:24:46'!
 emptyBlock
 	
@@ -2294,6 +2333,610 @@ test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
 	self collectCoverageForExampleNamed: #emptyMethod.
 	
 	self assertPercentCoverageForExampleNamed: #emptyMethod is: 100! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:32'!
+test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrue is: 3.
+	self assert: #temporaryVariableAssignedToTrue hasBeenHalfCoveredFrom: 37 to: 37 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrue hasBeenHalfCoveredFrom: 44 to: 44 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrue hasBeenCoveredFrom: 48 to: 51 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrue is: 66.67.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:43'!
+test060_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToFalse is: 3.
+	self assert: #temporaryVariableAssignedToFalse hasBeenHalfCoveredFrom: 38 to: 38 as: 'a'.
+	self assert: #temporaryVariableAssignedToFalse hasBeenHalfCoveredFrom: 45 to: 45 as: 'a'.
+	self assert: #temporaryVariableAssignedToFalse hasBeenCoveredFrom: 49 to: 53 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToFalse is: 66.67.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 20:58:27'!
+test061_FullyCoversABooleanTemporaryVariableDeclarationThatHasBeenAssignedToTrueAndFalse
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrueAndFalse is: 5.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 45 to: 45 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 52 to: 52 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 56 to: 59 as: 'true'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 63 to: 63 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 67 to: 71 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:34:14'!
+test062_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanTemporaryVariables
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrueMoreThanOnce is: 5.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 49 to: 49 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 56 to: 56 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 60 to: 63 as: 'true'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 67 to: 67 as: 'a'.
+	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 71 to: 74 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce is: 70.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:15:41'!
+test063_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 5.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 57 to: 57 as: 'a'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 64 to: 64 as: 'a'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 68 to: 71 as: 'true'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 75 to: 75 as: 'a'.
+	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 79 to: 79 as: '1'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:16:03'!
+test064_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self collectCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean.
+
+	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 5.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 57 to: 57 as: 'a'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 64 to: 64 as: 'a'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 68 to: 68 as: '1'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 72 to: 72 as: 'a'.
+	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 76 to: 79 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:34:42'!
+test065_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #methodWithOneArgument: with: true.
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:35:04'!
+test066_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #methodWithOneArgument: with: false.
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:06:48'!
+test067_FullyCoversABooleanArgumentThatHasBeenAssignedToTrueAndFalse
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: true;
+			methodWithOneArgument: false ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:40:08'!
+test068_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanArguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: true;
+			methodWithOneArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:06:56'!
+test069_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: true;
+			methodWithOneArgument: 1 ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:07:02'!
+test070_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			methodWithOneArgument: 1;
+			methodWithOneArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
+	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
+	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:35:27'!
+test071_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgumentAssignedToTrue is: 5.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenHalfCoveredFrom: 38 to: 40 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenHalfCoveredFrom: 44 to: 46 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 48 to: 58 as: 'printString'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 62 to: 67 as: 'value:'.
+	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 69 to: 72 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToTrue is: 80.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:36:42'!
+test072_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgumentAssignedToFalse is: 5.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenHalfCoveredFrom: 39 to: 41 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenHalfCoveredFrom: 45 to: 47 as: 'arg'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 49 to: 59 as: 'printString'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 63 to: 68 as: 'value:'.
+	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 70 to: 74 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToFalse is: 80.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:17:30'!
+test073_FullyCoversABooleanBlockArgumentThatHasBeenAssignedToTrueAndFalse
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: true;
+			blockWithArgument: false ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:37:14'!
+test074_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanArguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: true;
+			blockWithArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 66.67.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:02'!
+test075_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: true;
+			blockWithArgument: 1 ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:18'!
+test076_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			blockWithArgument: 1;
+			blockWithArgument: true ].
+
+	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
+	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
+	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:37:48'!
+test077_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #assignBlockTemporary: with: true.
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 148 to: 148 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 153 to: 153 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 157 to: 162 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:41:57'!
+test078_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #assignBlockTemporary: with: false.
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 148 to: 148 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 153 to: 153 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 157 to: 162 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:05'!
+test079_FullyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrueAndFalse
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: true;
+			assignBlockTemporary: false ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 148 to: 148 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 153 to: 153 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 157 to: 162 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:42:14'!
+test080_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanTemporaryVariables
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: true;
+			assignBlockTemporary: true ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 148 to: 148 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 153 to: 153 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 157 to: 162 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:29'!
+test081_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: true;
+			assignBlockTemporary: 1 ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 148 to: 148 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 153 to: 153 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 157 to: 162 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:47'!
+test082_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
+	
+	self collectCodeCoverageDuring: [
+		self
+			assignBlockTemporary: 1;
+			assignBlockTemporary: true ].
+
+	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 148 to: 148 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 153 to: 153 as: 'a'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 157 to: 162 as: 'aValue'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
+	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
+	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:33'!
+test083_PartiallyCoversABooleanSelectorThatOnlyReturnsTrue
+	
+	messageResult _ true.
+	self collectCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
+
+	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
+	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:43'!
+test084_PartiallyCoversABooleanSelectorThatOnlyReturnsFalse
+	
+	messageResult _ true.
+	self collectCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
+
+	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
+	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:33:39'!
+test085_FullyCoversABooleanSelectorThatReturnsTrueAndFalse
+	
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
+	
+	self collectCodeCoverageDuring: [
+		messageResult _ true.
+		self messageSendReturningMessageResultInstanceVariable.
+		messageResult _ false.
+		self messageSendReturningMessageResultInstanceVariable ].
+
+	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
+	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:55'!
+test086_DoesNotCountMultipleReturnsOfSameValueFromBooleanSelectors
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
+	
+	self collectCodeCoverageDuring: [
+		messageResult _ true.
+		self messageSendReturningMessageResultInstanceVariable.
+		messageResult _ true.
+		self messageSendReturningMessageResultInstanceVariable ].
+	
+	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
+	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.
+! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:26:22'!
+test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsABooleanAndThenANonBoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
+	
+	self collectCodeCoverageDuring: [
+		messageResult _ true.
+		self messageSendReturningMessageResultInstanceVariable.
+		messageResult _ 1.
+		self messageSendReturningMessageResultInstanceVariable ].
+
+	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
+	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:33:02'!
+test088_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
+	
+	self collectCodeCoverageDuring: [
+		messageResult _ 1.
+		self messageSendReturningMessageResultInstanceVariable.
+		messageResult _ true.
+		self messageSendReturningMessageResultInstanceVariable ].
+
+	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
+	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
+	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:44:13'!
+test090_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrue is: 2.
+	self assert: #instanceVariableAssignedToTrue hasBeenHalfCoveredFrom: 34 to: 49 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:51:00'!
+test091_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToFalse is: 2.
+	self assert: #instanceVariableAssignedToFalse hasBeenHalfCoveredFrom: 35 to: 50 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:52:23'!
+test092_FullyCoversABooleanInstanceVariableDeclarationThatHasBeenAssignedToTrueAndFalse
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrueAndFalse is: 4.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 42 to: 57 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 61 to: 64 as: 'true'.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 68 to: 83 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 87 to: 91 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:55:19'!
+test093_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanInstanceVariables
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrueMoreThanOnce is: 4.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 47 to: 62 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 66 to: 69 as: 'true'.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 73 to: 88 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 92 to: 95 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:59:54'!
+test094_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean.
+
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 4.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 58 to: 73 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 77 to: 80 as: 'true'.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 84 to: 99 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 103 to: 103 as: '1'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:58:21'!
+test095_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self collectCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean.
+	 
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 4.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 58 to: 73 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 77 to: 77 as: '1'.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 81 to: 96 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 100 to: 103 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 100.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 18:33:48'!
+test096_DoesNotCoverABooleanInstanceVariableAssignedInDifferentMethods
+
+	self setupCodeCoverageAnalyzerForAll: { self class>>#instanceVariableAssignedToTrue. self class>>#instanceVariableAssignedToFalse }.
+	
+	self collectCodeCoverageDuring: [
+		self
+			instanceVariableAssignedToTrue;
+			instanceVariableAssignedToFalse ].
+	 
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrue is: 2.
+	self assert: #instanceVariableAssignedToTrue hasBeenHalfCoveredFrom: 34 to: 49 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.
+	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToFalse is: 2.
+	self assert: #instanceVariableAssignedToFalse hasBeenHalfCoveredFrom: 35 to: 50 as: 'instanceVariable'.
+	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
+	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/16/2021 20:53:55'!
+test097_DoesNotCoverUnusedMethodArguments
+
+	self collectCoverageForExampleNamed: #emptyMethodWithUnusedArgument: with: 1.
+
+	self assert: #emptyMethodWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
+	self deny: #emptyMethodWithUnusedArgument: hasBeenCoveredFrom: 32 to: 34 as: 'arg'.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:42:09'!
+test098_PartiallyCoversABooleanClassVariableThatHasOnlyBeenAssignedToTrue
+
+	self collectCoverageForExampleNamed: #classVariableAssignedToTrue.
+
+	self assertNumberOfCoveredRangesFor: #classVariableAssignedToTrue is: 2.
+	self assert: #classVariableAssignedToTrue hasBeenHalfCoveredFrom: 31 to: 43 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToTrue hasBeenCoveredFrom: 47 to: 50 as: 'true'.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:42:20'!
+test099_PartiallyCoversABooleanClassVariableThatHasOnlyBeenAssignedToFalse
+
+	self collectCoverageForExampleNamed: #classVariableAssignedToFalse.
+
+	self assertNumberOfCoveredRangesFor: #classVariableAssignedToFalse is: 2.
+	self assert: #classVariableAssignedToFalse hasBeenHalfCoveredFrom: 32 to: 44 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToFalse hasBeenCoveredFrom: 48 to: 52 as: 'false'.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:42:25'!
+test100_FullyCoversABooleanClassVariableThatHasBeenAssignedToTrueAndFalse
+
+	self collectCoverageForExampleNamed: #classVariableAssignedToTrueAndFalse.
+
+	self assertNumberOfCoveredRangesFor: #classVariableAssignedToTrueAndFalse is: 4.
+	self assert: #classVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 39 to: 51 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 55 to: 58 as: 'true'.
+	self assert: #classVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 62 to: 74 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 78 to: 82 as: 'false'.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:43:58'!
+test101_DoesNotCountMultipleAssignmentsWithTheSameValueToClassTemporaryVariables
+
+	self collectCoverageForExampleNamed: #classVariableAssignedToABooleanMoreThanOnce.
+
+	self assertNumberOfCoveredRangesFor: #classVariableAssignedToABooleanMoreThanOnce is: 4.
+	self assert: #classVariableAssignedToABooleanMoreThanOnce hasBeenHalfCoveredFrom: 47 to: 59 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToABooleanMoreThanOnce hasBeenCoveredFrom: 63 to: 66 as: 'true'.
+	self assert: #classVariableAssignedToABooleanMoreThanOnce hasBeenHalfCoveredFrom: 70 to: 82 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToABooleanMoreThanOnce hasBeenCoveredFrom: 86 to: 89 as: 'true'.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:45:28'!
+test102_DoesNotConsiderAClassVariableAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
+
+	self collectCoverageForExampleNamed: #classVariableAssignedToABooleanAndThenToANonBoolean.
+
+	self assertNumberOfCoveredRangesFor: #classVariableAssignedToABooleanAndThenToANonBoolean is: 4.
+	self assert: #classVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 55 to: 67 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 71 to: 74 as: 'true'.
+	self assert: #classVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 78 to: 90 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 94 to: 94 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:46:17'!
+test103_DoesNotConsiderAClassVariableAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
+
+	self collectCoverageForExampleNamed: #classVariableAssignedToANonBooleanAndThenToABoolean.
+
+	self assertNumberOfCoveredRangesFor: #classVariableAssignedToANonBooleanAndThenToABoolean is: 4.
+	self assert: #classVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 55 to: 67 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 71 to: 71 as: '1'.
+	self assert: #classVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 75 to: 87 as: 'ClassVariable'.
+	self assert: #classVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 91 to: 94 as: 'true'.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test001_1_CoversALiteralVariable
@@ -3107,548 +3750,6 @@ test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 	self
 		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
 		is: 66.67! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:32'!
-test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrue.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrue is: 3.
-	self assert: #temporaryVariableAssignedToTrue hasBeenHalfCoveredFrom: 37 to: 37 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrue hasBeenHalfCoveredFrom: 44 to: 44 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrue hasBeenCoveredFrom: 48 to: 51 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrue is: 66.67.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:43'!
-test060_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignedToFalse.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToFalse is: 3.
-	self assert: #temporaryVariableAssignedToFalse hasBeenHalfCoveredFrom: 38 to: 38 as: 'a'.
-	self assert: #temporaryVariableAssignedToFalse hasBeenHalfCoveredFrom: 45 to: 45 as: 'a'.
-	self assert: #temporaryVariableAssignedToFalse hasBeenCoveredFrom: 49 to: 53 as: 'false'.
-	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToFalse is: 66.67.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 20:58:27'!
-test061_FullyCoversABooleanTemporaryVariableDeclarationThatHasBeenAssignedToTrueAndFalse
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrueAndFalse is: 5.
-	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 45 to: 45 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 52 to: 52 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 56 to: 59 as: 'true'.
-	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 63 to: 63 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 67 to: 71 as: 'false'.
-	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:34:14'!
-test062_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanTemporaryVariables
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToTrueMoreThanOnce is: 5.
-	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 49 to: 49 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 56 to: 56 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 60 to: 63 as: 'true'.
-	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 67 to: 67 as: 'a'.
-	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 71 to: 74 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce is: 70.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:15:41'!
-test063_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 5.
-	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 57 to: 57 as: 'a'.
-	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 64 to: 64 as: 'a'.
-	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 68 to: 71 as: 'true'.
-	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 75 to: 75 as: 'a'.
-	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 79 to: 79 as: '1'.
-	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:16:03'!
-test064_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
-
-	self collectCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean.
-
-	self assertNumberOfCoveredRangesFor: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 5.
-	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 57 to: 57 as: 'a'.
-	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 64 to: 64 as: 'a'.
-	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 68 to: 68 as: '1'.
-	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 72 to: 72 as: 'a'.
-	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 76 to: 79 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:34:42'!
-test065_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToTrue
-
-	self collectCoverageForExampleNamed: #methodWithOneArgument: with: true.
-
-	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
-	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
-	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
-	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:35:04'!
-test066_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToFalse
-
-	self collectCoverageForExampleNamed: #methodWithOneArgument: with: false.
-
-	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
-	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
-	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
-	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:06:48'!
-test067_FullyCoversABooleanArgumentThatHasBeenAssignedToTrueAndFalse
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			methodWithOneArgument: true;
-			methodWithOneArgument: false ].
-
-	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
-	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
-	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
-	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:40:08'!
-test068_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanArguments
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			methodWithOneArgument: true;
-			methodWithOneArgument: true ].
-
-	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
-	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 24 to: 26 as: 'arg'.
-	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
-	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:06:56'!
-test069_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			methodWithOneArgument: true;
-			methodWithOneArgument: 1 ].
-
-	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
-	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
-	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
-	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:07:02'!
-test070_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			methodWithOneArgument: 1;
-			methodWithOneArgument: true ].
-
-	self assertNumberOfCoveredRangesFor: #methodWithOneArgument: is: 2.
-	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 24 to: 26 as: 'arg'.
-	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
-	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:35:27'!
-test071_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToTrue
-
-	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToTrue.
-
-	self assertNumberOfCoveredRangesFor: #blockWithArgumentAssignedToTrue is: 5.
-	self assert: #blockWithArgumentAssignedToTrue hasBeenHalfCoveredFrom: 38 to: 40 as: 'arg'.
-	self assert: #blockWithArgumentAssignedToTrue hasBeenHalfCoveredFrom: 44 to: 46 as: 'arg'.
-	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 48 to: 58 as: 'printString'.
-	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 62 to: 67 as: 'value:'.
-	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 69 to: 72 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToTrue is: 80.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:36:42'!
-test072_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToFalse
-
-	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToFalse.
-
-	self assertNumberOfCoveredRangesFor: #blockWithArgumentAssignedToFalse is: 5.
-	self assert: #blockWithArgumentAssignedToFalse hasBeenHalfCoveredFrom: 39 to: 41 as: 'arg'.
-	self assert: #blockWithArgumentAssignedToFalse hasBeenHalfCoveredFrom: 45 to: 47 as: 'arg'.
-	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 49 to: 59 as: 'printString'.
-	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 63 to: 68 as: 'value:'.
-	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 70 to: 74 as: 'false'.
-	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToFalse is: 80.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:17:30'!
-test073_FullyCoversABooleanBlockArgumentThatHasBeenAssignedToTrueAndFalse
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			blockWithArgument: true;
-			blockWithArgument: false ].
-
-	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
-	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:37:14'!
-test074_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanArguments
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			blockWithArgument: true;
-			blockWithArgument: true ].
-
-	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
-	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 20 to: 29 as: 'anArgument'.
-	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 36 to: 38 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 42 to: 44 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
-	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 67 to: 76 as: 'anArgument'.
-	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 66.67.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:02'!
-test075_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			blockWithArgument: true;
-			blockWithArgument: 1 ].
-
-	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
-	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:18'!
-test076_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			blockWithArgument: 1;
-			blockWithArgument: true ].
-
-	self assertNumberOfCoveredRangesFor: #blockWithArgument: is: 6.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 20 to: 29 as: 'anArgument'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 36 to: 38 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 42 to: 44 as: 'arg'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 46 to: 56 as: 'printString'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 60 to: 65 as: 'value:'.
-	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
-	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:37:48'!
-test077_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
-
-	self collectCoverageForExampleNamed: #assignBlockTemporary: with: true.
-
-	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 148 to: 148 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 153 to: 153 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 157 to: 162 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
-	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:41:57'!
-test078_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
-
-	self collectCoverageForExampleNamed: #assignBlockTemporary: with: false.
-
-	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 148 to: 148 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 153 to: 153 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 157 to: 162 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
-	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:05'!
-test079_FullyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrueAndFalse
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			assignBlockTemporary: true;
-			assignBlockTemporary: false ].
-
-	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 148 to: 148 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 153 to: 153 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 157 to: 162 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
-	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:42:14'!
-test080_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanTemporaryVariables
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			assignBlockTemporary: true;
-			assignBlockTemporary: true ].
-
-	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 23 to: 28 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 148 to: 148 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 153 to: 153 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenHalfCoveredFrom: 157 to: 162 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
-	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:29'!
-test081_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			assignBlockTemporary: true;
-			assignBlockTemporary: 1 ].
-
-	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 148 to: 148 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 153 to: 153 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 157 to: 162 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
-	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:47'!
-test082_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
-	
-	self collectCodeCoverageDuring: [
-		self
-			assignBlockTemporary: 1;
-			assignBlockTemporary: true ].
-
-	self assertNumberOfCoveredRangesFor: #assignBlockTemporary: is: 6.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 23 to: 28 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 148 to: 148 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 153 to: 153 as: 'a'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 157 to: 162 as: 'aValue'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 167 to: 167 as: '1'.
-	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
-	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:33'!
-test083_PartiallyCoversABooleanSelectorThatOnlyReturnsTrue
-	
-	messageResult _ true.
-	self collectCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
-
-	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
-	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:43'!
-test084_PartiallyCoversABooleanSelectorThatOnlyReturnsFalse
-	
-	messageResult _ true.
-	self collectCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
-
-	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
-	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:33:39'!
-test085_FullyCoversABooleanSelectorThatReturnsTrueAndFalse
-	
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
-	
-	self collectCodeCoverageDuring: [
-		messageResult _ true.
-		self messageSendReturningMessageResultInstanceVariable.
-		messageResult _ false.
-		self messageSendReturningMessageResultInstanceVariable ].
-
-	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
-	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:55'!
-test086_DoesNotCountMultipleReturnsOfSameValueFromBooleanSelectors
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
-	
-	self collectCodeCoverageDuring: [
-		messageResult _ true.
-		self messageSendReturningMessageResultInstanceVariable.
-		messageResult _ true.
-		self messageSendReturningMessageResultInstanceVariable ].
-	
-	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
-	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.
-! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:26:22'!
-test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsABooleanAndThenANonBoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
-	
-	self collectCodeCoverageDuring: [
-		messageResult _ true.
-		self messageSendReturningMessageResultInstanceVariable.
-		messageResult _ 1.
-		self messageSendReturningMessageResultInstanceVariable ].
-
-	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
-	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:33:02'!
-test088_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
-
-	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
-	
-	self collectCodeCoverageDuring: [
-		messageResult _ 1.
-		self messageSendReturningMessageResultInstanceVariable.
-		messageResult _ true.
-		self messageSendReturningMessageResultInstanceVariable ].
-
-	self assertNumberOfCoveredRangesFor: #messageSendReturningMessageResultInstanceVariable is: 2.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 53 to: 56 as: 'self'.
-	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
-	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:44:13'!
-test090_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
-
-	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrue.
-
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrue is: 2.
-	self assert: #instanceVariableAssignedToTrue hasBeenHalfCoveredFrom: 34 to: 49 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:51:00'!
-test091_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
-
-	self collectCoverageForExampleNamed: #instanceVariableAssignedToFalse.
-
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToFalse is: 2.
-	self assert: #instanceVariableAssignedToFalse hasBeenHalfCoveredFrom: 35 to: 50 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:52:23'!
-test092_FullyCoversABooleanInstanceVariableDeclarationThatHasBeenAssignedToTrueAndFalse
-
-	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse.
-
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrueAndFalse is: 4.
-	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 42 to: 57 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 61 to: 64 as: 'true'.
-	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 68 to: 83 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 87 to: 91 as: 'false'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:55:19'!
-test093_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanInstanceVariables
-
-	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce.
-
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrueMoreThanOnce is: 4.
-	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 47 to: 62 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 66 to: 69 as: 'true'.
-	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenHalfCoveredFrom: 73 to: 88 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 92 to: 95 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce is: 75.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:59:54'!
-test094_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
-
-	self collectCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean.
-
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 4.
-	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 58 to: 73 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 77 to: 80 as: 'true'.
-	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 84 to: 99 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 103 to: 103 as: '1'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:58:21'!
-test095_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
-
-	self collectCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean.
-	 
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 4.
-	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 58 to: 73 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 77 to: 77 as: '1'.
-	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 81 to: 96 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 100 to: 103 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 100.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 18:33:48'!
-test096_DoesNotCoverABooleanInstanceVariableAssignedInDifferentMethods
-
-	self setupCodeCoverageAnalyzerForAll: { self class>>#instanceVariableAssignedToTrue. self class>>#instanceVariableAssignedToFalse }.
-	
-	self collectCodeCoverageDuring: [
-		self
-			instanceVariableAssignedToTrue;
-			instanceVariableAssignedToFalse ].
-	 
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToTrue is: 2.
-	self assert: #instanceVariableAssignedToTrue hasBeenHalfCoveredFrom: 34 to: 49 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.
-	self assertNumberOfCoveredRangesFor: #instanceVariableAssignedToFalse is: 2.
-	self assert: #instanceVariableAssignedToFalse hasBeenHalfCoveredFrom: 35 to: 50 as: 'instanceVariable'.
-	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
-	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
-
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/16/2021 20:53:55'!
-test097_DoesNotCoverUnusedMethodArguments
-
-	self collectCoverageForExampleNamed: #emptyMethodWithUnusedArgument: with: 1.
-
-	self assert: #emptyMethodWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
-	self deny: #emptyMethodWithUnusedArgument: hasBeenCoveredFrom: 32 to: 34 as: 'arg'.! !
 
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:50:57'!
 assertRaisesCannotBeCreatedError: aBlock
@@ -4605,7 +4706,7 @@ usagesOf: aDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/16/2021 20:35:49'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/19/2021 01:32:37'!
 value: compiledMethodWasExecuted 
 
 	^ CodeCoverageReport
@@ -5013,9 +5114,9 @@ cover: aSourceRange declaredAt: declarationSourceRange
 			coverNonBooleanUsage: aSourceRange
 			of: declarationSourceRange ]! !
 
-!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 17:15:28'!
+!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/19/2021 01:32:29'!
 coverAll: sourceRanges 
-	
+
 	^ self codeCoverageAnalyzerDo: [ :analyzer |
 		analyzer coverAsNonBooleanAll: sourceRanges ]! !
 

@@ -14,6 +14,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Support for covering boolean block temporary variable declarations.
 * Support for covering boolean selectors.
 * Support for covering boolean instance variables within a compiled method (covering an instance variable across 
+* Support for covering boolean class variables within a compiled method (covering a class variable across 
   different compiled methods is not supported yet).
 * Partially covered boolean parse nodes highlighting (yellow).
 * Supports covering unreferenced method and block arguments.
