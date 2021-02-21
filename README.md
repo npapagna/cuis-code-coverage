@@ -15,7 +15,7 @@ Easily find which collaborations were not executed using the Code Coverage Brows
 Get detailed coverage information at the System Category, Class, Message Category or Message level:
 ![Code Coverage](assets/demo-code-highlighting.png)
 
-### Collaborators highlighting
+### Collaborators coverage
 Collaborators are covered when they were used at least once:
 ![Code Coverage](assets/demo-collaborators-highlighting.png)
 
@@ -28,8 +28,8 @@ Block collaborators are covered when they were used at least once:
 Block temporary variables declarations are covered when they were either read or written at least once:
 ![Code Coverage](assets/demo-block-temporaries-declaration-highlighting.png)
 
-### Boolean Highlighting
-With Boolean Highlighting you can easily spot arguments, variables or message sends that only referenced `true` or `false`
+### Boolean coverage
+With Boolean Coverage you can easily spot arguments, variables or message sends that only referenced `true` or `false`
 (considered 50% covered), or both (considered 100% covered). 
 
 Temporary variables are covered as boolean when they were only assigned to true or false:

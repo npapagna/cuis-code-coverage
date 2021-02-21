@@ -3,7 +3,7 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [1.27](https://github.com/npapagna/cuis-code-coverage/compare/v1.10...v1.27) - 2021-02-21
 
 ### Added
 
@@ -16,11 +16,11 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Support for covering boolean instance variables within a compiled method (covering an instance variable across 
 * Support for covering boolean class variables within a compiled method (covering a class variable across 
   different compiled methods is not supported yet).
-* Partially covered boolean parse nodes highlighting (yellow).
-* Supports covering unreferenced method and block arguments.
-* Supports covering unreferenced method and block temporary variables.
+* Support for highlighting in yellow partially covered boolean parse nodes.
+* Support for covering unreferenced method and block arguments.
+* Support for covering unreferenced method and block temporary variables.
 
-## [1.10](https://github.com/npapagna/cuis-code-coverage/compare/v1.9...v1.10) - 2020-01-31
+## [1.10](https://github.com/npapagna/cuis-code-coverage/compare/v1.9...v1.10) - 2021-01-31
 
 ### Fixed
 
