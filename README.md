@@ -53,6 +53,11 @@ And block arguments:
 It even supports arbitrary messages that return boolean objects:
 ![Code Coverage](assets/demo-boolean-message-sends.png)
 
+### Abstract methods
+
+Abstract methods (those that send #subclassResponsibility) are excluded from the code coverage analysis, because they 
+should never be executed.
+
 ## Installing
 
 1. Make sure you have the latest updates installed: `World menu > Changes > Install New Updates`.

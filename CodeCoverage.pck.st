@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4528] on 19 February 2021 at 1:49:46 am'!
+'From Cuis 5.0 [latest update: #4532] on 10 March 2021 at 8:59:50 am'!
 'Description '!
-!provides: 'CodeCoverage' 1 27!
+!provides: 'CodeCoverage' 1 28!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -1520,6 +1520,11 @@ deny: aSymbol hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expect
 	self assert: (report uncoveredSourceRanges includes: (sourceRangeStart to: sourceRangeEnd)).
 	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).! !
 
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 3/10/2021 08:42:40'!
+denyHasBeenAnalyzed: aSelector
+
+	self deny: (coverageReport wasCompiledMethodAnalyzed: self class>>aSelector)! !
+
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/15/2021 17:50:43'!
 generateAssertionsFor: report 
 	
@@ -1611,6 +1616,11 @@ tearDown
 tearDownCodeCoverageAnalyzer
 
 	codeCoverageAnalyzer ifNotNil: [ codeCoverageAnalyzer stopTrackingCodeCoverage ]! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/10/2021 08:35:42'!
+abstractMethod
+
+	self subclassResponsibility! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 09:09:22'!
 assignBlockTemporary: aValue
@@ -2333,6 +2343,17 @@ test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
 	self collectCoverageForExampleNamed: #emptyMethod.
 	
 	self assertPercentCoverageForExampleNamed: #emptyMethod is: 100! !
+
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 3/10/2021 08:40:51'!
+test104_IgnoresAbstractMethods
+
+	self
+		should: [ self collectCoverageForExampleNamed: #abstractMethod ]
+		raise: Error
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubString: 'My subclass should have overridden') ].
+
+	self denyHasBeenAnalyzed: #abstractMethod! !
 
 !CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:32'!
 test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
@@ -4023,14 +4044,16 @@ classesToAnalyze
 	
 	^ (compiledMethodsToAnalyze collect: [ :compiledMethod | compiledMethod methodClass ]) asSet! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/17/2021 12:01:49'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 3/10/2021 08:55:11'!
 installCompiledMethodAnalizers
 	
 	self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size.
 	
-	installedCompiledMethodAnalyzers := compiledMethodsToAnalyze collect: [ :compiledMethodToAnalyze |
-		self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
-		compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self ].
+	installedCompiledMethodAnalyzers := compiledMethodsToAnalyze
+		select: [ :compiledMethodToAnalyze | compiledMethodToAnalyze isAbstract not ]
+	 	thenCollect: [ :compiledMethodToAnalyze |
+			self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
+			compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self ].
 	
 	self triggerEvent: #endInstallingCompiledMethodAnalyzers.
 	! !

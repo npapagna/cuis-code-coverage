@@ -3,6 +3,12 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28](https://github.com/npapagna/cuis-code-coverage/compare/v1.27...v1.28) - 2021-03-10
+
+### Added
+
+* Support for excluding abstract methods from the code coverage analysis.
+
 ## [1.27](https://github.com/npapagna/cuis-code-coverage/compare/v1.10...v1.27) - 2021-02-21
 
 ### Added
