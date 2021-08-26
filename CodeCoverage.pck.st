@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4532] on 10 March 2021 at 8:59:50 am'!
+'From Cuis 5.0 [latest update: #4532] on 26 August 2021 at 5:40:58 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 28!
+!provides: 'CodeCoverage' 1 29!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -455,7 +455,7 @@ denyIsOptimized: aMessageNode
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 2/15/2021 18:25:12'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'HAW 8/25/2021 11:06:16'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
@@ -465,7 +465,7 @@ value
 
 	methodNode accept: self.
 	
-	tracedSourceCode :=  methodNode printString .! !
+	tracedSourceCode :=  String streamContents: [ :stream | methodNode printOn: stream ] .! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 1/28/2021 21:27:28'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
