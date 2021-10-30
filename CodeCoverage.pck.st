@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4532] on 26 August 2021 at 5:40:58 pm'!
+'From Cuis 5.0 [latest update: #4913] on 30 October 2021 at 5:25:48 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 29!
+!provides: 'CodeCoverage' 1 30!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -811,7 +811,7 @@ visitBraceNode: aBraceNode
 	
 	^ self parseNodeToCoverSourceRangeOf: aBraceNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:32:38'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:05:16'!
 visitCascadeNode: aCascadeNode
 
 	"Add tracing to cascade nodes.
@@ -820,7 +820,7 @@ visitCascadeNode: aCascadeNode
 	Implementation Details
 	===============
 	
-	I need to rewrite the cascade node a a sequence of regular message sends to add tracing to them.
+	I need to rewrite the cascade node as a sequence of regular message sends to add tracing to them.
 	
 	I go from this:
 	
@@ -935,12 +935,24 @@ visitMessageNode: aMessageNode
 		parseNodeToCoverAll: aMessageNode keywordRanges 
 		whenExecutingMessageNode: aMessageNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 16:45:31'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:22:26'!
 visitMessageNodeInCascade: aMessageNode
-
+	
+	"Add tracing to cascade message nodes.
+	
+	Message nodes are traced by only replacing their arguments with traced equivalent ones.
+	The message receiver is not traced because it was already handled by the parse node that initiates the cascade.
+	The only source ranges besides those that remain to be traced are the one for the keywords, which are coverd when the message is evaluated."
+	
+	"This is a safety check as optimized message nodes cannot be traced correctly.
+	Remember that I unoptimize the source code of methods I work on to add tracing to them correctly (see the #for: instance creation method in my class)."
+	self denyIsOptimized: aMessageNode.
+	
+	aMessageNode arguments: (self addTracingToAll: aMessageNode arguments).
+	
 	^ self
-		parseNodeToCoverAll: { self consumeNextSourceRangeFor: aMessageNode }
-		whenExecutingMessageNode: aMessageNode.! !
+		parseNodeToCoverAll: aMessageNode keywordRanges 
+		whenExecutingMessageNode: aMessageNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:12:19'!
 visitMethodNode: aMethodNode
@@ -1739,12 +1751,19 @@ cascadeNodeWithBlockReceiverThatIsNotEvaluated
 		class;
 		hash! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:25:02'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 10/30/2021 17:14:38'!
 cascadeNodeWithMessageSendReceiver
 
 	OrderedCollection new
-		add: 1;
-		add: 2! !
+		copy;
+		yourself! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 10/30/2021 16:59:29'!
+cascadeWithArgument: arg
+	
+	Set new
+		add: arg;
+		copy! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:43'!
 classVariableAssignedToABooleanAndThenToANonBoolean
@@ -3466,6 +3485,21 @@ test018_1_CoversACascadeMessageSend
 	self assert: #cascade hasBeenCoveredFrom: 21 to: 23 as: 'new'.
 	self assert: #cascade hasBeenCoveredFrom: 28 to: 32 as: 'value'.! !
 
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 10/30/2021 17:23:23'!
+test018_2_CoversACascadeMessageSendWithArgument
+
+	self setupCodeCoverageAnalyzerForExampleNamed: #cascadeWithArgument:.
+	
+	self collectCodeCoverageDuring: [ self cascadeWithArgument: 1 ].
+	
+	self assertNumberOfCoveredRangesFor: #cascadeWithArgument: is: 6.
+	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 22 to: 24 as: 'arg'.
+	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 29 to: 31 as: 'Set'.
+	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 33 to: 35 as: 'new'.
+	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 39 to: 42 as: 'add:'.
+	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 44 to: 46 as: 'arg'.
+	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 51 to: 54 as: 'copy'.! !
+
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test019_CoversCollaborationsWithImplicitSelfReturnsWhenSelfIsReferenced
 
@@ -3503,7 +3537,7 @@ test021_CoversOptimizedMessages
 	self assert: #optimizedMessage hasBeenCoveredFrom: 46 to: 51 as: 'number'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 53 to: 57 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 10/30/2021 17:15:23'!
 test022_CoversTheReceiverOfACascadeNodeWhenItIsAMessageSend
 
 	self collectCoverageForExampleNamed: #cascadeNodeWithMessageSendReceiver.
@@ -3511,8 +3545,8 @@ test022_CoversTheReceiverOfACascadeNodeWhenItIsAMessageSend
 	self assertNumberOfCoveredRangesFor: #cascadeNodeWithMessageSendReceiver is: 4 .
 	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 38 to: 54 as: 'OrderedCollection'.
 	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 56 to: 58 as: 'new'.
-	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 62 to: 67 as: 'add: 1'.
-	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 72 to: 77 as: 'add: 2'.! !
+	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 62 to: 65 as: 'copy'.
+	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 70 to: 77 as: 'yourself'.! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
 test023_CoversTheReceiverOfACascadeNodeWhenItIsABlockThatIsEvaluated
