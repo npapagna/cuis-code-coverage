@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4913] on 30 October 2021 at 5:25:48 pm'!
+'From Cuis 5.0 [latest update: #4913] on 30 October 2021 at 5:41:16 pm'!
 'Description '!
-!provides: 'CodeCoverage' 1 30!
+!provides: 'CodeCoverage' 1 31!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -683,6 +683,27 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	
 	^ codeCoverageMessageSendNode.! !
 
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/30/2021 17:38:25'!
+parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver 
+
+	"Add tracing to message nodes.
+	
+	Message nodes are traced by replacing its receiver, and arguments with traced equivalent ones.
+	The only source ranges besides those that remain to be traced are the one for the keywords, which are coverd when the message is evaluated."
+	
+	"This is a safety check as optimized message nodes cannot be traced correctly.
+	Remember that I unoptimize the source code of methods I work on to add tracing to them correctly (see the #for: instance creation method in my class)."
+	self denyIsOptimized: aMessageNode.
+	
+	includeReceiver ifTrue: [ aMessageNode receiver: (aMessageNode receiver accept: self) ].
+	aMessageNode arguments: (self addTracingToAll: aMessageNode arguments).
+
+	self consumeNextSourceRangeFor: aMessageNode.
+
+	^ self
+		parseNodeToCoverAll: aMessageNode keywordRanges 
+		whenExecutingMessageNode: aMessageNode! !
+
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/7/2021 23:54:05'!
 parseNodeToCoverSourceRangeOf: aParseNode
 
@@ -914,45 +935,23 @@ visitLiteralVariableNode: aLiteralVariableNode
 	
 	^ self parseNodeToCoverSourceRangeOf: aLiteralVariableNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/28/2021 16:38:09'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:39:09'!
 visitMessageNode: aMessageNode
 
-	"Add tracing to message nodes.
-	
-	Message nodes are traced by replacing its receiver, and arguments with traced equivalent ones.
-	The only source ranges besides those that remain to be traced are the one for the keywords, which are coverd when the message is evaluated."
-	
-	"This is a safety check as optimized message nodes cannot be traced correctly.
-	Remember that I unoptimize the source code of methods I work on to add tracing to them correctly (see the #for: instance creation method in my class)."
-	self denyIsOptimized: aMessageNode.
-	
-	aMessageNode receiver: (aMessageNode receiver accept: self).
-	aMessageNode arguments: (self addTracingToAll: aMessageNode arguments).
-
-	self consumeNextSourceRangeFor: aMessageNode.
-
 	^ self
-		parseNodeToCoverAll: aMessageNode keywordRanges 
-		whenExecutingMessageNode: aMessageNode! !
+		parseNodeToCoverMessageSend: aMessageNode
+		includingReceiver: true! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:22:26'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:40:01'!
 visitMessageNodeInCascade: aMessageNode
 	
 	"Add tracing to cascade message nodes.
 	
-	Message nodes are traced by only replacing their arguments with traced equivalent ones.
-	The message receiver is not traced because it was already handled by the parse node that initiates the cascade.
-	The only source ranges besides those that remain to be traced are the one for the keywords, which are coverd when the message is evaluated."
-	
-	"This is a safety check as optimized message nodes cannot be traced correctly.
-	Remember that I unoptimize the source code of methods I work on to add tracing to them correctly (see the #for: instance creation method in my class)."
-	self denyIsOptimized: aMessageNode.
-	
-	aMessageNode arguments: (self addTracingToAll: aMessageNode arguments).
+	The message receiver is not traced because it was already handled by the parse node that initiates the cascade."
 	
 	^ self
-		parseNodeToCoverAll: aMessageNode keywordRanges 
-		whenExecutingMessageNode: aMessageNode! !
+		parseNodeToCoverMessageSend: aMessageNode
+		includingReceiver: false! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:12:19'!
 visitMethodNode: aMethodNode
