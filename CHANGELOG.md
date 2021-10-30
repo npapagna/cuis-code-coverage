@@ -4,7 +4,7 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## Unreleased
+## [1.31](https://github.com/npapagna/cuis-code-coverage/compare/v1.29...v1.31) - 2021-10-30
 
 ### Fixed
 
