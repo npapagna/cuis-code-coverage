@@ -3,6 +3,14 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+* Do not filter out non-covered classes in the Code Coverage Browser.
+  This bug causes pure abstract classes not to be displayed but their subclasses were still being indented, making
+  them look like they are subclasses of the class that happened to be rendered before them.
+  Thanks for the catch @hernanwilkinson!
 
 ## [1.31](https://github.com/npapagna/cuis-code-coverage/compare/v1.29...v1.31) - 2021-10-30
 

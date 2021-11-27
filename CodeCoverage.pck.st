@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4913] on 30 October 2021 at 5:41:16 pm'!
+'From Cuis 5.0 [latest update: #4972] on 27 November 2021 at 12:21:05 am'!
 'Description '!
-!provides: 'CodeCoverage' 1 31!
+!provides: 'CodeCoverage' 1 32!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -297,12 +297,11 @@ To overcome this problem, I hold a reference to the code coverage report that ha
 I wrap an item to customize its label (#displayOrText) appending its code coverage percentage.
 !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 21:46:24'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 11/27/2021 00:20:42'!
 classList
 
 	^ super classList
-		select: [ :className | codeCoverageReport wasClassOrMetaclassAnalyzed: (self classOrMetaclassNamed: className) ]
-		thenCollect: [ :className | self styleClassNamed: className ]! !
+		collect: [ :className | self styleClassNamed: className ]! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 19:49:24'!
 classOrMetaclassNamed: aClassName
