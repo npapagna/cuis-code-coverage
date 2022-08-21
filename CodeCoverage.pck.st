@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4972] on 27 November 2021 at 12:21:05 am'!
-'Description '!
-!provides: 'CodeCoverage' 1 32!
+'From Cuis 6.0 [latest update: #5462] on 20 August 2022 at 7:39:38 pm'!
+'Description System organization refactoring'!
+!provides: 'CodeCoverage' 1 33!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -4986,14 +4986,14 @@ targetClasses
 				addAll: (systemOrganizer classesAt: systemCategory);
 				yourself ]! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:45:59'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'HAW 8/20/2022 19:08:08'!
 targetSystemCategories
 
 	^ self rootSystemCategories
 		inject: Set new
 		into: [ :targetSystemCategories :systemCategory |
 			targetSystemCategories
-				addAll: (systemOrganizer categoriesMatching: systemCategory, '*');
+				addAll: (systemOrganizer withSubCategoriesOf: systemCategory);
 				yourself ]! !
 
 !CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:28:23'!
