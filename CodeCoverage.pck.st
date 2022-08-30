@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5462] on 20 August 2022 at 7:39:38 pm'!
-'Description System organization refactoring'!
-!provides: 'CodeCoverage' 1 33!
+'From Cuis 6.0 [latest update: #5466] on 30 August 2022 at 1:22:13 am'!
+'Description Remove the ProtoObject>>#coverAll: extension method used to register code coverage to prepare the tool to be meta-circular. This is a work in progress.'!
+!provides: 'CodeCoverage' 1 34!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -19,7 +19,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode'
+	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode reportBuilderLiteralName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -129,7 +129,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder literalIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -466,13 +466,14 @@ value
 	
 	tracedSourceCode :=  String streamContents: [ :stream | methodNode printOn: stream ] .! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 1/28/2021 21:27:28'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 8/30/2022 01:10:41'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
 
 	methodNode := aMethodNode.
 	rawSourceRanges := aCollectionOfRawSourceRanges.
 	numberOfSourceRangeTraced := 0.
 	tracedSourceRanges := Set new.
+	reportBuilderLiteralName := #_codeCoverageReportBuilder_.
 
 	"Holds the source range of the declaration of parse nodes (e.g. temporary variables)"
 	declarationSourceRangeByParseNode := Dictionary new.! !
@@ -625,22 +626,27 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 		toCoverAll: {aSourceRange. aDeclarationSourceRange}
 		whenExecuting: aParseNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:30:39'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 01:17:47'!
 parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
 
-	| sourceCodeTemplate |
+	| sourceCodeTemplate templateMethodNode messageSendNode |
 	
 	"This is the source code template I will use to create a parse node below.
-	It will send the message coverAll: to the result of executing aParseNode."
-	sourceCodeTemplate _ 'm1 nil coverAll: {1}'
-		format: { self sourceCodeToCreateAll: sourceRanges }.
-
-	^ self
-		parseNodeFrom: sourceCodeTemplate 
-		toCoverAll: sourceRanges
-		whenExecuting: aParseNode! !
+	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
+	referenced by reportBuilderLiteralName."
+	sourceCodeTemplate _ 'm1 {1} coverAll: {2} by: nil'
+		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+		
+	templateMethodNode _ self parse: sourceCodeTemplate.
+	messageSendNode := templateMethodNode block statements first.
+	messageSendNode arguments at: 2 put: aParseNode.
+	
+	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
+	tracedSourceRanges addAll: sourceRanges.
+	
+	^ messageSendNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:31:18'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
@@ -757,6 +763,11 @@ sourceRangesToCover: aParseNode
 	self addDeclarationSourceRangeOf: aParseNode to: sourceRangesToCover.
 
 	^ sourceRangesToCover! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 8/30/2022 01:10:41'!
+reportBuilderLiteralName
+	
+	^ reportBuilderLiteralName ! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 2/1/2021 22:39:50'!
 tracedSourceCode
@@ -4590,7 +4601,7 @@ codeCoverageReport
 
 	^ coverageReportBuilder value: self compiledMethodWasExecuted! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 2/6/2021 17:05:07'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/30/2022 01:15:00'!
 setUpTracedCompiledMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -4605,6 +4616,12 @@ setUpTracedCompiledMethod
 	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
 	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
 	
+	"NPM: Im keeping both the literal and the usage of #codeCoverageAnalyzer: below until all extension methods are removed"
+	self flag: #codeCoverageTodo.
+	literalIndex _ tracedCompiledMethod literals indexOf: (sourceCodeGenerator reportBuilderLiteralName). 
+	literalIndex > 0 ifTrue: [
+		tracedCompiledMethod literalAt: literalIndex put:  coverageReportBuilder.].
+
 	tracedCompiledMethod codeCoverageAnalyzer: coverageReportBuilder. ! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/10/2021 17:55:45'!
@@ -4794,6 +4811,18 @@ consolidateCoverageResults
 		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0 ].
 	
 	^ coverageRatioBySourceRange! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:13:04'!
+coverAll: sourceRanges by: anObject 
+
+	"Register that the evaluation of anObject covered sourceRanges"
+	
+	"Check if we need to handle boolean and non-boolean coverage here"
+	self flag: #codeCoverageTodo.
+
+	self coverAsNonBooleanAll: sourceRanges.
+	
+	^ anObject! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
 coverAsNonBoolean: aSourceRange
@@ -5168,12 +5197,6 @@ cover: aSourceRange declaredAt: declarationSourceRange
 		analyzer
 			coverNonBooleanUsage: aSourceRange
 			of: declarationSourceRange ]! !
-
-!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/19/2021 01:32:29'!
-coverAll: sourceRanges 
-
-	^ self codeCoverageAnalyzerDo: [ :analyzer |
-		analyzer coverAsNonBooleanAll: sourceRanges ]! !
 
 !ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 16:19:29'!
 registerCoveringAll: sourceRanges in: aCompiledMethodCoverageReportBuilder 

@@ -3,6 +3,13 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+* Replace the `ProtoObject>>#coverAll:` extension method used to register code coverage with a call to the new
+  `CompiledMethodCoverageReportBuilder>>coverAll:by:` method to prepare the tool to be meta-circular. This is a work in progress. 
+
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 
 ### Changed
