@@ -1,6 +1,9 @@
-'From Cuis 6.0 [latest update: #5466] on 30 August 2022 at 1:22:13 am'!
-'Description Remove the ProtoObject>>#coverAll: extension method used to register code coverage to prepare the tool to be meta-circular. This is a work in progress.'!
-!provides: 'CodeCoverage' 1 34!
+'From Cuis 6.0 [latest update: #5466] on 30 August 2022 at 1:56:41 am'!
+'Description Replace the `BlockClosure>>#valueCoveringAll:` extension method used to register code coverage with a call to the new `CompiledMethodCoverageReportBuilder>>coverAll:evaluating:` method to prepare the tool to be meta-circular.
+
+This is a work in progress. 
+'!
+!provides: 'CodeCoverage' 1 35!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -648,10 +651,10 @@ parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
 	
 	^ messageSendNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:31:18'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 01:55:16'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
-	"NOTE: this method is pretty similar to #parseNodeFrom:toCoverAll:whenExecuting:.
+	"NOTE: this method is pretty similar to #parseNodeToCoverAll:whenExecuting:.
 	The only difference is here we are wrapping aMessageNode in a block to cover it even when
 	it raises an error. NPM."
 
@@ -664,29 +667,30 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	To create the parse node, I create a template for it and modify it filling in the blanks.
 	I need to parse a method even though I ony use its sole statement because that's what the parser expects."
 
-	| sourceCodeTemplate templateMethodNode codeCoverageMessageSendNode |
+	| sourceCodeTemplate templateMethodNode messageSendNode secondArgumentNode |
 
 	"This is the source code template I will use to create a parse node below.
-	It sends the message valueCoveringAll: to the result of executing aMessageNode wrapped in a block.
+	It sends the message #coverAll:evaluating: to the code coverage report builder referenced by reportBuilderLiteralName
+	with a block that will execute aMessageNode when evaluated.
 	aMessageNode needs to be wrapped in a block to cover it even when it raises an error."
-	sourceCodeTemplate _ 'm1 [] valueCoveringAll: {1}'
-		format: { self sourceCodeToCreateAll: sourceRanges }.
-
-	"Parse it. The parser will return a MethodNode"
+	sourceCodeTemplate _ 'm1 {1} coverAll: {2} evaluating: [ nil ]'
+		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+	
+	"Parse it. The parser will return a MethodNode"	
 	templateMethodNode _ self parse: sourceCodeTemplate.
-
+	
 	"Method nodes have a block containing all statements in the method (in this case, there is only one).
-	Grab the message node that sends the #valueCoveringAll: message"
-	codeCoverageMessageSendNode _ templateMethodNode block statements first.
-
-	"The only thing I have to fill in is the expression that, when executed, will cover sourceRanges.
-	To do so I add aMessageNode as the sole statement of the empty block."
-	codeCoverageMessageSendNode receiver statements: { aMessageNode }.
-
-	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
+	Grab the message node that sends the #coverAll:evaluating: message"
+	messageSendNode := templateMethodNode block statements first.
+	
+	"Grab the message node's second argument, the block, and replace nil with aMessageNode"
+	secondArgumentNode := messageSendNode arguments at: 2.
+	secondArgumentNode statements at: 1 put: aMessageNode.
+	
+	"Increment the number of source range traced by the number of source ranges aMessageNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
 	
-	^ codeCoverageMessageSendNode.! !
+	^ messageSendNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/30/2021 17:38:25'!
 parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver 
@@ -4812,10 +4816,10 @@ consolidateCoverageResults
 	
 	^ coverageRatioBySourceRange! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:13:04'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:45:23'!
 coverAll: sourceRanges by: anObject 
 
-	"Register that the evaluation of anObject covered sourceRanges"
+	"Register that anObject covered sourceRanges"
 	
 	"Check if we need to handle boolean and non-boolean coverage here"
 	self flag: #codeCoverageTodo.
@@ -4823,6 +4827,21 @@ coverAll: sourceRanges by: anObject
 	self coverAsNonBooleanAll: sourceRanges.
 	
 	^ anObject! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:54:51'!
+coverAll: sourceRanges evaluating: aBlock
+	
+	"Register that the evaluation of aBlock covered sourceRanges"
+	
+	^ [ | result |
+		result _ aBlock value.
+		
+		(result isKindOf: Boolean)
+			ifTrue: [ self registerBoolean: result declaredAtAll: sourceRanges ]
+			ifFalse: [ self coverAsNonBooleanAll: sourceRanges ].
+		
+		result ]
+			ifCurtailed: [ self coverAsNonBooleanAll: sourceRanges ] ! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
 coverAsNonBoolean: aSourceRange
@@ -5319,15 +5338,6 @@ safelyBasicCompile: sourceCode
 	^  [ self basicCompile: sourceCode ]
 		on: Error
 		do: [ :error | MessageNode disableClassCachedStateDuring: [ self basicCompile: sourceCode ] ].! !
-
-!BlockClosure methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 17:15:36'!
-valueCoveringAll: sourceRanges
-
-	self codeCoverageAnalyzerDo: [ :analyzer |
-		^ [ self value registerCoveringAll: sourceRanges in: analyzer ]
-			ifCurtailed: [ analyzer coverAsNonBooleanAll: sourceRanges ] ]
-	
-! !
 
 !CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 1/16/2021 21:18:29'!
 codeCoverageAnalyzer

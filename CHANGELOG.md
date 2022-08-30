@@ -8,7 +8,9 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 ### Changed
 
 * Replace the `ProtoObject>>#coverAll:` extension method used to register code coverage with a call to the new
-  `CompiledMethodCoverageReportBuilder>>coverAll:by:` method to prepare the tool to be meta-circular. This is a work in progress. 
+  `CompiledMethodCoverageReportBuilder>>coverAll:by:` method to prepare the tool to be meta-circular. This is a work in progress.
+* Replace the `BlockClosure>>#valueCoveringAll:` extension method used to register code coverage with a call to the new
+  `CompiledMethodCoverageReportBuilder>>coverAll:evaluating:` method to prepare the tool to be meta-circular. This is a work in progress. 
 
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 
