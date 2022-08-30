@@ -1,9 +1,7 @@
-'From Cuis 6.0 [latest update: #5466] on 30 August 2022 at 1:56:41 am'!
-'Description Replace the `BlockClosure>>#valueCoveringAll:` extension method used to register code coverage with a call to the new `CompiledMethodCoverageReportBuilder>>coverAll:evaluating:` method to prepare the tool to be meta-circular.
-
-This is a work in progress. 
+'From Cuis 6.0 [latest update: #5466] on 30 August 2022 at 2:19:23 am'!
+'Description Replace the extension method in ProtoObject, CompiledMethod and Boolean used to register code coverage with a call to the new `CompiledMethodCoverageReportBuilder>>cover:declaredAt:by:` method to prepare the tool to be meta-circular.
 '!
-!provides: 'CodeCoverage' 1 35!
+!provides: 'CodeCoverage' 1 36!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -132,7 +130,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder literalIndex'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -611,23 +609,37 @@ parseNodeFrom: sourceCodeTemplate toCoverAll: sourceRanges whenExecuting: aParse
 
 	^ codeCoverageMessageSendNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:30:20'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 02:18:15'!
 parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf: aParseNode
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered aSourceRange
 	and aDeclarationSourceRange."
 
-	| sourceCodeTemplate |
+	| sourceCodeTemplate messageSendNode templateMethodNode |
 	
 	"This is the source code template I will use to create a parse node below.
-	It will send the message coverAll: to the result of executing aParseNode."
-	sourceCodeTemplate _ 'm1 nil cover: {1} declaredAt: {2}'
-		format: { aSourceRange storeString. aDeclarationSourceRange storeString }.
-
-	^ self
-		parseNodeFrom: sourceCodeTemplate
-		toCoverAll: {aSourceRange. aDeclarationSourceRange}
-		whenExecuting: aParseNode! !
+	It will send the message #cover:declaredAt:by: to the code coverage report builder referenced by
+	reportBuilderLiteralName with the result of executing aParseNode."
+	sourceCodeTemplate _ 'm1 {1} cover: {2} declaredAt: {3} by: nil'
+		format: { reportBuilderLiteralName storeString. aSourceRange storeString. aDeclarationSourceRange storeString }.
+	
+	"Parse it. The parser will return a MethodNode"	
+	templateMethodNode _ self parse: sourceCodeTemplate.
+	
+	"Method nodes have a block containing all statements in the method (in this case, there is only one).
+	Grab the message node that sends the #cover:declaredAt:by: message"
+	messageSendNode := templateMethodNode block statements first.
+	
+	"Grab the message node's third argument, the object that covering the source ranges, and replace it with aParseNode"
+	messageSendNode arguments
+		at: 3 put: aParseNode.
+	
+	"Increment the number of source range traced by the number of source ranges aMessageNode will cover when executed"
+	tracedSourceRanges
+		add: aSourceRange;
+		add: aDeclarationSourceRange.
+	
+	^ messageSendNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 01:17:47'!
 parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
@@ -4605,7 +4617,7 @@ codeCoverageReport
 
 	^ coverageReportBuilder value: self compiledMethodWasExecuted! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/30/2022 01:15:00'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/31/2022 01:28:03'!
 setUpTracedCompiledMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -4618,20 +4630,20 @@ setUpTracedCompiledMethod
 	    'genJumpLong: distance index -1042 is out of range -1024 to 1023'
 	
 	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
+	| reportBuilderLiteralIndex |
 	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
 	
-	"NPM: Im keeping both the literal and the usage of #codeCoverageAnalyzer: below until all extension methods are removed"
-	self flag: #codeCoverageTodo.
-	literalIndex _ tracedCompiledMethod literals indexOf: (sourceCodeGenerator reportBuilderLiteralName). 
-	literalIndex > 0 ifTrue: [
-		tracedCompiledMethod literalAt: literalIndex put:  coverageReportBuilder.].
+	reportBuilderLiteralIndex _ tracedCompiledMethod indexOfLiteral: sourceCodeGenerator reportBuilderLiteralName. 
+	reportBuilderLiteralIndex > 0
+		ifTrue: [
+			tracedCompiledMethod
+				literalAt: reportBuilderLiteralIndex
+				put:  coverageReportBuilder ].! !
 
-	tracedCompiledMethod codeCoverageAnalyzer: coverageReportBuilder. ! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 1/10/2021 17:55:45'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/30/2022 02:15:22'!
 tearDownTracedCompiledMethod
 
-	tracedCompiledMethod ifNotNil: [ tracedCompiledMethod removeCodeCoverageAnalyzer. tracedCompiledMethod := nil ]! !
+	tracedCompiledMethod := nil! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/16/2021 21:12:35'!
 analyzes: aCompiledMethod
@@ -4815,6 +4827,24 @@ consolidateCoverageResults
 		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0 ].
 	
 	^ coverageRatioBySourceRange! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 02:10:01'!
+cover: aSourceRange declaredAt: declarationSourceRange by: anObject
+
+	"Register thatanObject covered aSourceRange and its declaration at declarationSourceRange."
+	
+	(anObject isKindOf: Boolean)
+		ifTrue: [
+			self
+				registerBoolean: anObject
+				usedAt: aSourceRange 
+				declaredAt: declarationSourceRange ] 
+		ifFalse: [
+			self
+				coverNonBooleanUsage: aSourceRange
+				of: declarationSourceRange ].
+			
+	^ anObject! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:45:23'!
 coverAll: sourceRanges by: anObject 
@@ -5180,51 +5210,6 @@ for: anItem report: aCodeCoverageReport
 		initializeFor: anItem
 		with: aCodeCoverageReport ! !
 
-!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/8/2021 09:25:19'!
-codeCoverageAnalyzerDo: aBlock 
-	
-	"Convenience method used by CodeCoverageSourceCodeGenerator to report that
-	sourceRanges were covered for the compiled method that sent this message and
-	return the object that triggered the code coverage in one-shot.
-	
-	I assume that the calling method that called me is the one being analyzed."
-	
-	| compiledMethodBeingAnalyzed codeCoverageAnalyzer |
-	
-	compiledMethodBeingAnalyzed := thisContext sender sender method.
-	codeCoverageAnalyzer := compiledMethodBeingAnalyzed codeCoverageAnalyzer.
-
-	"I have to check that codeCoverageAnalyzer is not null even that is not possible
-	(it is either set or not) because when I tried tested code coverage using
-	the Live Typing tests, the returned code coverage analyzer was null.
-	
-	I suspect this is because Live Typing is intercepting bytecode execution and might
-	trigger a race condition.
-	
-	I have to investigate further to either validate or reject this hypotesis.
-	For now, as a safety check, I will check this to avoid unwanted errors. NPM"
-	codeCoverageAnalyzer ifNil: [ ^ self ].
-	
-	aBlock value: codeCoverageAnalyzer.
-	
-	^ self! !
-
-!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 16:27:39'!
-cover: aSourceRange declaredAt: declarationSourceRange 
-
-	^ self codeCoverageAnalyzerDo: [ :analyzer |
-		analyzer
-			coverNonBooleanUsage: aSourceRange
-			of: declarationSourceRange ]! !
-
-!ProtoObject methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 16:19:29'!
-registerCoveringAll: sourceRanges in: aCompiledMethodCoverageReportBuilder 
-	
-	aCompiledMethodCoverageReportBuilder 
-		coverAsNonBooleanAll: sourceRanges.
-		
-	^ self! !
-
 !Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 01:15:28'!
 runClassTestsWithCodeCoverage
 	
@@ -5286,24 +5271,6 @@ runWithCodeCoverage: aTestSuite
 		analyzingCodeCoverageWith: (CodeCoverageAnalyzerBuilder valueFrom: aTestSuite)
 	! !
 
-!Boolean methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 17:12:35'!
-cover: aSourceRange declaredAt: declarationSourceRange 
-	
-	^ self codeCoverageAnalyzerDo: [ :analyzer | 
-		analyzer
-			registerBoolean: self
-			usedAt: aSourceRange 
-			declaredAt: declarationSourceRange ]! !
-
-!Boolean methodsFor: '*CodeCoverage' stamp: 'NPM 2/15/2021 17:05:18'!
-registerCoveringAll: sourceRanges in: aCompiledMethodCoverageReportBuilder 
-	
-	aCompiledMethodCoverageReportBuilder
-		registerBoolean: self
-		declaredAtAll: sourceRanges.
-		
-	^ self! !
-
 !Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:33:51'!
 basicCompile: code
 
@@ -5338,27 +5305,6 @@ safelyBasicCompile: sourceCode
 	^  [ self basicCompile: sourceCode ]
 		on: Error
 		do: [ :error | MessageNode disableClassCachedStateDuring: [ self basicCompile: sourceCode ] ].! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 1/16/2021 21:18:29'!
-codeCoverageAnalyzer
-	
-	^ self propertyValueAt: #codeCoverageAnalyzer! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 1/16/2021 21:18:49'!
-codeCoverageAnalyzer: aCodeCoverageAnalyzer 
-	
-	self
-		assert: self codeCoverageAnalyzer isNil
-		description: 'The code coverage for compiled method is already being analyzed'.
-	
-	self
-		propertyValueAt: #codeCoverageAnalyzer
-		put: aCodeCoverageAnalyzer! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 1/10/2021 02:53:58'!
-removeCodeCoverageAnalyzer
-	
-	self removeProperty: #codeCoverageAnalyzer! !
 
 !MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 12/22/2020 21:09:17'!
 rawSourceRangesAndMethodNodeDo: aBinaryBlock
