@@ -13,7 +13,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
   `CompiledMethodCoverageReportBuilder>>coverAll:evaluating:` method to prepare the tool to be meta-circular.
 * Replace the extension methods in ProtoObject, CompiledMethod and Boolean used to register code coverage with a call to
   the new `CompiledMethodCoverageReportBuilder>>cover:declaredAt:by:` method to prepare the tool to be meta-circular.
-
+* Move the responsibility to track compiled methods execution from `CompiledMethodCoverageAnalyzer` to `CodeCoverageSourceCodeGenerator`.
 
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 

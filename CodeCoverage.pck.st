@@ -1,7 +1,6 @@
-'From Cuis 6.0 [latest update: #5466] on 30 August 2022 at 2:19:23 am'!
-'Description Replace the extension method in ProtoObject, CompiledMethod and Boolean used to register code coverage with a call to the new `CompiledMethodCoverageReportBuilder>>cover:declaredAt:by:` method to prepare the tool to be meta-circular.
-'!
-!provides: 'CodeCoverage' 1 36!
+'From Cuis 6.0 [latest update: #5466] on 31 August 2022 at 1:57:39 am'!
+'Description Move the responsibility to track compiled methods execution from CompiledMethodCoverageAnalyzer to CodeCoverageSourceCodeGenerator.'!
+!provides: 'CodeCoverage' 1 37!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -140,7 +139,7 @@ CompiledMethodCoverageAnalyzer class
 
 !classDefinition: #CompiledMethodCoverageReportBuilder category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageReportBuilder
-	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration'
+	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -486,6 +485,30 @@ addDeclarationSourceRangeOf: aParseNode to: sourceRanges
 		at: aParseNode
 		ifPresent: [ :declarationSourceRange | sourceRanges add: declarationSourceRange ]
 	! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/31/2022 01:54:57'!
+addParseNodeToTrackExecutionOf: aMethodNode 
+	
+	"Add an extra parse node at the start of aMethodNode that, when compiled and executed, will register that aMethodNode was executed.
+	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
+	based on the number of source ranges that were covered (they don't have any source range)."
+	
+	| templateMethodNode sourceCodeTemplate parseNodeToTrackMethodExecution |
+	"This is the source code template I will use to create the extra parse node.
+	It will send the message #markAsExecuted to the code coverage report builder referenced by
+	reportBuilderLiteralName."
+	sourceCodeTemplate := 'm1 {1} markAsExecuted' format: { reportBuilderLiteralName storeString }.
+	
+	"Parse it. The parser will return a MethodNode"	
+	templateMethodNode := self parse: (sourceCodeTemplate).
+	
+	"Method nodes have a block containing all statements in the method (in this case, there is only one).
+	Grab the message node that sends the #markAsExecuted message"
+	parseNodeToTrackMethodExecution := templateMethodNode block statements first.
+	
+	"Add that parse node to the start of aMethodNode"
+	aMethodNode block statements
+		addFirst: parseNodeToTrackMethodExecution.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/3/2021 17:14:05'!
 addTracingToAll: parseNodes 
@@ -979,13 +1002,15 @@ visitMessageNodeInCascade: aMessageNode
 		parseNodeToCoverMessageSend: aMessageNode
 		includingReceiver: false! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:12:19'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 8/31/2022 01:47:29'!
 visitMethodNode: aMethodNode
 
 	aMethodNode arguments do: [ :argument |
 		self registerDeclarationSourceRangeOf: argument ].
 	
-	^ super visitMethodNode: aMethodNode! !
+	super visitMethodNode: aMethodNode.
+	
+	self addParseNodeToTrackExecutionOf: aMethodNode.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 12/13/2020 18:41:19'!
 visitNewArrayNode: aNewArrayNode
@@ -4612,10 +4637,10 @@ uninstall
 	
 	self tearDownTracedCompiledMethod! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 2/6/2021 20:06:35'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 8/31/2022 01:45:17'!
 codeCoverageReport
 
-	^ coverageReportBuilder value: self compiledMethodWasExecuted! !
+	^ coverageReportBuilder value! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/31/2022 01:28:03'!
 setUpTracedCompiledMethod
@@ -4649,11 +4674,6 @@ tearDownTracedCompiledMethod
 analyzes: aCompiledMethod
 
 	^ originalCompiledMethod == aCompiledMethod ! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 2/2/2021 20:35:26'!
-compiledMethodWasExecuted
-
-	^ tracedCompiledMethod isNil not! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 13:35:33'!
 isInstalled
@@ -4794,22 +4814,23 @@ usagesOf: aDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 2/19/2021 01:32:37'!
-value: compiledMethodWasExecuted 
+!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 8/31/2022 01:45:45'!
+value
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
 		with: self consolidateCoverageResults.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 2/15/2021 17:13:42'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 8/31/2022 01:45:45'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
 	analyzedSourceRanges := aCollecitonOfAnalizedSourceRanges.
 	coveredNonBooleanSourceRanges := Set new.
 	booleanValuesByDeclaration := Dictionary new.
-	usagesByDeclaration := Dictionary new.! !
+	usagesByDeclaration := Dictionary new.
+	compiledMethodWasExecuted := false.! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
 consolidateCoverageResults
@@ -4902,6 +4923,11 @@ coverNonBooleanUsage: usageSourceRange of: declarationSourceRange
 	self
 		registerUsage: usageSourceRange of: declarationSourceRange;
 		coverAsNonBoolean: declarationSourceRange.! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/31/2022 01:45:45'!
+markAsExecuted
+	
+	compiledMethodWasExecuted := true.! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:22:34'!
 registerBoolean: aValue declaredAt: declarationSourceRange
