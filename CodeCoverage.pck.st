@@ -1,10 +1,11 @@
-'From Cuis 6.0 [latest update: #5466] on 31 August 2022 at 1:57:39 am'!
-'Description Move the responsibility to track compiled methods execution from CompiledMethodCoverageAnalyzer to CodeCoverageSourceCodeGenerator.'!
-!provides: 'CodeCoverage' 1 37!
+'From Cuis 6.0 [latest update: #5466] on 6 September 2022 at 1:13:44 am'!
+'Description Refactor the way coverage is reported to CompiledMethodCoverageReportBuilder to clean up its interface.'!
+!provides: 'CodeCoverage' 1 38!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
 SystemOrganization addCategory: 'CodeCoverage-UI'!
+SystemOrganization addCategory: 'CodeCoverage'!
 
 
 !classDefinition: #CodeCoverageAnalyzerBrowser category: 'CodeCoverage-UI'!
@@ -19,7 +20,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode reportBuilderLiteralName'
+	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode reportBuilderLiteralName xxxx'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -454,7 +455,7 @@ denyIsOptimized: aMessageNode
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'HAW 8/25/2021 11:06:16'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 9/4/2022 15:04:49'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
@@ -464,7 +465,9 @@ value
 
 	methodNode accept: self.
 	
-	tracedSourceCode :=  String streamContents: [ :stream | methodNode printOn: stream ] .! !
+	tracedSourceCode :=  String streamContents: [ :stream | methodNode printOn: stream ] .
+	
+	! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 8/30/2022 01:10:41'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
@@ -541,11 +544,6 @@ consumeNextSourceRangeFor: aParseNode
 	
 ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/19/2021 01:48:11'!
-isInstanceOrClassVariable: aParseNode
-
-	^ aParseNode isInstanceVariableNode or: [ aParseNode isLiteralVariableNode ]! !
-
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/9/2021 16:13:35'!
 parse: sourceCode
 
@@ -555,44 +553,22 @@ parse: sourceCode
 		parse: sourceCode
 		class: methodNode methodClass! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/19/2021 01:48:40'!
-parseNodeCovering: aParseNode whenExecuting: anotherParseNode 
-	
-	"Generate a parse node that, when compiled and executed, will register that anotherParseNode covered aParseNode.
-	If aParseNode has a declaration (e.g. when aParseNode is a temporary variable), it will be covered too."
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/5/2022 03:19:55'!
+parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode whenExecuting: aParseNode
 
-	declarationSourceRangeByParseNode
-		at: aParseNode
-		ifPresent: [ :declarationSourceRange |
-			^ self
-				parseNodeToCover: (self consumeNextSourceRangeFor: aParseNode)
-				declaredAt: declarationSourceRange
-				withResultOf: anotherParseNode ].
-
-	(self isInstanceOrClassVariable: aParseNode) ifTrue: [
-		^ self
-			parseNodeCoveringInstancerOrClassVariable: aParseNode
-			whenExecuting: anotherParseNode ].	
-		
-	^ self
-		parseNodeToCoverAll: (self sourceRangesToCover: aParseNode)
-		whenExecuting: anotherParseNode! !
-
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/19/2021 01:48:40'!
-parseNodeCoveringInstancerOrClassVariable: anInstanceVariableNode whenExecuting: aParseNode
-
-	"Instance variables have no declaration source range because, unlike temporary variables,
-	they are defined in the class creation message.
-
-	To be able to track all objects assigned to an instance variable in the compiled method across multiple assignments,
-	I consider the first appearance of an instance variable as its declaration source range."
-	
 	| declarationSourceRange usageSourceRange |
 	usageSourceRange := self consumeNextSourceRangeFor: anInstanceVariableNode.
 	
 	declarationSourceRange := declarationSourceRangeByParseNode
 		at: anInstanceVariableNode
-		ifAbsentPut: [ usageSourceRange ].
+		ifAbsentPut: [
+			"Instance variables or class variables have no declaration source range because, unlike temporary variables,
+		        they are defined in the class creation message.
+
+		        To be able to track all objects assigned to them in the compiled method across multiple assignments,
+	                  I consider the their first appearance as the declaration source range."
+			self assert: (anInstanceVariableNode isInstanceVariableNode or: [ anInstanceVariableNode isLiteralVariableNode ]).
+			usageSourceRange ].
 	
 	^ self
 		parseNodeToCover: usageSourceRange
@@ -601,36 +577,29 @@ parseNodeCoveringInstancerOrClassVariable: anInstanceVariableNode whenExecuting:
 	
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/6/2021 20:29:20'!
-parseNodeFrom: sourceCodeTemplate toCoverAll: sourceRanges whenExecuting: aParseNode
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/5/2022 02:43:50'!
+parseNodeToCover: aParseNode 
 
-	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges
-	in the selector and class of my methodNode instance variable.
-	
-	Implementation Details
-	================
-	
-	To create the parse node, I create a template for it and modify it filling in the blanks.
-	I need to parse a method even though I ony use its sole statement because that's what the parser expects.
-	
-	I expect sourceCodeTemplate to be the source code of a method whose sole statement is a message send."
+	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
 
-	| templateMethodNode codeCoverageMessageSendNode |
+	| sourceRanges sourceCodeTemplate templateMethodNode messageSendNode |
 	
-	"Parse sourceCodeTemplate. The parser will return a MethodNode"
+	sourceRanges _ self sourceRangesToCover: aParseNode.
+	
+	"This is the source code template I will use to create a parse node below.
+	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
+	referenced by reportBuilderLiteralName."
+	sourceCodeTemplate _ 'm1 {1} coverAll: {2} by: nil'
+		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+		
 	templateMethodNode _ self parse: sourceCodeTemplate.
-	
-	"Method nodes have a block containing all statements in the method (in this case, there is only one).
-	Grab the message node that sends the sole message in sourceCodeTemplate."
-	codeCoverageMessageSendNode _ templateMethodNode block statements first.
-	
-	"The only thing I have to fill in is the expression that, when executed, will cover sourceRanges"  
-	codeCoverageMessageSendNode receiver: aParseNode.
+	messageSendNode := templateMethodNode block statements first.
+	messageSendNode arguments at: 2 put: aParseNode.
 	
 	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
-
-	^ codeCoverageMessageSendNode.! !
+	
+	^ messageSendNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 02:18:15'!
 parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf: aParseNode
@@ -661,28 +630,6 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 	tracedSourceRanges
 		add: aSourceRange;
 		add: aDeclarationSourceRange.
-	
-	^ messageSendNode! !
-
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 01:17:47'!
-parseNodeToCoverAll: sourceRanges whenExecuting: aParseNode
-
-	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
-
-	| sourceCodeTemplate templateMethodNode messageSendNode |
-	
-	"This is the source code template I will use to create a parse node below.
-	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
-	referenced by reportBuilderLiteralName."
-	sourceCodeTemplate _ 'm1 {1} coverAll: {2} by: nil'
-		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
-		
-	templateMethodNode _ self parse: sourceCodeTemplate.
-	messageSendNode := templateMethodNode block statements first.
-	messageSendNode arguments at: 2 put: aParseNode.
-	
-	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
-	tracedSourceRanges addAll: sourceRanges.
 	
 	^ messageSendNode! !
 
@@ -727,6 +674,30 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	
 	^ messageSendNode! !
 
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/5/2022 02:35:29'!
+parseNodeToCoverLiteralOrPseudoVariable: aParseNode 
+
+	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
+
+	| sourceRanges sourceCodeTemplate templateMethodNode messageSendNode |
+	
+	sourceRanges _ self sourceRangesToCover: aParseNode.
+	
+	"This is the source code template I will use to create a parse node below.
+	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
+	referenced by reportBuilderLiteralName."
+	sourceCodeTemplate _ 'm1 {1} coverAll: {2} byLiteralOrPseudoVariable: nil'
+		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+		
+	templateMethodNode _ self parse: sourceCodeTemplate.
+	messageSendNode := templateMethodNode block statements first.
+	messageSendNode arguments at: 2 put: aParseNode.
+	
+	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
+	tracedSourceRanges addAll: sourceRanges.
+	
+	^ messageSendNode! !
+
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/30/2021 17:38:25'!
 parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver 
 
@@ -747,15 +718,6 @@ parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver
 	^ self
 		parseNodeToCoverAll: aMessageNode keywordRanges 
 		whenExecutingMessageNode: aMessageNode! !
-
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/7/2021 23:54:05'!
-parseNodeToCoverSourceRangeOf: aParseNode
-
-	"See #parseNodeCovering:whenExecuting:"
-
-	^ self
-		parseNodeCovering: aParseNode
-		whenExecuting: aParseNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/16/2021 20:37:07'!
 register: aSourceRange asDeclarationOf: aParseNode
@@ -818,7 +780,7 @@ tracedSourceRanges
 
 	^ tracedSourceRanges! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 2/6/2021 20:06:23'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:48:21'!
 visitAssignmentNode: anAssignmentNode
 
 	"Add tracing to assignment nodes.
@@ -836,13 +798,13 @@ visitAssignmentNode: anAssignmentNode
 
 	anAssignmentNode
 		variable: anAssignmentNode variable
-		value: (anAssignmentNode value accept: self).
+		value: (anAssignmentNode value accept: self).	
 
 	^ self
-		parseNodeCovering: anAssignmentNode variable
+		parseNodeCoveringNodeWithDeclaration: anAssignmentNode variable
 		whenExecuting: anAssignmentNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 20:51:07'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
 visitBacktickNode: aBacktickNode
  
 	"Add tracing to backtick nodes.
@@ -854,7 +816,7 @@ visitBacktickNode: aBacktickNode
 	I do not visit the node's expression because they are executed at compile time.
 	Instead I use the source range assigned to aBacktickNode to cover it."
 
-	^ self parseNodeToCoverSourceRangeOf: aBacktickNode! !
+	^ self parseNodeToCoverLiteralOrPseudoVariable: aBacktickNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 2/16/2021 20:35:42'!
 visitBlockNode: aBlockNode
@@ -873,13 +835,13 @@ visitBlockNode: aBlockNode
 	
 	^ aBlockNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:27:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
 visitBraceNode: aBraceNode
  
 	"Add tracing to brace nodes.
 	I consider a brace node covered when it is evaluated."
 	
-	^ self parseNodeToCoverSourceRangeOf: aBraceNode! !
+	^ self parseNodeToCoverLiteralOrPseudoVariable: aBraceNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:05:16'!
 visitCascadeNode: aCascadeNode
@@ -960,29 +922,31 @@ visitCascadeNode: aCascadeNode
 	
 	^ cascadeBlockEvaluationNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:27:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:39:07'!
 visitInstanceVariableNode: anInstanceVariableNode
  	
 	"Add tracing to instance variable nodes.
 	I consider a instance variable node covered when it is read."
 	
-	^ self parseNodeToCoverSourceRangeOf: anInstanceVariableNode! !
+	^ self
+		parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode
+		whenExecuting: anInstanceVariableNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:27:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
 visitLiteralNode: aLiteralNode
  	
 	"Add tracing to literal nodes.
 	I consider a literal node covered when it is read."
 	
-	^ self parseNodeToCoverSourceRangeOf: aLiteralNode ! !
+	^ self parseNodeToCoverLiteralOrPseudoVariable: aLiteralNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:27:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:44:12'!
 visitLiteralVariableNode: aLiteralVariableNode
  	
 	"Add tracing to literal variable nodes.
 	I consider a literal variable node covered when it is read."
 	
-	^ self parseNodeToCoverSourceRangeOf: aLiteralVariableNode! !
+	^ self parseNodeToCover: aLiteralVariableNode! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:39:09'!
 visitMessageNode: aMessageNode
@@ -1042,13 +1006,16 @@ visitSelectorNode: aSelectorNode
  
 	self shouldNotHappenBecause: 'visiting selector nodes is not needed for code coverage. NPM'. ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/9/2021 16:27:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/4/2022 15:22:05'!
 visitTempVariableNode: aTempVariableNode
  
 	"Add tracing to temporary variable nodes.
 	I consider a temporary variable node covered when it is read."
 	
-	^ self parseNodeToCoverSourceRangeOf: aTempVariableNode ! !
+	^ self
+		parseNodeToCover: (self consumeNextSourceRangeFor: aTempVariableNode)
+		declaredAt: (declarationSourceRangeByParseNode at: aTempVariableNode)
+		withResultOf: aTempVariableNode.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:05:35'!
 visitTemporaryDeclarationNode: aTemporaryDeclarationNode
@@ -1076,7 +1043,7 @@ visitUndeclaredVariableNode: aVariableNode
 
 	self shouldNotHappenBecause: 'undeclared variable nodes cannot be compiled, and so they cannot be present in the method node of compiled methods. NPM'.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/11/2021 21:28:26'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
 visitVariableNode: aVariableNode
 	
 	"Add tracing to variable nodes.
@@ -1118,7 +1085,7 @@ visitVariableNode: aVariableNode
 			self consumeNextSourceRangeFor: aVariableNode.
 			^ aVariableNode ].
 	
-	^ self parseNodeToCoverSourceRangeOf: aVariableNode.! !
+	^ self parseNodeToCoverLiteralOrPseudoVariable: aVariableNode! !
 
 !CodeCoverageSourceCodeGenerator class methodsFor: 'source code tracing' stamp: 'NPM 1/9/2021 17:10:23'!
 valueFor: aCompiledMethod 
@@ -4867,32 +4834,35 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 			
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:45:23'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:45:15'!
 coverAll: sourceRanges by: anObject 
+	
+	(anObject isKindOf: Boolean)
+		ifTrue: [ self registerBoolean: anObject declaredAtAll: sourceRanges ]
+		ifFalse: [ self coverAsNonBooleanAll: sourceRanges ].
+		
+	^ anObject! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:38:10'!
+coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 
 	"Register that anObject covered sourceRanges"
 	
-	"Check if we need to handle boolean and non-boolean coverage here"
-	self flag: #codeCoverageTodo.
-
+	"Literal or pseudo-variables should not be covered as boolean because
+	true would always be covered 50% when it should be 100% (it is the true pseudo-variable)"
 	self coverAsNonBooleanAll: sourceRanges.
 	
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 01:54:51'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 03:22:06'!
 coverAll: sourceRanges evaluating: aBlock
 	
 	"Register that the evaluation of aBlock covered sourceRanges"
 	
 	^ [ | result |
 		result _ aBlock value.
-		
-		(result isKindOf: Boolean)
-			ifTrue: [ self registerBoolean: result declaredAtAll: sourceRanges ]
-			ifFalse: [ self coverAsNonBooleanAll: sourceRanges ].
-		
-		result ]
-			ifCurtailed: [ self coverAsNonBooleanAll: sourceRanges ] ! !
+		self coverAll: sourceRanges by: result ]
+	   ifCurtailed: [ self coverAsNonBooleanAll: sourceRanges ] ! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
 coverAsNonBoolean: aSourceRange
