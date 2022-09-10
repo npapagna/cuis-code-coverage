@@ -1,6 +1,7 @@
-'From Cuis 6.0 [latest update: #5466] on 6 September 2022 at 1:13:44 am'!
-'Description Refactor the way coverage is reported to CompiledMethodCoverageReportBuilder to clean up its interface.'!
-!provides: 'CodeCoverage' 1 38!
+'From Cuis 6.0 [latest update: #5466] on 10 September 2022 at 12:34:51 am'!
+'Description Allows compiled method coverage analyzers to report code coverage information to more than one report builder.
+To do this the CompiledMethodCoverageTracker hierarchy was reified.'!
+!provides: 'CodeCoverage' 1 39!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -138,8 +139,28 @@ Object subclass: #CompiledMethodCoverageAnalyzer
 CompiledMethodCoverageAnalyzer class
 	instanceVariableNames: ''!
 
+!classDefinition: #CompiledMethodCoverageTracker category: 'CodeCoverage-Model'!
+Object subclass: #CompiledMethodCoverageTracker
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageTracker class' category: 'CodeCoverage-Model'!
+CompiledMethodCoverageTracker class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageNotifier category: 'CodeCoverage-Model'!
+CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageNotifier
+	instanceVariableNames: 'coverageTrackers coverageTrackers_CHANGE_ME'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageNotifier class' category: 'CodeCoverage-Model'!
+CompiledMethodCoverageNotifier class
+	instanceVariableNames: ''!
+
 !classDefinition: #CompiledMethodCoverageReportBuilder category: 'CodeCoverage-Model'!
-Object subclass: #CompiledMethodCoverageReportBuilder
+CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageReportBuilder
 	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -4609,7 +4630,7 @@ codeCoverageReport
 
 	^ coverageReportBuilder value! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/31/2022 01:28:03'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 9/10/2022 00:31:39'!
 setUpTracedCompiledMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -4630,7 +4651,7 @@ setUpTracedCompiledMethod
 		ifTrue: [
 			tracedCompiledMethod
 				literalAt: reportBuilderLiteralIndex
-				put:  coverageReportBuilder ].! !
+				put:  (CompiledMethodCoverageTracker toNotify: coverageReportBuilder) ].! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/30/2022 02:15:22'!
 tearDownTracedCompiledMethod
@@ -4715,6 +4736,111 @@ shouldOnlyBeCreatedForCompiledMethodsErrorMessage
 shouldOnlyBeInstalledOnceErrorMessage
 	
 	^ self class name, ' should only be installed once.'! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:47'!
+cover: aSourceRange declaredAt: declarationSourceRange by: anObject
+
+	"Register that anObject covered aSourceRange and its declaration at declarationSourceRange.
+	Return anObject."
+	
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:24:56'!
+coverAll: sourceRanges
+
+	"Register that sourceRanges were covered."
+
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:56'!
+coverAll: sourceRanges by: anObject 
+
+	"Register that anObject covered sourceRanges.
+	Return anObject."
+	
+	^ anObject! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:01'!
+coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
+
+	"Register that anObject covered sourceRanges.
+	Return anObject."
+
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:21'!
+coverAll: sourceRanges evaluating: aBlock
+
+	"Register that the evaluation of aBlock covered sourceRanges.
+	Return the result of evaluating aBlock."
+	
+	^ [ | result |
+		result _ aBlock value.
+		self coverAll: sourceRanges by: result ]
+	   ifCurtailed: [ self coverAll: sourceRanges ] ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
+markAsExecuted
+
+	"Register that the compiled method was executed.
+	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
+	based on the number of source ranges that were covered (they don't have any source range)."
+	
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 00:32:23'!
+toNotify: aCoverageTracker 
+
+	^ CompiledMethodCoverageNotifier with: aCoverageTracker! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 00:07:37'!
+initializeWithAll: aCollectionOfCoverageTrackers 
+	
+	coverageTrackers := aCollectionOfCoverageTrackers.! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:15:06'!
+cover: aSourceRange declaredAt: declarationSourceRange by: anObject
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker cover: aSourceRange declaredAt: declarationSourceRange by: anObject ].
+	
+	^ anObject! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:21:23'!
+coverAll: sourceRanges
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges ].
+	! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:23:31'!
+coverAll: anArray by: anObject 
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: anArray by: anObject ].
+	
+	^ anObject! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:13:06'!
+coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges byLiteralOrPseudoVariable: anObject ].
+	
+	^ anObject! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:08:40'!
+markAsExecuted
+	
+	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
+
+!CompiledMethodCoverageNotifier class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 00:06:29'!
+with: aCoverageTracker 
+	
+	^ self withAll: (OrderedCollection with: aCoverageTracker)! !
+
+!CompiledMethodCoverageNotifier class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 00:06:54'!
+withAll: coverageTrackers
+	
+	^ self
+		new
+		initializeWithAll: coverageTrackers! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
 collectWithUsages: sourceRanges
@@ -4834,7 +4960,12 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 			
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:45:15'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:22:17'!
+coverAll: sourceRanges
+
+	self coverAsNonBooleanAll: sourceRanges! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:30:50'!
 coverAll: sourceRanges by: anObject 
 	
 	(anObject isKindOf: Boolean)

@@ -15,7 +15,9 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
   the new `CompiledMethodCoverageReportBuilder>>cover:declaredAt:by:` method to prepare the tool to be meta-circular.
 * Move the responsibility to track compiled methods execution from `CompiledMethodCoverageAnalyzer` to `CodeCoverageSourceCodeGenerator`.
 * Refactor the way coverage is reported to `CompiledMethodCoverageReportBuilder` to clean up its interface.
-* 
+* Supports reporting code coverage to more than one `CompiledMethodCoverageReportBuilder`. This is needed to add support 
+  for having more than one `CodeCoverageAnalyzer` running on the same method.
+
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 
 ### Changed
