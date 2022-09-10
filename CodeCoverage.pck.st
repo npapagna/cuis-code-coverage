@@ -1,8 +1,7 @@
-'From Cuis 6.0 [latest update: #5466] on 10 September 2022 at 2:50:13 pm'!
-'Description Generates unique coverage tracker literal names in CodeCoverageSourceCodeGenerator to support multiple CodeCoverageAnalyzers analyzing the same compiled method.
-
-If this was not done, then the CompiledMethodCoverageNotifier instance setup by the first CompiledMethodCoverageAnalyzer instance on a compiled method was overwriten when another CompiledMethodCoverageAnalyzer was installed, causing 0% coverage to be reported on the first one.'!
-!provides: 'CodeCoverage' 1 40!
+'From Cuis 6.0 [latest update: #5466] on 10 September 2022 at 3:46:56 pm'!
+'Description Creates coverage report builders for each methods inside CodeCoverageAnalyzer.
+This allows multiple CodeCoverageAnalyzer instances running on the same compiled method to have their own coverage support.'!
+!provides: 'CodeCoverage' 1 41!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -82,7 +81,7 @@ CodeCoverageTextStyler class
 
 !classDefinition: #CodeCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CodeCoverageAnalyzer
-	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report'
+	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report coverageReportBuilders'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -132,7 +131,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder codeCoverageNotifier'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -3965,30 +3964,34 @@ test006_RestoresTheWrappedMethodWhenUninstalled
 		assert: compiledMethod
 		equals: self compiledMethodAtM1Selector! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 21:20:52'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 9/10/2022 15:22:59'!
 test007_DoesNotAnalyzeTheWrappedMethodWhenCodeCoverageIsDisabled
 	
+	| reportBuilder |
 	self createAnalyzerFor: self compiledMethodAtM1Selector.
 	compiledMethodAnalyzer install.
+	reportBuilder := compiledMethodAnalyzer registerNewCoverageReportBuilder.
 	
 	compiledMethodAnalyzer run: #m1 with: #() in: self.
 	
 	self
 		assert: 0
-		equals: compiledMethodAnalyzer codeCoverageReport percentCovered.! !
+		equals: reportBuilder value percentCovered.! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 21:24:26'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 9/10/2022 15:23:22'!
 test008_AnalizesTheWrappedMethodWhenCodeCoverageIsEnabled
 	
+	| reportBuilder |
 	self createAnalyzerFor: self compiledMethodAtM1Selector.
 	compiledMethodAnalyzer install.
 	fakeCodeCoverageAnalyzer enable.
+	reportBuilder := compiledMethodAnalyzer registerNewCoverageReportBuilder.
 	
 	compiledMethodAnalyzer run: #m1 with: #() in: fakeCodeCoverageAnalyzer .
 	
 	self
 		assert: 100
-		equals: compiledMethodAnalyzer codeCoverageReport percentCovered.! !
+		equals: reportBuilder value percentCovered.! !
 
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/10/2021 15:50:57'!
 test009_CannotBeCreatedFromMethodsThatAreAlreadyBeingAnalyzed
@@ -4126,7 +4129,7 @@ classesToAnalyze
 	
 	^ (compiledMethodsToAnalyze collect: [ :compiledMethod | compiledMethod methodClass ]) asSet! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 3/10/2021 08:55:11'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:30:37'!
 installCompiledMethodAnalizers
 	
 	self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size.
@@ -4136,14 +4139,17 @@ installCompiledMethodAnalizers
 	 	thenCollect: [ :compiledMethodToAnalyze |
 			self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
 			compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self ].
+		
+	coverageReportBuilders := installedCompiledMethodAnalyzers collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilder ].
 	
 	self triggerEvent: #endInstallingCompiledMethodAnalyzers.
 	! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/11/2021 21:15:02'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:09:23'!
 resetInstalledCompiledMethodAnalyzers
 
-	installedCompiledMethodAnalyzers := Set new! !
+	installedCompiledMethodAnalyzers := Set new.
+	coverageReportBuilders := Set new.! !
 
 !CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/11/2021 21:15:02'!
 uninstallCompiledMethodAnalyzers
@@ -4159,11 +4165,11 @@ assertReportsAreAvailable
 		assert: running not
 		description: self class reportsAreNotAvailableWhileRunningErrorMessage! !
 
-!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 1/20/2021 02:43:57'!
+!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 9/10/2022 15:09:30'!
 generateReport
 	
 	| compiledMethodReports |
-	compiledMethodReports := installedCompiledMethodAnalyzers collect: [ :analyzer | analyzer codeCoverageReport ].
+	compiledMethodReports := coverageReportBuilders collect: [ :reportBuilder | reportBuilder value ].
 	
 	report := CodeCoverageAnalyzerReport withAll: compiledMethodReports.
 	! !
@@ -4589,21 +4595,19 @@ run: aSelector with: arguments in: aReceiver
 		arguments: arguments
 		! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 2/6/2021 17:17:01'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 9/10/2022 15:38:16'!
 initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 
 	originalCompiledMethod := aCompiledMethod.
 	codeCoverageAnalyzer := aCodeCoverageAnalyzer.
 	sourceCodeGenerator := aCodeCoverageSourceCodeGenerator.
-	
+	codeCoverageNotifier := CompiledMethodCoverageTracker notifier.
+		
 	"methodClass and selector are cached in instance variables to reduce as much as
 	possible the overhead I put on the execution of the traced compiled method."
 	methodClass := originalCompiledMethod methodClass.
 	selector := originalCompiledMethod selector.
-	
-	coverageReportBuilder := CompiledMethodCoverageReportBuilder
-		for: originalCompiledMethod
-		withSourceRanges: sourceCodeGenerator tracedSourceRanges.! !
+! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 1/10/2021 13:46:48'!
 install
@@ -4640,7 +4644,19 @@ codeCoverageReport
 
 	^ coverageReportBuilder value! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 9/10/2022 14:44:31'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 9/10/2022 15:20:54'!
+registerNewCoverageReportBuilder
+
+	| newReportBuilder |
+	newReportBuilder := CompiledMethodCoverageReportBuilder
+		for: originalCompiledMethod
+		withSourceRanges: sourceCodeGenerator tracedSourceRanges.
+		
+	codeCoverageNotifier sendCoverageNotificationsTo: newReportBuilder.
+		
+	^ newReportBuilder! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 9/10/2022 15:31:00'!
 setUpTracedCompiledMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -4661,7 +4677,7 @@ setUpTracedCompiledMethod
 		ifTrue: [
 			tracedCompiledMethod
 				literalAt: reportBuilderLiteralIndex
-				put:  (CompiledMethodCoverageTracker toNotify: coverageReportBuilder) ].! !
+				put: codeCoverageNotifier ].! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 8/30/2022 02:15:22'!
 tearDownTracedCompiledMethod
@@ -4798,15 +4814,15 @@ markAsExecuted
 	
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 00:32:23'!
-toNotify: aCoverageTracker 
+!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 15:36:57'!
+notifier 
 
-	^ CompiledMethodCoverageNotifier with: aCoverageTracker! !
+	^ CompiledMethodCoverageNotifier new! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 00:07:37'!
-initializeWithAll: aCollectionOfCoverageTrackers 
+!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 15:36:20'!
+initialize
 	
-	coverageTrackers := aCollectionOfCoverageTrackers.! !
+	coverageTrackers := OrderedCollection new.! !
 
 !CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:15:06'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
@@ -4840,17 +4856,10 @@ markAsExecuted
 	
 	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
 
-!CompiledMethodCoverageNotifier class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 00:06:29'!
-with: aCoverageTracker 
-	
-	^ self withAll: (OrderedCollection with: aCoverageTracker)! !
+!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
+sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
 
-!CompiledMethodCoverageNotifier class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 00:06:54'!
-withAll: coverageTrackers
-	
-	^ self
-		new
-		initializeWithAll: coverageTrackers! !
+	coverageTrackers add: aCoverageTrackerToBeNotified ! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
 collectWithUsages: sourceRanges
