@@ -1,7 +1,8 @@
-'From Cuis 6.0 [latest update: #5466] on 10 September 2022 at 12:34:51 am'!
-'Description Allows compiled method coverage analyzers to report code coverage information to more than one report builder.
-To do this the CompiledMethodCoverageTracker hierarchy was reified.'!
-!provides: 'CodeCoverage' 1 39!
+'From Cuis 6.0 [latest update: #5466] on 10 September 2022 at 2:50:13 pm'!
+'Description Generates unique coverage tracker literal names in CodeCoverageSourceCodeGenerator to support multiple CodeCoverageAnalyzers analyzing the same compiled method.
+
+If this was not done, then the CompiledMethodCoverageNotifier instance setup by the first CompiledMethodCoverageAnalyzer instance on a compiled method was overwriten when another CompiledMethodCoverageAnalyzer was installed, causing 0% coverage to be reported on the first one.'!
+!provides: 'CodeCoverage' 1 40!
 !requires: 'Cuis-Base' 50 4527 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
@@ -21,7 +22,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode reportBuilderLiteralName xxxx'
+	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName xxxx'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -490,17 +491,26 @@ value
 	
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 8/30/2022 01:10:41'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 9/10/2022 14:46:16'!
+initializeCoverageTrackerLiteralName
+
+	"Generate a unique name for the literal that will hold a reference to the active CodeCoverageTracker instance when
+	the traced source code I generate is executed.
+	I use a timestamp to make this literal unique"
+	
+	coverageTrackerLiteralName := ('_coverageTracker', Time millisecondClockValue asString, '_') asSymbol.
+	self assert: (methodNode sourceText includesSubString: coverageTrackerLiteralName) not.! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 9/10/2022 14:43:29'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
 
 	methodNode := aMethodNode.
 	rawSourceRanges := aCollectionOfRawSourceRanges.
 	numberOfSourceRangeTraced := 0.
 	tracedSourceRanges := Set new.
-	reportBuilderLiteralName := #_codeCoverageReportBuilder_.
-
 	"Holds the source range of the declaration of parse nodes (e.g. temporary variables)"
-	declarationSourceRangeByParseNode := Dictionary new.! !
+	declarationSourceRangeByParseNode := Dictionary new.
+	self initializeCoverageTrackerLiteralName.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
 addDeclarationSourceRangeOf: aParseNode to: sourceRanges
@@ -510,7 +520,7 @@ addDeclarationSourceRangeOf: aParseNode to: sourceRanges
 		ifPresent: [ :declarationSourceRange | sourceRanges add: declarationSourceRange ]
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/31/2022 01:54:57'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
 addParseNodeToTrackExecutionOf: aMethodNode 
 	
 	"Add an extra parse node at the start of aMethodNode that, when compiled and executed, will register that aMethodNode was executed.
@@ -521,7 +531,7 @@ addParseNodeToTrackExecutionOf: aMethodNode
 	"This is the source code template I will use to create the extra parse node.
 	It will send the message #markAsExecuted to the code coverage report builder referenced by
 	reportBuilderLiteralName."
-	sourceCodeTemplate := 'm1 {1} markAsExecuted' format: { reportBuilderLiteralName storeString }.
+	sourceCodeTemplate := 'm1 {1} markAsExecuted' format: { coverageTrackerLiteralName storeString }.
 	
 	"Parse it. The parser will return a MethodNode"	
 	templateMethodNode := self parse: (sourceCodeTemplate).
@@ -598,7 +608,7 @@ parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode whenExecuting: aPar
 	
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/5/2022 02:43:50'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
 parseNodeToCover: aParseNode 
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
@@ -611,7 +621,7 @@ parseNodeToCover: aParseNode
 	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
 	referenced by reportBuilderLiteralName."
 	sourceCodeTemplate _ 'm1 {1} coverAll: {2} by: nil'
-		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+		format: { coverageTrackerLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
 		
 	templateMethodNode _ self parse: sourceCodeTemplate.
 	messageSendNode := templateMethodNode block statements first.
@@ -622,7 +632,7 @@ parseNodeToCover: aParseNode
 	
 	^ messageSendNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 02:18:15'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
 parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf: aParseNode
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered aSourceRange
@@ -634,7 +644,7 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 	It will send the message #cover:declaredAt:by: to the code coverage report builder referenced by
 	reportBuilderLiteralName with the result of executing aParseNode."
 	sourceCodeTemplate _ 'm1 {1} cover: {2} declaredAt: {3} by: nil'
-		format: { reportBuilderLiteralName storeString. aSourceRange storeString. aDeclarationSourceRange storeString }.
+		format: { coverageTrackerLiteralName storeString. aSourceRange storeString. aDeclarationSourceRange storeString }.
 	
 	"Parse it. The parser will return a MethodNode"	
 	templateMethodNode _ self parse: sourceCodeTemplate.
@@ -654,7 +664,7 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 	
 	^ messageSendNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 8/30/2022 01:55:16'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
 	"NOTE: this method is pretty similar to #parseNodeToCoverAll:whenExecuting:.
@@ -677,7 +687,7 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	with a block that will execute aMessageNode when evaluated.
 	aMessageNode needs to be wrapped in a block to cover it even when it raises an error."
 	sourceCodeTemplate _ 'm1 {1} coverAll: {2} evaluating: [ nil ]'
-		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+		format: { coverageTrackerLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
 	
 	"Parse it. The parser will return a MethodNode"	
 	templateMethodNode _ self parse: sourceCodeTemplate.
@@ -695,7 +705,7 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	
 	^ messageSendNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/5/2022 02:35:29'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
 parseNodeToCoverLiteralOrPseudoVariable: aParseNode 
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
@@ -708,7 +718,7 @@ parseNodeToCoverLiteralOrPseudoVariable: aParseNode
 	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
 	referenced by reportBuilderLiteralName."
 	sourceCodeTemplate _ 'm1 {1} coverAll: {2} byLiteralOrPseudoVariable: nil'
-		format: { reportBuilderLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
+		format: { coverageTrackerLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
 		
 	templateMethodNode _ self parse: sourceCodeTemplate.
 	messageSendNode := templateMethodNode block statements first.
@@ -786,10 +796,10 @@ sourceRangesToCover: aParseNode
 
 	^ sourceRangesToCover! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 8/30/2022 01:10:41'!
-reportBuilderLiteralName
+!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 9/10/2022 14:44:31'!
+coverageTrackerLiteralName
 	
-	^ reportBuilderLiteralName ! !
+	^ coverageTrackerLiteralName ! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 2/1/2021 22:39:50'!
 tracedSourceCode
@@ -4630,7 +4640,7 @@ codeCoverageReport
 
 	^ coverageReportBuilder value! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 9/10/2022 00:31:39'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'source code tracing' stamp: 'NPM 9/10/2022 14:44:31'!
 setUpTracedCompiledMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -4646,7 +4656,7 @@ setUpTracedCompiledMethod
 	| reportBuilderLiteralIndex |
 	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
 	
-	reportBuilderLiteralIndex _ tracedCompiledMethod indexOfLiteral: sourceCodeGenerator reportBuilderLiteralName. 
+	reportBuilderLiteralIndex _ tracedCompiledMethod indexOfLiteral: sourceCodeGenerator coverageTrackerLiteralName. 
 	reportBuilderLiteralIndex > 0
 		ifTrue: [
 			tracedCompiledMethod

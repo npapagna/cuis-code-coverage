@@ -17,7 +17,8 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Refactor the way coverage is reported to `CompiledMethodCoverageReportBuilder` to clean up its interface.
 * Supports reporting code coverage to more than one `CompiledMethodCoverageReportBuilder`. This is needed to add support 
   for having more than one `CodeCoverageAnalyzer` running on the same method.
-
+* Supports multiple `CompiledMethodCoverageNotifier` instances to be used in a compiled method. This is needed to add support
+  for having more than one `CodeCoverageAnalyzer` running on the same method.
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 
 ### Changed
