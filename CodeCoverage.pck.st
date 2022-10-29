@@ -1,8 +1,6 @@
-'From Cuis 6.0 [latest update: #5466] on 28 October 2022 at 11:58:54 pm'!
-'Description Allows Code Coverage to analyze itself by using PackageSnapshot to copy the whole CodeCoverage package and uses the copy of the CodeCoverageAnalyzer class to create the analyzer to measure the coverage of the CodeCoverage Package.
-
-Using a separate copy of the project avoids infinite recursions.'!
-!provides: 'CodeCoverage' 1 43!
+'From Cuis 6.0 [latest update: #5466] on 29 October 2022 at 12:07:35 am'!
+'Description Removes unused methods from CodeCoverageAnalyzer.'!
+!provides: 'CodeCoverage' 1 46!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -4231,25 +4229,10 @@ ifRunning: aBlock
 	
 	running ifTrue: aBlock! !
 
-!CodeCoverageAnalyzer methodsFor: 'accessing' stamp: 'NPM 1/11/2021 22:11:47'!
-classesToAnalyze
-
-	^ (compiledMethodsToAnalyze collect: [ :compiledMethod | compiledMethod methodClass ]) asSet! !
-
-!CodeCoverageAnalyzer methodsFor: 'events - triggering' stamp: 'NPM 9/12/2022 02:30:13'!
-triggerStartEvent
-
-	self triggerEvent: #start.! !
-
 !CodeCoverageAnalyzer methodsFor: 'events - triggering' stamp: 'NPM 9/12/2022 02:30:20'!
 triggerStopEvent
 
 	self triggerEvent: #stop.! !
-
-!CodeCoverageAnalyzer methodsFor: 'events - registering' stamp: 'NPM 9/12/2022 02:29:28'!
-onStartSend: aSelector to: anObject
-
-	self when: #start send: aSelector to: anObject.! !
 
 !CodeCoverageAnalyzer methodsFor: 'events - registering' stamp: 'NPM 9/12/2022 02:29:38'!
 onStopSend: aSelector to: anObject
