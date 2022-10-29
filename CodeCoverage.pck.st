@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5466] on 29 October 2022 at 12:07:35 am'!
-'Description Removes unused methods from CodeCoverageAnalyzer.'!
-!provides: 'CodeCoverage' 1 46!
+'From Cuis 6.0 [latest update: #5466] on 29 October 2022 at 2:47:41 am'!
+'Description Supports analyzing the same compiled method with multiple code coverage analyzers when they are not nested (the nested scenario was already supported).'!
+!provides: 'CodeCoverage' 1 47!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -1491,6 +1491,34 @@ test012_DoesNotAllowRequestingTheCodeCoverageReportForACompiledMethodThatWasNotA
 		stopTrackingCodeCoverage.
 	
 	self assertRaisesCompiledMethodWasNotAnalizedError:  [ codeCoverageAnalyzer report reportForCompiledMethod: Object>>#value ]! !
+
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:43:45'!
+test013_AllowsMultipleInstancesToAnalyzeTheSameCompiledMethods
+
+	| analyzer1 analyzer2 compiledMethodToAnalyze |
+	compiledMethodToAnalyze _ self compiledMethodAtM1Selector.
+	analyzer1 _  CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.
+	analyzer2 _ CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.
+	
+	analyzer1 value: [
+		analyzer2 value: [ self m1 ]].
+	
+	self assert: 100 equals: analyzer1 report percentCovered.	
+	self assert: 100 equals: analyzer2 report percentCovered ! !
+
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:44:51'!
+test014_AllowsNestedInstancesToAnalyzeTheSameCompiledMethods
+
+	| parentReport childReport |
+	parentReport _  CodeCoverageAnalyzer
+		value: [
+			childReport _ CodeCoverageAnalyzer
+				value: [ self m1 ]
+				analyzingAll: { self compiledMethodAtM1Selector } ]
+		analyzingAll: { self compiledMethodAtM1Selector }.
+	
+	self assert: 100 equals: parentReport percentCovered.	
+	self assert: 100 equals: childReport percentCovered ! !
 
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:54:21'!
 assert: aSelector at: aSourceRange hasSourceCode: expectedSourceCode coverageRatio: aRatio 
@@ -4751,14 +4779,14 @@ analyzes: aCompiledMethod
 
 	^ originalCompiledMethod == aCompiledMethod ! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 16:20:20'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 10/29/2022 02:43:13'!
 for: aCompiledMethod using: aCodeCoverageAnalyzer
 	
 	"Create an instance of myself to analyze code coverage of aCompiledMethod.
 	aTracedSourceCodeGenerator is used to generate the traced version of aCompiledMethod that will report code coverage
-	to aCodeCoverageAnalyzer.
-	If aCompiledMethod is a CompiledMethodAnalyzer (e.g. the compiled method is already being analyzer) return aCompiledMethod instead of creating a new one."
+	to aCodeCoverageAnalyzer."
 	
+	"If aCompiledMethod is a CompiledMethodAnalyzer (e.g. the compiled method is already being analyzer) return aCompiledMethod instead of creating a new one."
 	(self isCompiledMethodAnalyzer: aCompiledMethod)
 		ifTrue: [ ^ aCompiledMethod ].
 	
@@ -4766,6 +4794,15 @@ for: aCompiledMethod using: aCodeCoverageAnalyzer
 	is an instance of CompiledMethod and not, say, a MethodReference or even an instance of myself. That could end up leaving
 	the class aCompiledMethod is installed in an inconsistent way."
 	self assertIsCompiledMethod: aCompiledMethod.
+	
+	"Double check that aCompiledMethod is not being analyzed.
+	It might be the case that a compiled method analyzer is already installed instead of aCompiledMethod.
+	This can happen if the analyzer was installed after aCompiledMethod was retrieved from its class by its selector
+	(e.g. using #compiledMethodAt:).
+	If that is the case, return the existing analyzer instead of creating a new one."
+	self
+		withCompiledMethodAnayzerFor: aCompiledMethod
+		do: [ :analyzer | ^ analyzer ].	
 		
 	^ self
 		new
@@ -4834,6 +4871,15 @@ shouldOnlyBeCreatedForCompiledMethodsErrorMessage
 shouldOnlyBeInstalledOnceErrorMessage
 	
 	^ self class name, ' should only be installed once.'! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'as yet unclassified' stamp: 'NPM 10/29/2022 00:56:29'!
+withCompiledMethodAnayzerFor: aCompiledMethod do: aBlockClosure 
+	
+	| current |
+	current _ aCompiledMethod methodClass compiledMethodAt: aCompiledMethod selector.
+
+	(current class includesSelector: #registerNewCoverageReportBuilder)
+		ifTrue: [ aBlockClosure value: current ]! !
 
 !CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:47'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
