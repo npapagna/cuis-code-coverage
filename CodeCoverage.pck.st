@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5466] on 29 October 2022 at 2:47:41 am'!
-'Description Supports analyzing the same compiled method with multiple code coverage analyzers when they are not nested (the nested scenario was already supported).'!
-!provides: 'CodeCoverage' 1 47!
+'From Cuis 6.0 [latest update: #5466] on 29 October 2022 at 10:01:11 am'!
+'Description Supports collecting code coverage information from methods while there is at least one active code coverage analyzer.'!
+!provides: 'CodeCoverage' 1 50!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -131,7 +131,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: #'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder codeCoverageNotifier isInstalled'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder codeCoverageNotifier isInstalled installCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -1371,6 +1371,11 @@ compiledMethodAtM1Selector
 
 	^ self class compiledMethodAt: #m1! !
 
+!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/29/2022 09:49:08'!
+compiledMethodAtM2Selector
+
+	^ self class compiledMethodAt: #m2:! !
+
 !CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 1/16/2021 18:15:10'!
 m1
 
@@ -1378,6 +1383,13 @@ m1
 	Its behavior does not really matter." 
 
 	Object new! !
+
+!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/29/2022 09:46:40'!
+m2: aBoolean
+
+	aBoolean
+		ifTrue: [ Array ]
+		ifFalse: [ Dictionary ]! !
 
 !CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 17:21:33'!
 test001_IsNotRunningWhenCreated
@@ -1519,6 +1531,38 @@ test014_AllowsNestedInstancesToAnalyzeTheSameCompiledMethods
 	
 	self assert: 100 equals: parentReport percentCovered.	
 	self assert: 100 equals: childReport percentCovered ! !
+
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:51:10'!
+test015_CollectsCoverageInformationFromTheTimeItIsUsed
+
+	| compiledMethodToAnalyze analyzer1 analyzer2 |
+	compiledMethodToAnalyze _ self compiledMethodAtM2Selector.
+	analyzer1 _  CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.
+	analyzer2 _ CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.
+	
+	analyzer1 value: [
+		self m2: true.
+		analyzer2 value: [ self m2: false. ]
+	].
+	
+	self assert: 100 equals: analyzer1 report percentCovered.	
+	self assert: 66.67 equals: analyzer2 report percentCovered ! !
+
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:52:08'!
+test016_CollectsCoverageInformationWhileThereIsAtLeastOneActiveInstance
+
+	| compiledMethodToAnalyze analyzer1 analyzer2 |
+	compiledMethodToAnalyze _ self compiledMethodAtM2Selector.
+	analyzer1 _  CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.
+	analyzer2 _ CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.
+	
+	analyzer1 value: [
+		analyzer2 value: [ self m2: false. ].
+		self m2: true.
+	].
+	
+	self assert: 100 equals: analyzer1 report percentCovered.	
+	self assert: 66.67 equals: analyzer2 report percentCovered ! !
 
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:54:21'!
 assert: aSelector at: aSourceRange hasSourceCode: expectedSourceCode coverageRatio: aRatio 
@@ -4683,14 +4727,14 @@ run: aSelector with: arguments in: aReceiver
 		arguments: arguments
 		! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 9/11/2022 01:50:43'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 10/29/2022 09:56:11'!
 initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 
 	originalCompiledMethod := aCompiledMethod.
 	codeCoverageAnalyzer := aCodeCoverageAnalyzer.
 	sourceCodeGenerator := aCodeCoverageSourceCodeGenerator.
 	codeCoverageNotifier := CompiledMethodCoverageTracker notifier.
-	isInstalled := false.
+	installCount _ 0.
 		
 	"methodClass and selector are cached in instance variables to reduce as much as
 	possible the overhead I put on the execution of the traced compiled method."
@@ -4698,14 +4742,27 @@ initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCode
 	selector := originalCompiledMethod selector.
 ! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 9/11/2022 01:51:01'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 10/29/2022 10:00:02'!
+ifShouldBeInstalled: aBlock
+
+	installCount = 0
+		ifTrue: aBlock ! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 10/29/2022 09:59:02'!
+ifShouldBeUninstalled: aBlock
+
+	installCount = 1
+		ifTrue: aBlock ! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 10/29/2022 10:00:14'!
 install
 	
 	"Replace the original compiled method with myself to intercept its execution".
 	
-	isInstalled ifFalse: [
-		self installCompiledMethod: self.
-		isInstalled := true ].! !
+	self ifShouldBeInstalled: [
+		self installCompiledMethod: self ].
+		
+	installCount _ installCount + 1.! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 1/10/2021 13:47:09'!
 installCompiledMethod: aCompiledMethod
@@ -4719,14 +4776,16 @@ installedCompiledMethod
 
 	^ methodClass compiledMethodAt: selector! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 9/11/2022 01:51:18'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 10/29/2022 09:58:49'!
 uninstall
 	
 	"Restore the original compiled method"
 	
-	self installCompiledMethod: originalCompiledMethod.
-	self tearDownTracedCompiledMethod.
-	isInstalled := false.
+	self ifShouldBeUninstalled: [
+		self installCompiledMethod: originalCompiledMethod.
+		self tearDownTracedCompiledMethod ].
+
+	installCount _ installCount - 1.
 	! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 8/31/2022 01:45:17'!
