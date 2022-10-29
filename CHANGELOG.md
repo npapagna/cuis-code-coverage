@@ -5,13 +5,16 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 
 ## Unreleased
 
+## Added
+* Reflexion support to allow Code Coverage to analyze itself.
+
 ### Changed
 
 * Replace the `ProtoObject>>#coverAll:` extension method used to register code coverage with a call to the new
   `CompiledMethodCoverageReportBuilder>>coverAll:by:` method to prepare the tool to be meta-circular.
 * Replace the `BlockClosure>>#valueCoveringAll:` extension method used to register code coverage with a call to the new
   `CompiledMethodCoverageReportBuilder>>coverAll:evaluating:` method to prepare the tool to be meta-circular.
-* Replace the extension methods in ProtoObject, CompiledMethod and Boolean used to register code coverage with a call to
+* Replace the extension methods in `ProtoObject`, `CompiledMethod` and `Boolean` used to register code coverage with a call to
   the new `CompiledMethodCoverageReportBuilder>>cover:declaredAt:by:` method to prepare the tool to be meta-circular.
 * Move the responsibility to track compiled methods execution from `CompiledMethodCoverageAnalyzer` to `CodeCoverageSourceCodeGenerator`.
 * Refactor the way coverage is reported to `CompiledMethodCoverageReportBuilder` to clean up its interface.
