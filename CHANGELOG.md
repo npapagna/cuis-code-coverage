@@ -26,7 +26,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
   This allows multiple `CodeCoverageAnalyzer` instances running on the same compiled method to have their own coverage support.
 * Supports reusing a compiled method coverage analyzer if one is already installed for the compiled method to be analyzed. 
   This allows multiple `CodeCoverageAnalyzer` instances to register their report builders in the same `CompiledMethodCoverageAnalyzer` instance for a method.
-
+* Optimized traced source code generation by ~2x.
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 
 ### Changed

@@ -1,6 +1,7 @@
-'From Cuis 6.0 [latest update: #5466] on 29 October 2022 at 10:01:11 am'!
-'Description Supports collecting code coverage information from methods while there is at least one active code coverage analyzer.'!
-!provides: 'CodeCoverage' 1 50!
+'From Cuis 6.0 [latest update: #5510] on 1 November 2022 at 12:27:37 am'!
+'Description Optimizes the performance of CodeCoverageSourceCodeGenerator by creating parse nodes manually instead of using the parser to create them from strings.
+This lead to a ~2x improvement.'!
+!provides: 'CodeCoverage' 1 51!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -21,7 +22,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: #'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges codeCoverageAnalyzerGlobalName numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName xxxx'
+	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -476,17 +477,20 @@ denyIsOptimized: aMessageNode
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 9/4/2022 15:04:49'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 11/1/2022 00:16:01'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
 	
 	I traverse the method node's AST adding tracing to each parse node.
 	For more information about how each type of parse node is traced, see methods in my 'visiting' protocol."
-
+	
 	methodNode accept: self.
 	
-	tracedSourceCode :=  String streamContents: [ :stream | methodNode printOn: stream ] .
+	"Force source text generation"
+	methodNode sourceText: nil.
+	
+	tracedSourceCode := methodNode sourceText.
 	
 	! !
 
@@ -500,7 +504,7 @@ initializeCoverageTrackerLiteralName
 	coverageTrackerLiteralName := ('_coverageTracker', Time millisecondClockValue asString, '_') asSymbol.
 	self assert: (methodNode sourceText includesSubString: coverageTrackerLiteralName) not.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 9/10/2022 14:43:29'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 11/1/2022 00:27:22'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
 
 	methodNode := aMethodNode.
@@ -509,7 +513,11 @@ initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges
 	tracedSourceRanges := Set new.
 	"Holds the source range of the declaration of parse nodes (e.g. temporary variables)"
 	declarationSourceRangeByParseNode := Dictionary new.
-	self initializeCoverageTrackerLiteralName.! !
+	self initializeCoverageTrackerLiteralName.
+	"Used to generate traced parse nodes"
+	decompilerConstructor := DecompilerConstructor new.
+	encoder := Encoder new initScopeAndLiteralTables.
+	coverageTrackerNode := encoder encodeLiteral: coverageTrackerLiteralName.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
 addDeclarationSourceRangeOf: aParseNode to: sourceRanges
@@ -519,29 +527,16 @@ addDeclarationSourceRangeOf: aParseNode to: sourceRanges
 		ifPresent: [ :declarationSourceRange | sourceRanges add: declarationSourceRange ]
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:31:05'!
 addParseNodeToTrackExecutionOf: aMethodNode 
 	
 	"Add an extra parse node at the start of aMethodNode that, when compiled and executed, will register that aMethodNode was executed.
 	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
 	based on the number of source ranges that were covered (they don't have any source range)."
-	
-	| templateMethodNode sourceCodeTemplate parseNodeToTrackMethodExecution |
-	"This is the source code template I will use to create the extra parse node.
-	It will send the message #markAsExecuted to the code coverage report builder referenced by
-	reportBuilderLiteralName."
-	sourceCodeTemplate := 'm1 {1} markAsExecuted' format: { coverageTrackerLiteralName storeString }.
-	
-	"Parse it. The parser will return a MethodNode"	
-	templateMethodNode := self parse: (sourceCodeTemplate).
-	
-	"Method nodes have a block containing all statements in the method (in this case, there is only one).
-	Grab the message node that sends the #markAsExecuted message"
-	parseNodeToTrackMethodExecution := templateMethodNode block statements first.
-	
-	"Add that parse node to the start of aMethodNode"
+		
 	aMethodNode block statements
-		addFirst: parseNodeToTrackMethodExecution.! !
+		addFirst: self parseNodeToTrackMethodExecution.
+! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/3/2021 17:14:05'!
 addTracingToAll: parseNodes 
@@ -607,126 +602,93 @@ parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode whenExecuting: aPar
 	
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:32:30'!
+parseNodeForRange: aSourceRange
+
+	^ decompilerConstructor
+		codeMessage: (encoder encodeLiteral: aSourceRange first)
+		selector: (encoder encodeSelector: #to:)
+		arguments: { encoder encodeLiteral: aSourceRange last }! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:33:20'!
+parseNodeForRanges: sourceRanges
+
+	| parseNodesForRanges |
+	parseNodesForRanges := sourceRanges asArray collect: [ :range | self parseNodeForRange: range ].
+	
+	^ decompilerConstructor codeBrace: parseNodesForRanges! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:14:36'!
 parseNodeToCover: aParseNode 
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
 
-	| sourceRanges sourceCodeTemplate templateMethodNode messageSendNode |
-	
+	| sourceRanges |
 	sourceRanges _ self sourceRangesToCover: aParseNode.
-	
-	"This is the source code template I will use to create a parse node below.
-	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
-	referenced by reportBuilderLiteralName."
-	sourceCodeTemplate _ 'm1 {1} coverAll: {2} by: nil'
-		format: { coverageTrackerLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
-		
-	templateMethodNode _ self parse: sourceCodeTemplate.
-	messageSendNode := templateMethodNode block statements first.
-	messageSendNode arguments at: 2 put: aParseNode.
 	
 	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
 	
-	^ messageSendNode! !
+	^ self
+		parseNodeToSendToCodeCoverageTracker: #coverAll:by:
+		withAll: {
+			self parseNodeForRanges: sourceRanges.
+			aParseNode
+		}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:14:45'!
 parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf: aParseNode
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered aSourceRange
 	and aDeclarationSourceRange."
 
-	| sourceCodeTemplate messageSendNode templateMethodNode |
-	
-	"This is the source code template I will use to create a parse node below.
-	It will send the message #cover:declaredAt:by: to the code coverage report builder referenced by
-	reportBuilderLiteralName with the result of executing aParseNode."
-	sourceCodeTemplate _ 'm1 {1} cover: {2} declaredAt: {3} by: nil'
-		format: { coverageTrackerLiteralName storeString. aSourceRange storeString. aDeclarationSourceRange storeString }.
-	
-	"Parse it. The parser will return a MethodNode"	
-	templateMethodNode _ self parse: sourceCodeTemplate.
-	
-	"Method nodes have a block containing all statements in the method (in this case, there is only one).
-	Grab the message node that sends the #cover:declaredAt:by: message"
-	messageSendNode := templateMethodNode block statements first.
-	
-	"Grab the message node's third argument, the object that covering the source ranges, and replace it with aParseNode"
-	messageSendNode arguments
-		at: 3 put: aParseNode.
-	
-	"Increment the number of source range traced by the number of source ranges aMessageNode will cover when executed"
+	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
 	tracedSourceRanges
 		add: aSourceRange;
 		add: aDeclarationSourceRange.
-	
-	^ messageSendNode! !
+		
+	^ self
+		parseNodeToSendToCodeCoverageTracker: #cover:declaredAt:by:
+		withAll: {
+			self parseNodeForRange: aSourceRange.
+			self parseNodeForRange: aDeclarationSourceRange.
+			aParseNode
+		}
+		! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:42:51'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
-	"NOTE: this method is pretty similar to #parseNodeToCoverAll:whenExecuting:.
-	The only difference is here we are wrapping aMessageNode in a block to cover it even when
-	it raises an error. NPM."
-
 	"Generate a parse node that, when compiled and executed, will register that aMessageNode covered sourceRanges
-	in the selector and class of methodNode.
-
-	Implementation Details
-	================
-
-	To create the parse node, I create a template for it and modify it filling in the blanks.
-	I need to parse a method even though I ony use its sole statement because that's what the parser expects."
-
-	| sourceCodeTemplate templateMethodNode messageSendNode secondArgumentNode |
-
-	"This is the source code template I will use to create a parse node below.
-	It sends the message #coverAll:evaluating: to the code coverage report builder referenced by reportBuilderLiteralName
-	with a block that will execute aMessageNode when evaluated.
-	aMessageNode needs to be wrapped in a block to cover it even when it raises an error."
-	sourceCodeTemplate _ 'm1 {1} coverAll: {2} evaluating: [ nil ]'
-		format: { coverageTrackerLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
-	
-	"Parse it. The parser will return a MethodNode"	
-	templateMethodNode _ self parse: sourceCodeTemplate.
-	
-	"Method nodes have a block containing all statements in the method (in this case, there is only one).
-	Grab the message node that sends the #coverAll:evaluating: message"
-	messageSendNode := templateMethodNode block statements first.
-	
-	"Grab the message node's second argument, the block, and replace nil with aMessageNode"
-	secondArgumentNode := messageSendNode arguments at: 2.
-	secondArgumentNode statements at: 1 put: aMessageNode.
+	in the selector and class of methodNode."
 	
 	"Increment the number of source range traced by the number of source ranges aMessageNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
 	
-	^ messageSendNode! !
+	^ self
+		parseNodeToSendToCodeCoverageTracker: #coverAll:evaluating:
+		withAll: {
+			self parseNodeForRanges: sourceRanges.
+			decompilerConstructor codeBlock: { aMessageNode } returns: false.
+		}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/10/2022 14:43:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:42:04'!
 parseNodeToCoverLiteralOrPseudoVariable: aParseNode 
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
 
-	| sourceRanges sourceCodeTemplate templateMethodNode messageSendNode |
-	
+	| sourceRanges |
 	sourceRanges _ self sourceRangesToCover: aParseNode.
-	
-	"This is the source code template I will use to create a parse node below.
-	It will send the message coverAll:by: with the result of executing aParseNode to the coverage report builder
-	referenced by reportBuilderLiteralName."
-	sourceCodeTemplate _ 'm1 {1} coverAll: {2} byLiteralOrPseudoVariable: nil'
-		format: { coverageTrackerLiteralName storeString. self sourceCodeToCreateAll: sourceRanges }.
-		
-	templateMethodNode _ self parse: sourceCodeTemplate.
-	messageSendNode := templateMethodNode block statements first.
-	messageSendNode arguments at: 2 put: aParseNode.
 	
 	"Increment the number of source range traced by the number of source ranges aParseNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
 	
-	^ messageSendNode! !
+	^ self
+		parseNodeToSendToCodeCoverageTracker: #coverAll:byLiteralOrPseudoVariable:
+		withAll: {
+			self parseNodeForRanges: sourceRanges.
+			aParseNode
+		}! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/30/2021 17:38:25'!
 parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver 
@@ -749,6 +711,26 @@ parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver
 		parseNodeToCoverAll: aMessageNode keywordRanges 
 		whenExecutingMessageNode: aMessageNode! !
 
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:15:39'!
+parseNodeToSendToCodeCoverageTracker: aSelector
+
+	^ self
+		parseNodeToSendToCodeCoverageTracker: aSelector
+		withAll: {}! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:15:21'!
+parseNodeToSendToCodeCoverageTracker: aSelector withAll: arguments
+
+	^ decompilerConstructor
+			codeMessage: coverageTrackerNode
+			selector: (encoder encodeSelector: aSelector)
+			arguments: arguments! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:15:39'!
+parseNodeToTrackMethodExecution
+
+	^ self parseNodeToSendToCodeCoverageTracker: #markAsExecuted! !
+
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/16/2021 20:37:07'!
 register: aSourceRange asDeclarationOf: aParseNode
 
@@ -766,21 +748,6 @@ registerDeclarationSourceRangeOf: aParseNode
 	self
 		register: (self consumeNextSourceRangeFor: aParseNode)
 		asDeclarationOf: aParseNode! !
-
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/11/2021 21:30:12'!
-sourceCodeToCreateAll: sourceRanges 
-	
-	"Return the source code that, when compiled and executed, will represent sourceRanges."
-	
-	^ String streamContents: [ :contents | 
-		contents nextPut: ${.
-		
-		sourceRanges
-			do: [ :sourceRange | sourceRange storeOn:  contents ]
-			separatedBy: [ contents nextPut: $.; space ].
-		
-		contents nextPut: $}
-	]! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:22:34'!
 sourceRangesToCover: aParseNode
@@ -873,7 +840,7 @@ visitBraceNode: aBraceNode
 	
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aBraceNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:05:16'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 11/1/2022 00:16:13'!
 visitCascadeNode: aCascadeNode
 
 	"Add tracing to cascade nodes.
@@ -913,44 +880,40 @@ visitCascadeNode: aCascadeNode
 	To fix it, I rewrite the cascade messages by assigning them a receiver: the cascadeReceiver variable that I mentioned above. This makes them valid
 	message nodes, ones I know how to add tracing to."
  
-	| cascadeBlockNode cascadeBlockEvaluationNode cascadeReceiverAssignmentNode cascadeReceiverVariableNode templateMethodNode tracedMessageNodes |
+	| cascadeBlockNode temporaryVariableForCascadeReceiver tracedMessageNodes temporariesDeclarations cascadeReceiverAssignment |
+		
+	"I create a temporary variable to hold a reference to the cascade receiver"
+	temporaryVariableForCascadeReceiver := 	decompilerConstructor codeTemp: 0 named: 'cascadeReceiver'.
+	temporariesDeclarations := TemporariesDeclarationNode withAll: { TemporaryDeclarationNode of: temporaryVariableForCascadeReceiver }.
 	
-	"This is the source code template I will use to create a parse node to cover aCascadeNode.
-	I will fill in the cascadeReceiver assigment value and add aCascadeNode message sends after it.
-	I need to parse a method even though I ony use its sole statement because that's what the parser expects."
-	templateMethodNode := self parse: 'm1 [ |cascadeReceiver| cascadeReceiver := nil ] value.'.
-	
-	"Grab the block evaluation node: [ |cascadeReceiver| cascadeReceiver := nil ] value"
-	cascadeBlockEvaluationNode := templateMethodNode block statements first.
-	
-	"Grab the receiver of the block evaluation node: [ |cascadeReceiver| cascadeReceiver := nil ]"
-	cascadeBlockNode := cascadeBlockEvaluationNode receiver.
-	
-	"Grab the assignment node: cascadeReceiver := nil"
-	cascadeReceiverAssignmentNode := cascadeBlockNode statements first.
-	
-	"Grab the variable being assigned: cascadeReceiver"
-	cascadeReceiverVariableNode := cascadeReceiverAssignmentNode variable.
-	
-	"Now I will replace the placeholde value being assigned (nil) with an expression that, when evaluated, will cover the receiver
-	of aCascadeNode and return it.
-	After executing this assignment node, cascadeReceiver will hold a reference to the receiver of the cascade message send."
-	cascadeReceiverAssignmentNode
-		variable: cascadeReceiverVariableNode
+	"Add tracing to the receiver node and assign it to its variable"
+	cascadeReceiverAssignment := decompilerConstructor
+		codeAssignTo: temporaryVariableForCascadeReceiver
 		value: (aCascadeNode receiver accept: self).
-	
+
 	"As I mentioned above, I need to rewrite aCascadeNode as a sequence of regular message sends.
 	For doing that I assign to each message send their missing receiver: the cascade node receiver which I just stored in the
 	cascadeReceiver temporary variable."
-	tracedMessageNodes := (aCascadeNode messages collect:
-		[ :messageNode | 
-			messageNode receiver: cascadeReceiverVariableNode.
-			self visitMessageNodeInCascade: messageNode ]).
+	tracedMessageNodes := aCascadeNode messages
+		collect: [ :messageNode | 
+			messageNode receiver: temporaryVariableForCascadeReceiver.
+			self visitMessageNodeInCascade: messageNode ].
 		
-	"Now I will add the traced message nodes after the cascadeReceiver assignment node."
-	cascadeBlockNode statements addAll: tracedMessageNodes.
+	"Finally, I create a block that will cover 	aCascadeNode when it is evaluated.
+	The first statement should be the assignment I created avobe to hold a reference
+	to the cascade receiver that the other pase nodes used."
+	tracedMessageNodes addFirst: cascadeReceiverAssignment.
 	
-	^ cascadeBlockEvaluationNode! !
+	cascadeBlockNode := decompilerConstructor
+		codeBlock: tracedMessageNodes
+		returns: false. 
+	
+	cascadeBlockNode temporariesDeclaration: temporariesDeclarations.
+	
+	^ decompilerConstructor
+		codeMessage: cascadeBlockNode
+		selector: (encoder encodeSelector: #value)
+		arguments: {}! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:39:07'!
 visitInstanceVariableNode: anInstanceVariableNode
