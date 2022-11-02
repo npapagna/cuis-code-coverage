@@ -1,242 +1,241 @@
-'From Cuis 6.0 [latest update: #5510] on 1 November 2022 at 12:27:37 am'!
-'Description Optimizes the performance of CodeCoverageSourceCodeGenerator by creating parse nodes manually instead of using the parser to create them from strings.
-This lead to a ~2x improvement.'!
-!provides: 'CodeCoverage' 1 51!
+'From Cuis 6.0 [latest update: #5510] on 2 November 2022 at 12:14:26 am'!
+'Description Hacks CodeCoverageResultItem to make it work for system categories (the browser has been changed to use HierarchicalListMorph).'!
+!provides: 'CodeCoverage' 1 52!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
-SystemOrganization addCategory: #'CodeCoverage-Model'!
-SystemOrganization addCategory: #'CodeCoverage-Tests'!
-SystemOrganization addCategory: #'CodeCoverage-UI'!
-SystemOrganization addCategory: #CodeCoverage!
+SystemOrganization addCategory: 'CodeCoverage-Model'!
+SystemOrganization addCategory: 'CodeCoverage-Tests'!
+SystemOrganization addCategory: 'CodeCoverage-UI'!
+SystemOrganization addCategory: 'CodeCoverage'!
 
 
-!classDefinition: #CodeCoverageAnalyzerBrowser category: #'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageAnalyzerBrowser category: 'CodeCoverage-UI'!
 Browser subclass: #CodeCoverageAnalyzerBrowser
 	instanceVariableNames: 'codeCoverageReport'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageAnalyzerBrowser class' category: #'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageAnalyzerBrowser class' category: 'CodeCoverage-UI'!
 CodeCoverageAnalyzerBrowser class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageSourceCodeGenerator category: #'CodeCoverage-Model'!
+!classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
 	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageSourceCodeGenerator class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageSourceCodeGenerator class' category: 'CodeCoverage-Model'!
 CodeCoverageSourceCodeGenerator class
 	instanceVariableNames: ''!
 
-!classDefinition: #ProgressiveCodeCoverageTestRunner category: #'CodeCoverage-UI'!
+!classDefinition: #ProgressiveCodeCoverageTestRunner category: 'CodeCoverage-UI'!
 ProgressiveTestRunner subclass: #ProgressiveCodeCoverageTestRunner
 	instanceVariableNames: 'codeCoverageAnalyzer compiledMethodAnalyzersInstallationProgressBar compiledMethodAnalyzersRunIncrement'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'ProgressiveCodeCoverageTestRunner class' category: #'CodeCoverage-UI'!
+!classDefinition: 'ProgressiveCodeCoverageTestRunner class' category: 'CodeCoverage-UI'!
 ProgressiveCodeCoverageTestRunner class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageAnalyzerTest category: #'CodeCoverage-Tests'!
+!classDefinition: #CodeCoverageAnalyzerTest category: 'CodeCoverage-Tests'!
 TestCase subclass: #CodeCoverageAnalyzerTest
 	instanceVariableNames: 'codeCoverageAnalyzer originalM1Method'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageAnalyzerTest class' category: #'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageAnalyzerTest class' category: 'CodeCoverage-Tests'!
 CodeCoverageAnalyzerTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageTest category: #'CodeCoverage-Tests'!
+!classDefinition: #CodeCoverageTest category: 'CodeCoverage-Tests'!
 TestCase subclass: #CodeCoverageTest
 	instanceVariableNames: 'codeCoverageAnalyzer instanceVariable otherInstanceVariable coverageReport messageResult'
 	classVariableNames: 'ClassVariable'
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageTest class' category: #'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageTest class' category: 'CodeCoverage-Tests'!
 CodeCoverageTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageAnalyzerTest category: #'CodeCoverage-Tests'!
+!classDefinition: #CompiledMethodCoverageAnalyzerTest category: 'CodeCoverage-Tests'!
 TestCase subclass: #CompiledMethodCoverageAnalyzerTest
 	instanceVariableNames: 'compiledMethodAnalyzer fakeCodeCoverageAnalyzer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CompiledMethodCoverageAnalyzerTest class' category: #'CodeCoverage-Tests'!
+!classDefinition: 'CompiledMethodCoverageAnalyzerTest class' category: 'CodeCoverage-Tests'!
 CompiledMethodCoverageAnalyzerTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageTextStyler category: #'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageTextStyler category: 'CodeCoverage-UI'!
 SHTextStylerST80 subclass: #CodeCoverageTextStyler
 	instanceVariableNames: 'codeCoverageReport'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageTextStyler class' category: #'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageTextStyler class' category: 'CodeCoverage-UI'!
 CodeCoverageTextStyler class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageAnalyzer category: #'CodeCoverage-Model'!
+!classDefinition: #CodeCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CodeCoverageAnalyzer
 	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report coverageReportBuilders'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageAnalyzer class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageAnalyzer class' category: 'CodeCoverage-Model'!
 CodeCoverageAnalyzer class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageAnalyzerReport category: #'CodeCoverage-Model'!
+!classDefinition: #CodeCoverageAnalyzerReport category: 'CodeCoverage-Model'!
 Object subclass: #CodeCoverageAnalyzerReport
 	instanceVariableNames: 'reportsByClass reportsBySystemCategory reportsByCompiledMethod reportsByClassAndMessageCategory summaryReport'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageAnalyzerReport class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageAnalyzerReport class' category: 'CodeCoverage-Model'!
 CodeCoverageAnalyzerReport class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageReport category: #'CodeCoverage-Model'!
+!classDefinition: #CodeCoverageReport category: 'CodeCoverage-Model'!
 Object subclass: #CodeCoverageReport
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageReport class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageReport class' category: 'CodeCoverage-Model'!
 CodeCoverageReport class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageReportSummary category: #'CodeCoverage-Model'!
+!classDefinition: #CodeCoverageReportSummary category: 'CodeCoverage-Model'!
 CodeCoverageReport subclass: #CodeCoverageReportSummary
 	instanceVariableNames: 'childReports'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageReportSummary class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageReportSummary class' category: 'CodeCoverage-Model'!
 CodeCoverageReportSummary class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageReport category: #'CodeCoverage-Model'!
+!classDefinition: #CompiledMethodCoverageReport category: 'CodeCoverage-Model'!
 CodeCoverageReport subclass: #CompiledMethodCoverageReport
 	instanceVariableNames: 'compiledMethod compiledMethodWasExecuted coverageRatioBySourceRange'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageReport class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageReport class' category: 'CodeCoverage-Model'!
 CompiledMethodCoverageReport class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageAnalyzer category: #'CodeCoverage-Model'!
+!classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
 	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder codeCoverageNotifier isInstalled installCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageAnalyzer class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageAnalyzer class' category: 'CodeCoverage-Model'!
 CompiledMethodCoverageAnalyzer class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageTracker category: #'CodeCoverage-Model'!
+!classDefinition: #CompiledMethodCoverageTracker category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageTracker
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageTracker class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageTracker class' category: 'CodeCoverage-Model'!
 CompiledMethodCoverageTracker class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageNotifier category: #'CodeCoverage-Model'!
+!classDefinition: #CompiledMethodCoverageNotifier category: 'CodeCoverage-Model'!
 CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageNotifier
 	instanceVariableNames: 'coverageTrackers coverageTrackers_CHANGE_ME'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageNotifier class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageNotifier class' category: 'CodeCoverage-Model'!
 CompiledMethodCoverageNotifier class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageReportBuilder category: #'CodeCoverage-Model'!
+!classDefinition: #CompiledMethodCoverageReportBuilder category: 'CodeCoverage-Model'!
 CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageReportBuilder
 	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageReportBuilder class' category: #'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageReportBuilder class' category: 'CodeCoverage-Model'!
 CompiledMethodCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageTestClass1 category: #'CodeCoverage-Tests'!
+!classDefinition: #CodeCoverageTestClass1 category: 'CodeCoverage-Tests'!
 Object subclass: #CodeCoverageTestClass1
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageTestClass1 class' category: #'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageTestClass1 class' category: 'CodeCoverage-Tests'!
 CodeCoverageTestClass1 class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageTestClass2 category: #'CodeCoverage-Tests'!
+!classDefinition: #CodeCoverageTestClass2 category: 'CodeCoverage-Tests'!
 Object subclass: #CodeCoverageTestClass2
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageTestClass2 class' category: #'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageTestClass2 class' category: 'CodeCoverage-Tests'!
 CodeCoverageTestClass2 class
 	instanceVariableNames: ''!
 
-!classDefinition: #FakeCodeCoverageAnalyzer category: #'CodeCoverage-Tests'!
+!classDefinition: #FakeCodeCoverageAnalyzer category: 'CodeCoverage-Tests'!
 Object subclass: #FakeCodeCoverageAnalyzer
 	instanceVariableNames: 'enabled'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
-!classDefinition: 'FakeCodeCoverageAnalyzer class' category: #'CodeCoverage-Tests'!
+!classDefinition: 'FakeCodeCoverageAnalyzer class' category: 'CodeCoverage-Tests'!
 FakeCodeCoverageAnalyzer class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageAnalyzerBuilder category: #'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageAnalyzerBuilder category: 'CodeCoverage-UI'!
 Object subclass: #CodeCoverageAnalyzerBuilder
 	instanceVariableNames: 'testSuite systemOrganizer packageSnapshot'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageAnalyzerBuilder class' category: #'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageAnalyzerBuilder class' category: 'CodeCoverage-UI'!
 CodeCoverageAnalyzerBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageBrowserMenues category: #'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageBrowserMenues category: 'CodeCoverage-UI'!
 Object subclass: #CodeCoverageBrowserMenues
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageBrowserMenues class' category: #'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageBrowserMenues class' category: 'CodeCoverage-UI'!
 CodeCoverageBrowserMenues class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageTextStylerFactory category: #'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageTextStylerFactory category: 'CodeCoverage-UI'!
 Object subclass: #CodeCoverageTextStylerFactory
 	instanceVariableNames: 'report'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageTextStylerFactory class' category: #'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageTextStylerFactory class' category: 'CodeCoverage-UI'!
 CodeCoverageTextStylerFactory class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageResultItem category: #'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageResultItem category: 'CodeCoverage-UI'!
 ProtoObject subclass: #CodeCoverageResultItem
-	instanceVariableNames: 'item report label'
+	instanceVariableNames: 'item report label numberOfCharactersToSkip'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageResultItem class' category: #'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageResultItem class' category: 'CodeCoverage-UI'!
 CodeCoverageResultItem class
 	instanceVariableNames: ''!
 
@@ -426,6 +425,23 @@ systemCategoryList
 	^ super systemCategoryList
 		select: [ :systemCategory | codeCoverageReport wasSystemCategoryAnalyzed: systemCategory ]
 		thenCollect: [ :systemCategory | self styleSystemCategory: systemCategory ]! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 11/1/2022 23:57:50'!
+systemCategoryRoots
+	"Answer the roots of the forest of system categories."
+	| categories subcategories roots name |
+	categories _ self systemCategoryList.
+
+	subcategories _ Dictionary new.
+	categories do: [:each|
+		name _ (each findTokens: '-') first.
+		(subcategories at: name ifAbsentPut: [OrderedCollection new]) add: each].
+	roots _ OrderedCollection new.
+	categories do: [:each|
+		name _ (each findTokens: '-') first.
+		(roots includes: name) ifFalse:
+			[(subcategories at: name) size > 1 ifTrue: [roots add: name] ifFalse: [roots add: (subcategories at: name) first]]].
+	^ roots collect: [:each| SystemCategoryWrapper with: each name: each displayStringOrText model: self]! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 1/18/2021 21:06:58'!
 textStylerClassFor: textGetter
@@ -5467,11 +5483,17 @@ string
 	
 	^ item string! !
 
-!CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 1/17/2021 21:35:58'!
-initializeFor: anItem with: aCodeCoverageReport
+!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 11/2/2022 00:08:49'!
+appendToString: aString
+
+	^ aString, (item allButFirst: numberOfCharactersToSkip)! !
+
+!CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 11/2/2022 00:08:49'!
+initializeFor: anItem with: aCodeCoverageReport skippingAllButFirst: numberOfCharacters 
 
 	item := anItem.
-	report := aCodeCoverageReport! !
+	report := aCodeCoverageReport.
+	numberOfCharactersToSkip := numberOfCharacters.! !
 
 !CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:46:33'!
 displayStringOrText
@@ -5483,18 +5505,41 @@ initializeLabel
 
 	^ label := ('{1} ({2}%)' format: { item. report percentCovered asFloat printStringFractionDigits: 2 })! !
 
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 1/17/2021 21:35:34'!
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:11:22'!
+allButFirst: numberOfCharacters
+
+	^ self class
+		for: item
+		report: report
+		skippingAllButFirst: numberOfCharacters ! !
+
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:08:49'!
+asString
+
+	^ self displayStringOrText
+		allButFirst: numberOfCharactersToSkip! !
+
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:03:19'!
 doesNotUnderstand: aMessage
 
 	^ aMessage sendTo: item! !
 
-!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 1/17/2021 21:43:22'!
+!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:10:12'!
 for: anItem report: aCodeCoverageReport 
+	
+	^ self
+		for: anItem
+		report: aCodeCoverageReport
+		skippingAllButFirst: 0 ! !
+
+!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:09:47'!
+for: anItem report: aCodeCoverageReport  skippingAllButFirst: numberOfCharacters 
 	
 	^ self
 		new
 		initializeFor: anItem
-		with: aCodeCoverageReport ! !
+		with: aCodeCoverageReport
+		skippingAllButFirst: numberOfCharacters! !
 
 !Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 01:15:28'!
 runClassTestsWithCodeCoverage
