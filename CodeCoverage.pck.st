@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 2 November 2022 at 12:14:26 am'!
-'Description Hacks CodeCoverageResultItem to make it work for system categories (the browser has been changed to use HierarchicalListMorph).'!
-!provides: 'CodeCoverage' 1 52!
+'From Cuis 6.0 [latest update: #5510] on 2 November 2022 at 12:31:34 am'!
+'Description Hacks CodeCoverageAnalyzerBrowser to display the average percent coverage in root system categories.'!
+!provides: 'CodeCoverage' 1 53!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -426,7 +426,7 @@ systemCategoryList
 		select: [ :systemCategory | codeCoverageReport wasSystemCategoryAnalyzed: systemCategory ]
 		thenCollect: [ :systemCategory | self styleSystemCategory: systemCategory ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 11/1/2022 23:57:50'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 11/2/2022 00:29:31'!
 systemCategoryRoots
 	"Answer the roots of the forest of system categories."
 	| categories subcategories roots name |
@@ -441,7 +441,12 @@ systemCategoryRoots
 		name _ (each findTokens: '-') first.
 		(roots includes: name) ifFalse:
 			[(subcategories at: name) size > 1 ifTrue: [roots add: name] ifFalse: [roots add: (subcategories at: name) first]]].
-	^ roots collect: [:each| SystemCategoryWrapper with: each name: each displayStringOrText model: self]! !
+	^ roots collect: [:each|
+		| averagePercentCoveredInSubcategories rootName | 
+		averagePercentCoveredInSubcategories := ((subcategories at: name) collect: [ :subcategory | subcategory percentCovered ]) average.
+		rootName := each, ' (', (averagePercentCoveredInSubcategories printStringFractionDigits: 2 ) asString, '%)'.
+		
+		SystemCategoryWrapper with: each name: (rootName)  model: self]! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 1/18/2021 21:06:58'!
 textStylerClassFor: textGetter
@@ -5523,6 +5528,11 @@ asString
 doesNotUnderstand: aMessage
 
 	^ aMessage sendTo: item! !
+
+!CodeCoverageResultItem methodsFor: 'as yet unclassified' stamp: 'NPM 11/2/2022 00:22:10'!
+percentCovered
+
+	^ report percentCovered! !
 
 !CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:10:12'!
 for: anItem report: aCodeCoverageReport 
