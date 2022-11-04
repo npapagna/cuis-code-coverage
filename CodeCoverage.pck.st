@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 2 November 2022 at 12:31:34 am'!
-'Description Hacks CodeCoverageAnalyzerBrowser to display the average percent coverage in root system categories.'!
-!provides: 'CodeCoverage' 1 53!
+'From Cuis 6.0 [latest update: #5510] on 4 November 2022 at 12:02:50 am'!
+'Description Fixes test005_CoversABinaryMessageSend so it exercises a method with a binary message send (the binaryMessageSend method was sending a keyword message).'!
+!provides: 'CodeCoverage' 1 54!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -1761,10 +1761,10 @@ backtick
 	
 	`Object new`! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:26:18'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/4/2022 00:00:38'!
 binaryMessageSend
 	
-	Array with: Object! !
+	1 + 2! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:27:39'!
 block
@@ -3145,15 +3145,15 @@ test004_CoversMultipleOcurrencesOfTheSameMessageSend
 	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 56 to: 61 as: 'Object'.
 	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 63 to: 65 as: 'new'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 11/4/2022 00:01:27'!
 test005_CoversABinaryMessageSend
 
 	self collectCoverageForExampleNamed: #binaryMessageSend.
 	
 	self assertNumberOfCoveredRangesFor: #binaryMessageSend is: 3 .
-	self assert: #binaryMessageSend hasBeenCoveredFrom: 22 to: 26 as: 'Array'.
-	self assert: #binaryMessageSend hasBeenCoveredFrom: 28 to: 32 as: 'with:'.
-	self assert: #binaryMessageSend hasBeenCoveredFrom: 34 to: 39 as: 'Object'.
+	self assert: #binaryMessageSend hasBeenCoveredFrom: 22 to: 22 as: '1'.
+	self assert: #binaryMessageSend hasBeenCoveredFrom: 24 to: 24 as: '+'.
+	self assert: #binaryMessageSend hasBeenCoveredFrom: 25 to: 26 as: ' 2'.
 	! !
 
 !CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
@@ -5488,11 +5488,6 @@ string
 	
 	^ item string! !
 
-!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 11/2/2022 00:08:49'!
-appendToString: aString
-
-	^ aString, (item allButFirst: numberOfCharactersToSkip)! !
-
 !CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 11/2/2022 00:08:49'!
 initializeFor: anItem with: aCodeCoverageReport skippingAllButFirst: numberOfCharacters 
 
@@ -5528,6 +5523,11 @@ asString
 doesNotUnderstand: aMessage
 
 	^ aMessage sendTo: item! !
+
+!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 11/2/2022 00:08:49'!
+appendToString: aString
+
+	^ aString, (item allButFirst: numberOfCharactersToSkip)! !
 
 !CodeCoverageResultItem methodsFor: 'as yet unclassified' stamp: 'NPM 11/2/2022 00:22:10'!
 percentCovered
