@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 4 November 2022 at 12:09:16 am'!
-'Description Marks CodeCoverageMethodTracker>>#coverAll:by: as subclass responsibility.'!
-!provides: 'CodeCoverage' 1 55!
+'From Cuis 6.0 [latest update: #5510] on 4 November 2022 at 12:14:30 am'!
+'Description Cleans up CompiledMethodCoverageAnalyzer.'!
+!provides: 'CodeCoverage' 1 56!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -131,7 +131,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector coverageReportBuilder codeCoverageNotifier isInstalled installCount'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator tracedCompiledMethod methodClass codeCoverageAnalyzer selector codeCoverageNotifier installCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -4771,11 +4771,6 @@ uninstall
 
 	installCount _ installCount - 1.
 	! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 8/31/2022 01:45:17'!
-codeCoverageReport
-
-	^ coverageReportBuilder value! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 9/10/2022 15:20:54'!
 registerNewCoverageReportBuilder
