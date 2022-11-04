@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 4 November 2022 at 12:02:50 am'!
-'Description Fixes test005_CoversABinaryMessageSend so it exercises a method with a binary message send (the binaryMessageSend method was sending a keyword message).'!
-!provides: 'CodeCoverage' 1 54!
+'From Cuis 6.0 [latest update: #5510] on 4 November 2022 at 12:09:16 am'!
+'Description Marks CodeCoverageMethodTracker>>#coverAll:by: as subclass responsibility.'!
+!provides: 'CodeCoverage' 1 55!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -4939,13 +4939,13 @@ coverAll: sourceRanges
 
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:56'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/4/2022 00:05:13'!
 coverAll: sourceRanges by: anObject 
 
 	"Register that anObject covered sourceRanges.
 	Return anObject."
 	
-	^ anObject! !
+	self subclassResponsibility.! !
 
 !CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:01'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
