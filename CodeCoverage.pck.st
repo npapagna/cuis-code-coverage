@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 6 November 2022 at 2:55:53 am'!
-'Description Implements decision coverage support for #ifTrue:, #ifFalse:, #ifTrue:ifFalse:, and #ifFalse:ifTrue: selectors. '!
-!provides: 'CodeCoverage' 1 58!
+'From Cuis 6.0 [latest update: #5510] on 6 November 2022 at 3:12:03 am'!
+'Description Supports decision coverage on blocks that return from the method they created from.'!
+!provides: 'CodeCoverage' 1 59!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -1807,11 +1807,6 @@ binaryMessageSend
 block
 	
 	[ 1 ] value! !
-
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 02:51:49'!
-blockReturning: anObject
-
-	[ ^ anObject ] value! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:16:11'!
 blockWithArgument: anArgument
@@ -3981,6 +3976,11 @@ test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
 		is: 66.67! !
 
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 03:02:32'!
+blockReturningFromMethodWith: anObject
+
+	anObject ifTrue: [ ^ 1 ]! !
+
 !CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:30:28'!
 test105_PartiallyCoversIfTrueMessageSendsWhenBothBranchesAreNotExercised
 	
@@ -4068,6 +4068,17 @@ test112_FullyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreExercised
 	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 28 to: 36 as: 'aReceiver'.
 	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 40 to: 47 as: 'ifFalse:'.
 	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 54 to: 60 as: 'ifTrue:'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 03:10:02'!
+test113_FullyCoversDecisionSelectorsWhenTheyReturnFromTheMethodTheyWereCreatedFrom
+	
+	self collectCoverageForExampleNamed: #blockReturningFromMethodWith: withTestCaseArguments: {{true}. {false}}.
+
+	self assertNumberOfCoveredRangesFor: #blockReturningFromMethodWith: is: 4.
+	self assert: #blockReturningFromMethodWith: hasBeenCoveredFrom: 31 to: 38 as: 'anObject'.
+	self assert: #blockReturningFromMethodWith: hasBeenCoveredFrom: 42 to: 49 as: 'anObject'.
+	self assert: #blockReturningFromMethodWith: hasBeenCoveredFrom: 51 to: 57 as: 'ifTrue:'.
+	self assert: #blockReturningFromMethodWith: hasBeenCoveredFrom: 63 to: 63 as: '1'.! !
 
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:50:57'!
 assertRaisesCannotBeCreatedError: aBlock
@@ -5025,7 +5036,7 @@ markAsExecuted
 	
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 01:57:04'!
+!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:07:25'!
 coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver   
 	
 	"Register that the evaluation of aBlock covered sourceRanges.
@@ -5043,7 +5054,16 @@ coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver
 		
 		result ]
 	 ifCurtailed: [
-		self coverAll: sourceRanges ] ! !
+		self
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: aReceiver
+		] ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:07:43'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver 
+	
+	self subclassResponsibility ! !
 
 !CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 20:33:47'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
@@ -5091,6 +5111,15 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 markAsExecuted
 	
 	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:08:31'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver 
+	
+	coverageTrackers do: [ :coverageTracker |
+		coverageTracker
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: aReceiver ] ! !
 
 !CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 20:33:47'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
@@ -5372,6 +5401,17 @@ transformToNonBoolean: declarationSourceRange
 isDecisionSelector: aSelector  
 	
 	^ decisionSelectors includes: aSelector! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:08:49'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver 
+	
+	(self isDecisionSelector: aSelector )
+		ifTrue: [
+			self
+				coverDecisionMessageSendTo: aReceiver
+				atAll: sourceRanges ]
+		ifFalse: [
+			self coverAll: sourceRanges  ]! !
 
 !CompiledMethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
 for: aCompiledMethod withSourceRanges: sourceRanges
