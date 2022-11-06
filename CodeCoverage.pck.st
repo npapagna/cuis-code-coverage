@@ -1,7 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 4 November 2022 at 2:51:13 am'!
-'Description Refactors CompiledMethodCoverageAnalyzer so that it is only used to install/uninstall traced compiled methods.
-It is no longer installed in the target classes method dictionaries.'!
-!provides: 'CodeCoverage' 1 57!
+'From Cuis 6.0 [latest update: #5510] on 6 November 2022 at 2:55:53 am'!
+'Description Implements decision coverage support for #ifTrue:, #ifFalse:, #ifTrue:ifFalse:, and #ifFalse:ifTrue: selectors. '!
+!provides: 'CodeCoverage' 1 58!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -22,7 +21,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode'
+	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode parseNodesBySourceRanges'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -162,7 +161,7 @@ CompiledMethodCoverageNotifier class
 
 !classDefinition: #CompiledMethodCoverageReportBuilder category: 'CodeCoverage-Model'!
 CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageReportBuilder
-	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted'
+	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted sourceRanges2 decisionReceverRanges decisionSelectors'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -678,7 +677,7 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 		}
 		! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:42:51'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/6/2022 01:51:18'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
 	"Generate a parse node that, when compiled and executed, will register that aMessageNode covered sourceRanges
@@ -688,10 +687,13 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 	tracedSourceRanges addAll: sourceRanges.
 	
 	^ self
-		parseNodeToSendToCodeCoverageTracker: #coverAll:evaluating:
+		parseNodeToSendToCodeCoverageTracker: #coverAll:evaluating:thatSends:to:
 		withAll: {
 			self parseNodeForRanges: sourceRanges.
 			decompilerConstructor codeBlock: { aMessageNode } returns: false.
+			encoder encodeLiteral: aMessageNode selector key.
+			aMessageNode originalReceiver.
+			encoder encodeLiteral: aMessageNode originalReceiver isVariableNode.
 		}! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:42:04'!
@@ -1101,6 +1103,11 @@ visitVariableNode: aVariableNode
 			^ aVariableNode ].
 	
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aVariableNode! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 15:19:05'!
+parseNodesBySourceRanges
+
+	^ parseNodesBySourceRanges! !
 
 !CodeCoverageSourceCodeGenerator class methodsFor: 'source code tracing' stamp: 'NPM 1/9/2021 17:10:23'!
 valueFor: aCompiledMethod 
@@ -1521,7 +1528,7 @@ test014_AllowsNestedInstancesToAnalyzeTheSameCompiledMethods
 	self assert: 100 equals: parentReport percentCovered.	
 	self assert: 100 equals: childReport percentCovered ! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:51:10'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 11/6/2022 01:52:41'!
 test015_CollectsCoverageInformationFromTheTimeItIsUsed
 
 	| compiledMethodToAnalyze analyzer1 analyzer2 |
@@ -1535,9 +1542,9 @@ test015_CollectsCoverageInformationFromTheTimeItIsUsed
 	].
 	
 	self assert: 100 equals: analyzer1 report percentCovered.	
-	self assert: 66.67 equals: analyzer2 report percentCovered ! !
+	self assert: 50 equals: analyzer2 report percentCovered ! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:52:08'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 11/6/2022 01:52:53'!
 test016_CollectsCoverageInformationWhileThereIsAtLeastOneActiveInstance
 
 	| compiledMethodToAnalyze analyzer1 analyzer2 |
@@ -1551,7 +1558,7 @@ test016_CollectsCoverageInformationWhileThereIsAtLeastOneActiveInstance
 	].
 	
 	self assert: 100 equals: analyzer1 report percentCovered.	
-	self assert: 66.67 equals: analyzer2 report percentCovered ! !
+	self assert: 50 equals: analyzer2 report percentCovered ! !
 
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:54:21'!
 assert: aSelector at: aSourceRange hasSourceCode: expectedSourceCode coverageRatio: aRatio 
@@ -1706,6 +1713,31 @@ collectCoverageForExampleNamed: aSelector with: argument
 	
 	self collectCodeCoverageDuring: [ self perform: aSelector with: argument ].! !
 
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 11/6/2022 01:38:18'!
+collectCoverageForExampleNamed: aSelector withArguments: arguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
+	
+	self collectCodeCoverageDuring: [ self perform: aSelector withArguments: arguments ].! !
+
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 11/6/2022 01:41:46'!
+collectCoverageForExampleNamed: aSelector withTestCaseArguments: testCaseArguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
+	
+	self collectCodeCoverageDuring: [ 
+		testCaseArguments do: [ :arguments |
+			self perform: aSelector withArguments: arguments ] ].! !
+
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 11/5/2022 20:40:48'!
+collectCoverageForExampleNamed: aSelector withTestCases: singleTestCaseArguments
+
+	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
+	
+	self collectCodeCoverageDuring: [ 
+		singleTestCaseArguments do: [ :argument |
+			self perform: aSelector with: argument ] ].! !
+
 !CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/20/2021 02:20:00'!
 reportForExampleNamed: aSelector
 
@@ -1775,6 +1807,11 @@ binaryMessageSend
 block
 	
 	[ 1 ] value! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 02:51:49'!
+blockReturning: anObject
+
+	[ ^ anObject ] value! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:16:11'!
 blockWithArgument: anArgument
@@ -1929,6 +1966,36 @@ foo: aBoolean
 	aBoolean
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ] ! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/5/2022 21:03:39'!
+ifFalse: aReceiver
+
+	aReceiver ifFalse: [ 1 ]! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 01:26:45'!
+ifFalseIfTrue: aReceiver
+
+	aReceiver
+		ifFalse: []
+		ifTrue: []! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 02:30:01'!
+ifTrue: aBoolean
+
+	aBoolean ifTrue: [ 1 ]! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 02:31:36'!
+ifTrueIfFalse: aReceiver
+
+	aReceiver
+		ifTrue: []
+		ifFalse: []! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/5/2022 20:42:23'!
+ifTrueToNonBooleanReceiver
+
+	CodeCoverageTestClass1 new
+		ifTrue: [ 1 ]! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 21:18:13'!
 implicitSelfReturn
@@ -2386,7 +2453,7 @@ test039_Informs100PercentCoverageWhenAllOfTheAnalyzedCompiledMethodsOfAClassHave
 		assertCoveragePercentOfClass: self class
 		is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 2/14/2021 19:57:41'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 11/6/2022 01:53:37'!
 test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyzedCompiledMethods
 	
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -2396,9 +2463,9 @@ test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyz
 		self foo: true
 	].
 		
-	self assertCoveragePercentOfClass: self class is: 83.33! !
+	self assertCoveragePercentOfClass: self class is: 75! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 2/14/2021 19:56:16'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 11/6/2022 01:53:58'!
 test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -2406,7 +2473,7 @@ test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBl
 	self collectCodeCoverageDuring: [ 	self emptyMethod ].
 	self collectCodeCoverageDuring: [ self foo: true ].
 		
-	self assertCoveragePercentOfClass: self class is: 33.33! !
+	self assertCoveragePercentOfClass: self class is: 25! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:21:22'!
 test029_Informs0PercentCoverageWhenNoneOfTheCompiledMethodCollaborationsAreCovered
@@ -2426,23 +2493,23 @@ test030_Informs100PercentCoverageWhenAllOfTheCompiledMethodCollaborationsAreCove
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 2/14/2021 19:58:41'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 11/6/2022 01:53:07'!
 test030_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
 	
 	self collectCodeCoverageDuring: [ self foo: false ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 66.67! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 50! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 2/14/2021 19:58:33'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 11/6/2022 01:53:14'!
 test031_DoesNotCountCoveredCollaborationsMoreThanOnce
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
 	
 	self collectCodeCoverageDuring: [ self foo: false. self foo: false ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 66.67! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 50! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:05'!
 test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
@@ -2453,7 +2520,7 @@ test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 2/14/2021 19:58:48'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 11/6/2022 01:53:20'!
 test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -2461,7 +2528,7 @@ test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 	
 	self collectCodeCoverageDuring: [ self foo: true. ].
 	
-	self assertPercentCoverageForExampleNamed: #foo: is: 66.67! !
+	self assertPercentCoverageForExampleNamed: #foo: is: 50! !
 
 !CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:36'!
 test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
@@ -3914,6 +3981,94 @@ test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
 		is: 66.67! !
 
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:30:28'!
+test105_PartiallyCoversIfTrueMessageSendsWhenBothBranchesAreNotExercised
+	
+	self collectCoverageForExampleNamed: #ifTrue: with: true.
+
+	self assertNumberOfCoveredRangesFor: #ifTrue: is: 4.
+	self assert: #ifTrue: hasBeenHalfCoveredFrom: 9 to: 16 as: 'aBoolean'.
+	self assert: #ifTrue: hasBeenHalfCoveredFrom: 20 to: 27 as: 'aBoolean'.
+	self assert: #ifTrue: hasBeenHalfCoveredFrom: 29 to: 35 as: 'ifTrue:'.
+	self assert: #ifTrue: hasBeenCoveredFrom: 39 to: 39 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:30:52'!
+test106_FullyCoversIfTrueMessageSendsWhenBothBranchesAreExercised
+	
+	self collectCoverageForExampleNamed: #ifTrue: withTestCases: {true. false.}.
+
+	self assertNumberOfCoveredRangesFor: #ifTrue: is: 4.
+	self assert: #ifTrue: hasBeenCoveredFrom: 9 to: 16 as: 'aBoolean'.
+	self assert: #ifTrue: hasBeenCoveredFrom: 20 to: 27 as: 'aBoolean'.
+	self assert: #ifTrue: hasBeenCoveredFrom: 29 to: 35 as: 'ifTrue:'.
+	self assert: #ifTrue: hasBeenCoveredFrom: 39 to: 39 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:04:04'!
+test107_PartiallyCoversIfTrueIfFalseMessageSendsWhenBothBranchesAreNotExercised
+	
+	self collectCoverageForExampleNamed: #ifTrueIfFalse: with: true.
+
+	self assertNumberOfCoveredRangesFor: #ifTrueIfFalse: is: 4.
+	self assert: #ifTrueIfFalse: hasBeenHalfCoveredFrom: 16 to: 24 as: 'aReceiver'.
+	self assert: #ifTrueIfFalse: hasBeenHalfCoveredFrom: 28 to: 36 as: 'aReceiver'.
+	self assert: #ifTrueIfFalse: hasBeenHalfCoveredFrom: 40 to: 46 as: 'ifTrue:'.
+	self assert: #ifTrueIfFalse: hasBeenHalfCoveredFrom: 53 to: 60 as: 'ifFalse:'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:04:59'!
+test108_FullyCoversIfTrueIfFalseMessageSendsWhenBothBranchesAreExercised
+	
+	self collectCoverageForExampleNamed: #ifTrueIfFalse: withTestCases: {true. false}.
+
+	self assertNumberOfCoveredRangesFor: #ifTrueIfFalse: is: 4.
+	self assert: #ifTrueIfFalse: hasBeenCoveredFrom: 16 to: 24 as: 'aReceiver'.
+	self assert: #ifTrueIfFalse: hasBeenCoveredFrom: 28 to: 36 as: 'aReceiver'.
+	self assert: #ifTrueIfFalse: hasBeenCoveredFrom: 40 to: 46 as: 'ifTrue:'.
+	self assert: #ifTrueIfFalse: hasBeenCoveredFrom: 53 to: 60 as: 'ifFalse:'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:05:18'!
+test109_PartiallyCoversIfFalseMessageSendsWhenBothBranchesAreNotExercised
+	
+	self collectCoverageForExampleNamed: #ifFalse: with: false.
+
+	self assertNumberOfCoveredRangesFor: #ifFalse: is: 4.
+	self assert: #ifFalse: hasBeenHalfCoveredFrom: 10 to: 18 as: 'aReceiver'.
+	self assert: #ifFalse: hasBeenHalfCoveredFrom: 22 to: 30 as: 'aReceiver'.
+	self assert: #ifFalse: hasBeenHalfCoveredFrom: 32 to: 39 as: 'ifFalse:'.
+	self assert: #ifFalse: hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:05:55'!
+test110_FullyCoversIfFalseMessageSendsWhenBothBranchesAreExercised
+	
+	self collectCoverageForExampleNamed: #ifFalse: withTestCases: {true. false}.
+
+	self assertNumberOfCoveredRangesFor: #ifFalse: is: 4.
+	self assert: #ifFalse: hasBeenCoveredFrom: 10 to: 18 as: 'aReceiver'.
+	self assert: #ifFalse: hasBeenCoveredFrom: 22 to: 30 as: 'aReceiver'.
+	self assert: #ifFalse: hasBeenCoveredFrom: 32 to: 39 as: 'ifFalse:'.
+	self assert: #ifFalse: hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:06:31'!
+test111_PartiallyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreNotExercised
+	
+	self collectCoverageForExampleNamed: #ifFalseIfTrue: with: true.
+
+	self assertNumberOfCoveredRangesFor: #ifFalseIfTrue: is: 4.
+	self assert: #ifFalseIfTrue: hasBeenHalfCoveredFrom: 16 to: 24 as: 'aReceiver'.
+	self assert: #ifFalseIfTrue: hasBeenHalfCoveredFrom: 28 to: 36 as: 'aReceiver'.
+	self assert: #ifFalseIfTrue: hasBeenHalfCoveredFrom: 40 to: 47 as: 'ifFalse:'.
+	self assert: #ifFalseIfTrue: hasBeenHalfCoveredFrom: 54 to: 60 as: 'ifTrue:'.! !
+
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:06:51'!
+test112_FullyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreExercised
+	
+	self collectCoverageForExampleNamed: #ifFalseIfTrue: withTestCases: {true. false}.
+
+	self assertNumberOfCoveredRangesFor: #ifFalseIfTrue: is: 4.
+	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 16 to: 24 as: 'aReceiver'.
+	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 28 to: 36 as: 'aReceiver'.
+	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 40 to: 47 as: 'ifFalse:'.
+	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 54 to: 60 as: 'ifTrue:'.! !
+
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:50:57'!
 assertRaisesCannotBeCreatedError: aBlock
 	
@@ -4861,17 +5016,6 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:21'!
-coverAll: sourceRanges evaluating: aBlock
-
-	"Register that the evaluation of aBlock covered sourceRanges.
-	Return the result of evaluating aBlock."
-	
-	^ [ | result |
-		result _ aBlock value.
-		self coverAll: sourceRanges by: result ]
-	   ifCurtailed: [ self coverAll: sourceRanges ] ! !
-
 !CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
 markAsExecuted
 
@@ -4880,6 +5024,31 @@ markAsExecuted
 	based on the number of source ranges that were covered (they don't have any source range)."
 	
 	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 01:57:04'!
+coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver   
+	
+	"Register that the evaluation of aBlock covered sourceRanges.
+	Return the result of evaluating aBlock."
+	
+	^ [
+		| result |
+		result := aBlock value.
+		
+		self
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: aReceiver
+			withResult: result.
+		
+		result ]
+	 ifCurtailed: [
+		self coverAll: sourceRanges ] ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 20:33:47'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
+
+	self subclassResponsibility ! !
 
 !CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 15:36:57'!
 notifier 
@@ -4922,6 +5091,16 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 markAsExecuted
 	
 	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 20:33:47'!
+coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
+	
+	coverageTrackers do: [ :coverageTracker | 
+		coverageTracker
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: anObject
+			withResult: result  ]! !
 
 !CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
 sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
@@ -5001,7 +5180,7 @@ value
 		executed: compiledMethodWasExecuted
 		with: self consolidateCoverageResults.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 8/31/2022 01:45:45'!
+!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/6/2022 02:54:29'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
@@ -5009,7 +5188,8 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	coveredNonBooleanSourceRanges := Set new.
 	booleanValuesByDeclaration := Dictionary new.
 	usagesByDeclaration := Dictionary new.
-	compiledMethodWasExecuted := false.! !
+	compiledMethodWasExecuted := false.
+	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
 consolidateCoverageResults
@@ -5071,15 +5251,16 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 	
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 03:22:06'!
-coverAll: sourceRanges evaluating: aBlock
-	
-	"Register that the evaluation of aBlock covered sourceRanges"
-	
-	^ [ | result |
-		result _ aBlock value.
-		self coverAll: sourceRanges by: result ]
-	   ifCurtailed: [ self coverAsNonBooleanAll: sourceRanges ] ! !
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 02:53:47'!
+coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
+
+	(self isDecisionSelector: aSelector )
+		ifTrue: [
+			self
+				coverDecisionMessageSendTo: anObject
+				atAll: sourceRanges ]
+		ifFalse: [
+			self coverAll: sourceRanges by: result ]! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
 coverAsNonBoolean: aSourceRange
@@ -5097,6 +5278,16 @@ coverAsNonBoolean: aSourceRange
 coverAsNonBooleanAll: sourceRanges
 	
 	sourceRanges do: [ :sourceRange | self coverAsNonBoolean: sourceRange ]! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:55:56'!
+coverDecisionMessageSendTo: aReceiver atAll: sourceRanges 
+	
+	coveredNonBooleanSourceRanges
+		removeAllFoundIn: sourceRanges.
+		
+	self
+		registerBoolean: aReceiver
+		declaredAtAll: sourceRanges ! !
 
 !CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:00:53'!
 coverNonBooleanUsage: usageSourceRange of: declarationSourceRange 
@@ -5176,6 +5367,11 @@ transformToNonBoolean: declarationSourceRange
 	"Consider all source ranges related to declarationSourceRange covered as well."
 	self coverAsNonBooleanAll: (self usagesOf: declarationSourceRange)
 	! !
+
+!CompiledMethodCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/6/2022 01:59:03'!
+isDecisionSelector: aSelector  
+	
+	^ decisionSelectors includes: aSelector! !
 
 !CompiledMethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
 for: aCompiledMethod withSourceRanges: sourceRanges
