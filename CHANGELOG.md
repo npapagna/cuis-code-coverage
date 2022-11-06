@@ -31,7 +31,8 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 
 ### Fixed
 
-* Display code coverage percentages on system categories (they were changed to be displayed in a hierarchical way in the Cuis base image). 
+* Display code coverage percentages on system categories (they were changed to be displayed in a hierarchical way in the Cuis base image).
+* Browsing messages via the message category list in the code coverage browser (sometimes the message list was empty even if there were messages to show).
 
 ## [1.33](https://github.com/npapagna/cuis-code-coverage/compare/v1.32...v1.33) - 2022-08-21
 

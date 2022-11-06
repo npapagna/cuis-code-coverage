@@ -1,6 +1,10 @@
-'From Cuis 6.0 [latest update: #5510] on 6 November 2022 at 3:12:03 am'!
-'Description Supports decision coverage on blocks that return from the method they created from.'!
-!provides: 'CodeCoverage' 1 59!
+'From Cuis 6.0 [latest update: #5510] on 6 November 2022 at 3:30:48 am'!
+'Description Fixes the message category list in the code coverage browser.
+Clicking on some categories did not work and the message list was empty.
+The bug was caused when the message category list contents were changed to be instances of CodeCoverageResultItem.
+This broke the equality tests in #messageList and returned an empty collection.
+The bug was fixed by unwrapping the item in CodeCoverageResultItem in #messageList (copied from the superclass).'!
+!provides: 'CodeCoverage' 1 60!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -367,7 +371,28 @@ messageCategoryList
 	
 ! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 1/18/2021 20:50:31'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 11/6/2022 03:26:39'!
+messageCategoryListIndex: anInteger
+	"Set the selected message category to be the one indexed by anInteger."
+
+	| index messageCategoryList |
+	
+	messageCategoryList _ self messageCategoryList.
+	index _ messageCategoryList ifInBounds: anInteger ifNot: 0.
+
+	selectedMessageCategory _ index = 0 ifFalse: [(messageCategoryList at: index) item ].
+	selectedMessage _ nil.
+	self changed: #messageCategorySelectionChanged.
+	self changed: #messageCategoryListIndex. "update my selection"
+	self changed: #messageList.
+	self editSelection: (index > 0
+		ifTrue: [#newMessage]
+		ifFalse: [self classListIndex > 0
+			ifTrue: [#editClass]
+			ifFalse: [#newClass]]).
+	self acceptedContentsChanged.! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 11/6/2022 03:27:29'!
 messageList
 
 	^ super messageList
@@ -5625,7 +5650,12 @@ new
 	
 	^ CodeCoverageTextStyler highlightingCoveredCodeFrom: report! !
 
-!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:48:02'!
+!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:10'!
+item
+
+	^ item! !
+
+!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:01'!
 string
 	
 	^ item string! !
