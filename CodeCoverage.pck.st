@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 7 November 2022 at 2:12:50 am'!
-'Description Parametrizes the report builder factory used by CodeCoverageAnalyzer.'!
-!provides: 'CodeCoverage' 1 63!
+'From Cuis 6.0 [latest update: #5510] on 7 November 2022 at 3:44:31 am'!
+'Description Renames CompiledMethodCoverageReportBuilder to DecisionConditionReportBuilder.'!
+!provides: 'CodeCoverage' 1 65!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -159,14 +159,14 @@ CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageNotifier
 CompiledMethodCoverageNotifier class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompiledMethodCoverageReportBuilder category: 'CodeCoverage-Model'!
-CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageReportBuilder
+!classDefinition: #DecisionConditionCoverageReportBuilder category: 'CodeCoverage-Model'!
+CompiledMethodCoverageTracker subclass: #DecisionConditionCoverageReportBuilder
 	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted sourceRanges2 decisionReceverRanges decisionSelectors'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageReportBuilder class' category: 'CodeCoverage-Model'!
-CompiledMethodCoverageReportBuilder class
+!classDefinition: 'DecisionConditionCoverageReportBuilder class' category: 'CodeCoverage-Model'!
+DecisionConditionCoverageReportBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #CodeCoverageTestClass1 category: 'CodeCoverage-Tests'!
@@ -4497,12 +4497,12 @@ value: aBlock analyzingAll: compiledMethods
 	to retrieve coverage reports from it."
 	^ analzer report! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:31'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 03:44:16'!
 toAnalyzeAll: compiledMethods 
 	
 	^ self
 		toAnalyzeAll: compiledMethods
-		creatingReportBuildersWith: CompiledMethodCoverageReportBuilder! !
+		creatingReportBuildersWith: DecisionConditionCoverageReportBuilder! !
 
 !CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:17'!
 toAnalyzeAll: compiledMethods creatingReportBuildersWith: aReportBuilderFactory
@@ -5092,16 +5092,7 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
-markAsExecuted
-
-	"Register that the compiled method was executed.
-	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
-	based on the number of source ranges that were covered (they don't have any source range)."
-	
-	self subclassResponsibility.! !
-
-!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:07:25'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:25'!
 coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver   
 	
 	"Register that the evaluation of aBlock covered sourceRanges.
@@ -5125,20 +5116,34 @@ coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver
 			to: aReceiver
 		] ! !
 
-!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:07:43'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:43'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	self subclassResponsibility ! !
 
-!CompiledMethodCoverageTracker methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 20:33:47'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
 
 	self subclassResponsibility ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
+markAsExecuted
+
+	"Register that the compiled method was executed.
+	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
+	based on the number of source ranges that were covered (they don't have any source range)."
+	
+	self subclassResponsibility.! !
 
 !CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 15:36:57'!
 notifier 
 
 	^ CompiledMethodCoverageNotifier new! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
+sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
+
+	coverageTrackers add: aCoverageTrackerToBeNotified ! !
 
 !CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 15:36:20'!
 initialize
@@ -5172,12 +5177,7 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 	
 	^ anObject! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:08:40'!
-markAsExecuted
-	
-	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 11/6/2022 03:08:31'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:31'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	coverageTrackers do: [ :coverageTracker |
@@ -5186,7 +5186,7 @@ coverAll: sourceRanges fromSending: aSelector to: aReceiver
 			fromSending: aSelector
 			to: aReceiver ] ! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 20:33:47'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
 	
 	coverageTrackers do: [ :coverageTracker | 
@@ -5196,12 +5196,12 @@ coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result
 			to: anObject
 			withResult: result  ]! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
-sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:08:40'!
+markAsExecuted
+	
+	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
 
-	coverageTrackers add: aCoverageTrackerToBeNotified ! !
-
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
 collectWithUsages: sourceRanges
 	
 	^ sourceRanges
@@ -5212,36 +5212,36 @@ collectWithUsages: sourceRanges
 				addAll: (self usagesOf: sourceRange);
 				yourself ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:37'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:37'!
 coveredSourceRanges
 	
 	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:27'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:27'!
 fulllyCoveredNonBooleanSourceRanges
 	
 	^ self collectWithUsages: coveredNonBooleanSourceRanges! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 12:32:12'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 12:32:12'!
 fullyCoveredBooleanSourceRanges
 	
 	"A fully-covered boolean source range is one that referenced both true and false."
 	
 	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 2 ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 13:13:10'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 13:13:10'!
 fullyCoveredSourceRanges
 
 	^ self fulllyCoveredNonBooleanSourceRanges, self fullyCoveredBooleanSourceRanges! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:23:30'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:23:30'!
 partiallyCoveredBooleanRanges
 	
 	"A partially-covered boolean source range is one that referenced either true or false."
 	
 	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 1 ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:27:43'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:27:43'!
 selectBooleanSourceRanges: aCondition
 	
 	"Select the boolean source range declarations passing the covered boolean values referenced by them to aCondition.
@@ -5254,19 +5254,19 @@ selectBooleanSourceRanges: aCondition
 	
 	^ self collectWithUsages: selectedDeclarations! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:12'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:12'!
 uncoveredSourceRanges
 
 	^ analyzedSourceRanges difference: self coveredSourceRanges! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 20:25:52'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 20:25:52'!
 usagesOf: aDeclaration
 
 	^ usagesByDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:22:04'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:22:04'!
 value
 
 	^ CodeCoverageReport
@@ -5275,7 +5275,7 @@ value
 		with: self consolidateCoverageResults
 		messages: self messages.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/6/2022 02:54:29'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/6/2022 02:54:29'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
@@ -5286,7 +5286,7 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	compiledMethodWasExecuted := false.
 	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
 consolidateCoverageResults
 	
 	| coverageRatioBySourceRange |
@@ -5303,7 +5303,7 @@ consolidateCoverageResults
 	
 	^ coverageRatioBySourceRange! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 02:10:01'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 02:10:01'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 
 	"Register thatanObject covered aSourceRange and its declaration at declarationSourceRange."
@@ -5321,12 +5321,12 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 			
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:22:17'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:22:17'!
 coverAll: sourceRanges
 
 	self coverAsNonBooleanAll: sourceRanges! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:30:50'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:30:50'!
 coverAll: sourceRanges by: anObject 
 	
 	(anObject isKindOf: Boolean)
@@ -5335,7 +5335,7 @@ coverAll: sourceRanges by: anObject
 		
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:38:10'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:38:10'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 
 	"Register that anObject covered sourceRanges"
@@ -5346,7 +5346,7 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 	
 	^ anObject! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:49'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:49'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	(self isDecisionSelector: aSelector )
@@ -5357,7 +5357,7 @@ coverAll: sourceRanges fromSending: aSelector to: aReceiver
 		ifFalse: [
 			self coverAll: sourceRanges  ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 02:53:47'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 02:53:47'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
 
 	(self isDecisionSelector: aSelector )
@@ -5368,7 +5368,7 @@ coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result
 		ifFalse: [
 			self coverAll: sourceRanges by: result ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
 coverAsNonBoolean: aSourceRange
 
 	"Consider aSourceRange as a covered non-boolean source range.
@@ -5380,12 +5380,12 @@ coverAsNonBoolean: aSourceRange
 		
 	coveredNonBooleanSourceRanges add: aSourceRange.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:19:29'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:19:29'!
 coverAsNonBooleanAll: sourceRanges
 	
 	sourceRanges do: [ :sourceRange | self coverAsNonBoolean: sourceRange ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:55:56'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:55:56'!
 coverDecisionMessageSendTo: aReceiver atAll: sourceRanges 
 	
 	coveredNonBooleanSourceRanges
@@ -5395,7 +5395,7 @@ coverDecisionMessageSendTo: aReceiver atAll: sourceRanges
 		registerBoolean: aReceiver
 		declaredAtAll: sourceRanges ! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:00:53'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:00:53'!
 coverNonBooleanUsage: usageSourceRange of: declarationSourceRange 
 	
 	"Consider both usageSourceRange and declarationSourceRange as covered.
@@ -5408,12 +5408,12 @@ coverNonBooleanUsage: usageSourceRange of: declarationSourceRange
 		registerUsage: usageSourceRange of: declarationSourceRange;
 		coverAsNonBoolean: declarationSourceRange.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/31/2022 01:45:45'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/31/2022 01:45:45'!
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 01:31:28'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 01:31:28'!
 messages
 	
 	^ booleanValuesByDeclaration
@@ -5426,7 +5426,7 @@ messages
 			'Code Coverge: missing test case: ', missingTestCase asString, '. Only exercised with ',
 			exercisedTestCase asString, '.' ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:22:34'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:22:34'!
 registerBoolean: aValue declaredAt: declarationSourceRange
 
 	"Consider declarationSourceRange as a covered boolean source range."
@@ -5440,7 +5440,7 @@ registerBoolean: aValue declaredAt: declarationSourceRange
 	(booleanValuesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
 		add: aValue! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:08:31'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:08:31'!
 registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
 
 	"Consider declarationSourceRanges as covered boolean source ranges.
@@ -5454,7 +5454,7 @@ registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
 	declarationSourceRanges do: [ :declarationSourceRange |
 		self registerBoolean: aBoolean declaredAt: declarationSourceRange ]! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:12:48'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:12:48'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
 	
 	self
@@ -5464,13 +5464,13 @@ registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSource
 	
 	! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:10:42'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:10:42'!
 registerUsage: aSourceRange of: declarationSourceRange
 
 	(usagesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
 		add: aSourceRange! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:17:06'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:17:06'!
 transformToNonBoolean: declarationSourceRange 
 	
 	"Discard boolean values related to declarationSourceRange"
@@ -5487,12 +5487,12 @@ transformToNonBoolean: declarationSourceRange
 	self coverAsNonBooleanAll: (self usagesOf: declarationSourceRange)
 	! !
 
-!CompiledMethodCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/6/2022 01:59:03'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/6/2022 01:59:03'!
 isDecisionSelector: aSelector  
 	
 	^ decisionSelectors includes: aSelector! !
 
-!CompiledMethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
+!DecisionConditionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
 for: aCompiledMethod withSourceRanges: sourceRanges
 	
 	^ self
