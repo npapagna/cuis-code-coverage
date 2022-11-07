@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 7 November 2022 at 1:46:55 am'!
-'Description Displays code coverage messages using tooltips in the editor.'!
-!provides: 'CodeCoverage' 1 62!
+'From Cuis 6.0 [latest update: #5510] on 7 November 2022 at 2:12:50 am'!
+'Description Parametrizes the report builder factory used by CodeCoverageAnalyzer.'!
+!provides: 'CodeCoverage' 1 63!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -81,7 +81,7 @@ CodeCoverageTextStyler class
 
 !classDefinition: #CodeCoverageAnalyzer category: 'CodeCoverage-Model'!
 Object subclass: #CodeCoverageAnalyzer
-	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report coverageReportBuilders'
+	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report coverageReportBuilders reportBuilderFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -4336,7 +4336,7 @@ highlightingCoveredCodeFrom: aCodeCoverageReport
 		new
 		initializeHighlightingCoveredCodeFrom: aCodeCoverageReport ! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:30:37'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/7/2022 02:04:18'!
 installCompiledMethodAnalizers
 	
 	self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size.
@@ -4347,7 +4347,7 @@ installCompiledMethodAnalizers
 			self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
 			compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self ].
 		
-	coverageReportBuilders := installedCompiledMethodAnalyzers collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilder ].
+	coverageReportBuilders := installedCompiledMethodAnalyzers collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilderUsing: reportBuilderFactory ].
 	
 	self triggerEvent: #endInstallingCompiledMethodAnalyzers.
 	! !
@@ -4425,11 +4425,12 @@ value: aBlock
 	]
 	! !
 
-!CodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 1/20/2021 02:42:44'!
-initializeToAnalyze: compiledMethods with: aCompiledMethodCoverageAnalyzer  
+!CodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/7/2022 02:04:41'!
+initializeToAnalyze: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory   
 	
 	compiledMethodsToAnalyze := compiledMethods.
 	compiledMethodCoverageAnalyzer := aCompiledMethodCoverageAnalyzer.
+	reportBuilderFactory := aReportBuilderFactory.
 	running := false.
 	report := IdentitySet new.
 	
@@ -4496,33 +4497,43 @@ value: aBlock analyzingAll: compiledMethods
 	to retrieve coverage reports from it."
 	^ analzer report! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 1/10/2021 16:11:53'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:31'!
 toAnalyzeAll: compiledMethods 
 	
 	^ self
 		toAnalyzeAll: compiledMethods
-		with: CompiledMethodCoverageAnalyzer! !
+		creatingReportBuildersWith: CompiledMethodCoverageReportBuilder! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 10/26/2022 02:35:06'!
-toAnalyzeAll: compiledMethods with: aCompiledMethodCoverageAnalyzer
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:17'!
+toAnalyzeAll: compiledMethods creatingReportBuildersWith: aReportBuilderFactory
+	
+	^ self
+		toAnalyzeAll: compiledMethods
+		with: CompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: aReportBuilderFactory! !
+
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:07:32'!
+toAnalyzeAll: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
 	
 	(self anyBelongToMySystemCategory: compiledMethods)
 		ifTrue: [
 			^ self
 				toAnalyzeAllInMyPackage: compiledMethods
-				with: aCompiledMethodCoverageAnalyzer ].
+				with: aCompiledMethodCoverageAnalyzer
+				creatingReportBuildersWith: aReportBuilderFactory ].
 
 	^ self
 		toAnalyzeAllOutsideMyPackage: compiledMethods
-		with: aCompiledMethodCoverageAnalyzer! !
+		with: aCompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: aReportBuilderFactory! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 10/27/2022 01:24:57'!
-toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:08:10'!
+toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
 
 	"To analyze methods in my own package (aka analyze instances of myself) I create a temporary copy of my whole package
 	and instantiate classes from it to avoid infinite recursions"
 	
-	| snapshotOfCompiledMethodCoverageAnalyzer codeCoverageAnalyzer snapshotOfMyself myPackage snapshotOfMyPackage |
+	| snapshotOfCompiledMethodCoverageAnalyzer codeCoverageAnalyzer snapshotOfMyself myPackage snapshotOfMyPackage snapshotOfReportBuilderFactory |
 	"First I create a copy of my own package"
 	myPackage := CodePackage packageOfClass: self ifNone: [ self shouldNotHappen ].
 	snapshotOfMyPackage := PackageSnapshot takeOf: myPackage.
@@ -4530,11 +4541,13 @@ toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer
 	"Find a snapshot of myself and my collaborator in the package snapshot"
 	snapshotOfMyself := snapshotOfMyPackage snapshotOf: self.
 	snapshotOfCompiledMethodCoverageAnalyzer _ snapshotOfMyPackage snapshotOf: aCompiledMethodCoverageAnalyzer.
+	snapshotOfReportBuilderFactory _ snapshotOfMyPackage snapshotOf: aReportBuilderFactory.
 	
 	"Create the code coverage analyzer instance. It will be an instance of my snapshot (not myself)"
 	codeCoverageAnalyzer := snapshotOfMyself
 		toAnalyzeAll: compiledMethods
-		with: snapshotOfCompiledMethodCoverageAnalyzer.
+		with: snapshotOfCompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: snapshotOfReportBuilderFactory.
 		
 	"Once codeCoverageAnalyzer is done running, it will need the package snapshot to discard it.
 	I need to pin it or else it will be garbage collected."
@@ -4551,13 +4564,14 @@ toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer
 		
 	! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 10/26/2022 02:20:23'!
-toAnalyzeAllOutsideMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:05:31'!
+toAnalyzeAllOutsideMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
 
 	^ self
 		new
 		initializeToAnalyze: compiledMethods
-		with: aCompiledMethodCoverageAnalyzer! !
+		with: aCompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: aReportBuilderFactory! !
 
 !CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 10/26/2022 02:33:31'!
 anyBelongToMySystemCategory: compiledMethods
@@ -4961,11 +4975,11 @@ uninstall
 	
 	! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 9/10/2022 15:20:54'!
-registerNewCoverageReportBuilder
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 11/7/2022 02:03:51'!
+registerNewCoverageReportBuilderUsing: aReportBuilderFactory
 
 	| newReportBuilder |
-	newReportBuilder := CompiledMethodCoverageReportBuilder
+	newReportBuilder := aReportBuilderFactory
 		for: originalCompiledMethod
 		withSourceRanges: sourceCodeGenerator tracedSourceRanges.
 		
