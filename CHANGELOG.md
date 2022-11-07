@@ -8,6 +8,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 ## Added
 * Reflexion support to allow Code Coverage to analyze itself.
 * Decision coverage support for `#ifTrue:`, `#ifFalse:`, `#ifTrue:ifFalse:`, and `#ifFalse:ifTrue: selectors`.
+* Display code coverage messages using tooltips in the editor.
 
 ### Changed
 
