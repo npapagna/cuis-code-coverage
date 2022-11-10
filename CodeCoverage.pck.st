@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 7 November 2022 at 3:44:31 am'!
-'Description Renames CompiledMethodCoverageReportBuilder to DecisionConditionReportBuilder.'!
-!provides: 'CodeCoverage' 1 65!
+'From Cuis 6.0 [latest update: #5510] on 10 November 2022 at 6:19:02 pm'!
+'Description Adds support for displaying tooltips in the code coverage browser.'!
+!provides: 'CodeCoverage' 1 66!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -5943,7 +5943,7 @@ disableClassCachedStateDuring: aBlockClosure
 	] ensure: [ self initialize ]
 	! !
 
-!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 11/7/2022 01:13:16'!
+!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 11/9/2022 02:06:44'!
 codeCoverageInfoAt: mousePositionInText 
 	
 	^ [
