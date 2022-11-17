@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5510] on 10 November 2022 at 6:19:02 pm'!
-'Description Adds support for displaying tooltips in the code coverage browser.'!
-!provides: 'CodeCoverage' 1 66!
+'From Cuis 6.0 [latest update: #5510] on 17 November 2022 at 1:24:12 am'!
+'Description Fixes a bug that caused message receives to be evaluated twice when tracking code coverage for message sends.'!
+!provides: 'CodeCoverage' 1 68!
 !requires: 'Cuis-Base' 50 4527 nil!
 !requires: 'PackageSnapshot' 1 4 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
@@ -21,7 +21,7 @@ CodeCoverageAnalyzerBrowser class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode parseNodesBySourceRanges'
+	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode parseNodesBySourceRanges receiverTempCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -51,7 +51,7 @@ CodeCoverageAnalyzerTest class
 
 !classDefinition: #CodeCoverageTest category: 'CodeCoverage-Tests'!
 TestCase subclass: #CodeCoverageTest
-	instanceVariableNames: 'codeCoverageAnalyzer instanceVariable otherInstanceVariable coverageReport messageResult'
+	instanceVariableNames: 'codeCoverageAnalyzer instanceVariable otherInstanceVariable coverageReport messageResult messageReceiverUsageCount'
 	classVariableNames: 'ClassVariable'
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
@@ -530,7 +530,7 @@ denyIsOptimized: aMessageNode
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 11/1/2022 00:16:01'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 11/16/2022 01:48:00'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
@@ -543,9 +543,7 @@ value
 	"Force source text generation"
 	methodNode sourceText: nil.
 	
-	tracedSourceCode := methodNode sourceText.
-	
-	! !
+	tracedSourceCode := methodNode sourceText.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 9/10/2022 14:46:16'!
 initializeCoverageTrackerLiteralName
@@ -557,7 +555,7 @@ initializeCoverageTrackerLiteralName
 	coverageTrackerLiteralName := ('_coverageTracker', Time millisecondClockValue asString, '_') asSymbol.
 	self assert: (methodNode sourceText includesSubString: coverageTrackerLiteralName) not.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 11/1/2022 00:27:22'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 11/17/2022 00:46:51'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
 
 	methodNode := aMethodNode.
@@ -570,7 +568,9 @@ initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges
 	"Used to generate traced parse nodes"
 	decompilerConstructor := DecompilerConstructor new.
 	encoder := Encoder new initScopeAndLiteralTables.
-	coverageTrackerNode := encoder encodeLiteral: coverageTrackerLiteralName.! !
+	coverageTrackerNode := encoder encodeLiteral: coverageTrackerLiteralName.
+	"Used to uniquely assign temporary variable names for message receivers"
+	receiverTempCount := 0.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
 addDeclarationSourceRangeOf: aParseNode to: sourceRanges
@@ -709,24 +709,122 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 		}
 		! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/6/2022 01:51:18'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/17/2022 01:22:11'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
 	"Generate a parse node that, when compiled and executed, will register that aMessageNode covered sourceRanges
-	in the selector and class of methodNode."
+	in the selector and class of methodNode.
 	
+	Implementation Details
+	================
+	
+	For tracking code coverage in this case I send the CompiledMethodCoverageTracker>>#coverAll:evaluating:thatSends:to: message
+	passing as collaborators:
+	
+	1) the source ranges to be covered when the message is sent
+	2) a block that captures the message to be sent and its context
+	3) the selector
+	4) the message receiver
+	
+	Notice that in this rewrite the message receiver is referenced twice:
+	- one inside the block in 2) to actually send the message and 
+	- one in 4) so the message receiver can be passed to the method that tracks the coverage
+	
+	To avoid changing the semantics of aMessageNode, I make sure to reference aMessageNode receiver only once
+	and store it in a temp variable. If I dont do this (say I reference it more than once) then the semantics might be changed.
+	
+	For instance, consider the following message send: (Set new) add: 1.
+	If I use the message receiver more than once, then the code coverage message send will look something like this
+	(important: for this example, the code has been simplified - this is not how the generated code will look like):
+
+	nameOfTheCodeCoverageTrackerInstance
+		coverAll: ...source ranges here....
+		evaluating: [ (Set new) add: 1 ]
+		thatSends: #add:
+		to: Set new
+		
+	Notice that Set new is referenced twice, so a new receiver (and not the original) is passed to the method that tracks the coverage.
+	
+	To fix this, I rewrite the code to make it look like this
+	[
+		|receiver|
+	 	receiver := Set new.
+		
+		nameOfTheCodeCoverageTrackerInstance
+		coverAll: ...source ranges here....
+		evaluating: [ receiver add: 1 ]
+		thatSends: #add:
+		to: receiver
+	] value
+
+	Notice that the receiver temporary has been introduced to reference aMessageNode receiver only once.
+	"
+	
+	| receiverTemp blockAssigningTheMessageReceiverTemp receiverTempAssignment codeCoverageTrackingNode receiverTempDeclaration |
 	"Increment the number of source range traced by the number of source ranges aMessageNode will cover when executed"
 	tracedSourceRanges addAll: sourceRanges.
 	
-	^ self
+	aMessageNode originalReceiver isSuperPseudoVariable ifTrue: [
+		"Special case.
+		Because this is a super send, I cannot rewrite the message send like I mentioned in the comment avobe.
+		Doing that would change the semantics of aMessageNode.
+		For instance, if the message send is: super printString:
+		
+		[
+			|receiver|
+		 	receiver := super.
+		
+			nameOfTheCodeCoverageTrackerInstance
+			coverAll: ...source ranges here....
+			evaluating: [ receiver printString ]
+			thatSends: #printString
+			to: receiver
+		] value
+		
+		Notice that, If I do this, then receiver will hold a reference to self and the message will be sent to self instead of super.
+		
+		In this case it is safe to reference the message receiver more than once (because it is self), so I dont do that rewrite.
+		"
+		^ self
+			parseNodeToSendToCodeCoverageTracker: #coverAll:evaluating:thatSends:to:
+			withAll: {
+				self parseNodeForRanges: sourceRanges.
+				decompilerConstructor codeBlock: { aMessageNode } returns: false.
+				encoder encodeLiteral: aMessageNode selector key.
+				aMessageNode originalReceiver.
+			} ].
+	
+	
+	"General case. rewrite the message send as mentioned in my comment avobe"
+	
+	"Assign the receiver to a new temporary variable"
+	receiverTemp := self parseNodeForStoringMessageReceiver.
+	receiverTempAssignment := decompilerConstructor codeAssignTo: receiverTemp value: aMessageNode receiver.
+	
+	"Change the message receiver to be that temporary variable"
+	aMessageNode receiver: receiverTemp.
+	
+	"Create the parse node that will track the code coverage for aMessageNode.
+	Notice it references receiverTemp."	
+	codeCoverageTrackingNode := self
 		parseNodeToSendToCodeCoverageTracker: #coverAll:evaluating:thatSends:to:
 		withAll: {
 			self parseNodeForRanges: sourceRanges.
-			decompilerConstructor codeBlock: { aMessageNode } returns: false.
+			decompilerConstructor codeBlock: { aMessageNode }  returns: false.
 			encoder encodeLiteral: aMessageNode selector key.
-			aMessageNode originalReceiver.
-			encoder encodeLiteral: aMessageNode originalReceiver isVariableNode.
-		}! !
+			receiverTemp.
+		}.
+		
+	"Create the block that actually assigns the aMessageNode receiver to receiverTemp and evaluates codeCoverageTrackingNode"
+	receiverTempDeclaration := TemporariesDeclarationNode withAll:{ TemporaryDeclarationNode of: receiverTemp }.
+	blockAssigningTheMessageReceiverTemp := decompilerConstructor codeBlock: { receiverTempAssignment. codeCoverageTrackingNode }  returns: false.
+	blockAssigningTheMessageReceiverTemp temporariesDeclaration: receiverTempDeclaration.
+	
+	"Create the message send node that will evaluate the block created avobe."
+	^ decompilerConstructor
+		codeMessage: blockAssigningTheMessageReceiverTemp
+		selector: (encoder encodeSelector: #value)
+		arguments: {}! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:42:04'!
 parseNodeToCoverLiteralOrPseudoVariable: aParseNode 
@@ -1135,6 +1233,19 @@ visitVariableNode: aVariableNode
 			^ aVariableNode ].
 	
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aVariableNode! !
+
+!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 11/17/2022 00:53:23'!
+parseNodeForStoringMessageReceiver
+	
+	| receiverTempName |
+	receiverTempCount := receiverTempCount +1.
+	receiverTempName := 'receiver', receiverTempCount asString.
+	
+	^ (TempVariableNode new
+		name: receiverTempName
+		key: receiverTempName
+		code: 16)
+		scope: 0.! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 15:19:05'!
 parseNodesBySourceRanges
@@ -1654,6 +1765,13 @@ assertCoveragePercentOfSystemCategory: aSystemCategory is: aPercentage
 		assert: aPercentage
 		equals: (coverageReport reportForSystemCategory: aSystemCategory) percentCovered! !
 
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 11/17/2022 01:19:16'!
+assertMessageReceiverUsageCountIs: aQuanity 
+	
+	self
+		assert: aQuanity
+		equals: messageReceiverUsageCount ! !
+
 !CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:15:32'!
 assertNumberOfCoveredRangesFor: aSelector is: aQuantity 
 
@@ -1830,7 +1948,7 @@ backtick
 	
 	`Object new`! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/4/2022 00:00:38'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/11/2022 14:38:44'!
 binaryMessageSend
 	
 	1 + 2! !
@@ -2115,6 +2233,11 @@ messageArgumentUsedManyTimes: anArgument
 
 	anArgument.
 	anArgument.! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/17/2022 01:16:19'!
+messageReceiverTracker
+
+	(self trackMessageReceiverUsage) printString! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 08:17:16'!
 messageSendReturningMessageResultInstanceVariable
@@ -2435,6 +2558,15 @@ temporaryVariableReadAndAssignment
 	a := 1.
 
 	a! !
+
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/17/2022 01:18:31'!
+trackMessageReceiverUsage
+
+	messageReceiverUsageCount ifNil: [
+			messageReceiverUsageCount := 1.
+			^ self ].
+	
+	messageReceiverUsageCount := 	messageReceiverUsageCount + 1! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:13:06'!
 unaryMessageSend
@@ -3971,6 +4103,13 @@ test058_DoesNotCoverMethodsThatWereNotExecuted
 	self deny: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
 	self deny: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
 
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 11/17/2022 01:18:56'!
+test114_EvaluatesReceiversOnlyOnceWhenCoveringMessageSends
+	
+	self collectCoverageForExampleNamed: #messageReceiverTracker.
+
+	self assertMessageReceiverUsageCountIs: 1! !
+
 !CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
 
@@ -4336,20 +4475,19 @@ highlightingCoveredCodeFrom: aCodeCoverageReport
 		new
 		initializeHighlightingCoveredCodeFrom: aCodeCoverageReport ! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/7/2022 02:04:18'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:31:48'!
 installCompiledMethodAnalizers
 	
-	self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size.
+	self triggerInstallStartedEvent.
 	
 	installedCompiledMethodAnalyzers := compiledMethodsToAnalyze
 		select: [ :compiledMethodToAnalyze | compiledMethodToAnalyze isAbstract not ]
-	 	thenCollect: [ :compiledMethodToAnalyze |
-			self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
-			compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self ].
-		
-	coverageReportBuilders := installedCompiledMethodAnalyzers collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilderUsing: reportBuilderFactory ].
+	 	thenCollect: [ :compiledMethodToAnalyze | self installCompiledMethodAnalyzer: compiledMethodToAnalyze ].
 	
-	self triggerEvent: #endInstallingCompiledMethodAnalyzers.
+	coverageReportBuilders := installedCompiledMethodAnalyzers
+		collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilderUsing: reportBuilderFactory ].
+		
+	self triggerIntallFinishedEvent.
 	! !
 
 !CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:09:23'!
@@ -4357,6 +4495,16 @@ resetInstalledCompiledMethodAnalyzers
 
 	installedCompiledMethodAnalyzers := Set new.
 	coverageReportBuilders := Set new.! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 07:54:47'!
+triggerInstallStartedEvent
+
+	^ self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:29:52'!
+triggerIntallFinishedEvent
+
+	^ self triggerEvent: #endInstallingCompiledMethodAnalyzers! !
 
 !CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/11/2021 21:15:02'!
 uninstallCompiledMethodAnalyzers
@@ -4450,6 +4598,13 @@ triggerStopEvent
 onStopSend: aSelector to: anObject
 
 	self when: #stop send: aSelector to: anObject.! !
+
+!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 08:31:30'!
+installCompiledMethodAnalyzer: compiledMethodToAnalyze 
+
+	self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
+	
+	^ compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self! !
 
 !CodeCoverageAnalyzer class methodsFor: 'code coverage tracking' stamp: 'NPM 1/11/2021 22:08:50'!
 stopTrackingCoverageInAllInstances
@@ -5533,7 +5688,7 @@ ifRunning: aBlock
 	
 	enabled ifTrue: aBlock! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 01:22:46'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 11/11/2022 15:36:34'!
 value
 
 	^ CodeCoverageAnalyzer toAnalyzeAll: self compiledMethodsToAnalyze! !
