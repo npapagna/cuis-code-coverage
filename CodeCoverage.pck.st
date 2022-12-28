@@ -2,7 +2,7 @@
 'Description Fixes a bug that caused message receives to be evaluated twice when tracking code coverage for message sends.'!
 !provides: 'CodeCoverage' 1 68!
 !requires: 'Cuis-Base' 50 4527 nil!
-!requires: 'PackageSnapshot' 1 4 nil!
+!requires: 'PackageSnapshot' 1 3 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
 SystemOrganization addCategory: 'CodeCoverage-UI'!
