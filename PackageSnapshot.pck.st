@@ -1,48 +1,48 @@
-'From Cuis 6.0 [latest update: #5466] on 26 October 2022 at 1:34:25 am'!
-'Description '!
-!provides: 'PackageSnapshot' 1 3!
-SystemOrganization addCategory: #'PackageSnapshot-Model'!
-SystemOrganization addCategory: #'PackageSnapshot-Tests'!
-SystemOrganization addCategory: #PackageSnapshot!
+'From Cuis 6.0 [latest update: #5706] on 26 April 2023 at 1:13:39 am'!
+'Description Improves LiveTyping disabling mechanism. '!
+!provides: 'PackageSnapshot' 1 4!
+SystemOrganization addCategory: 'PackageSnapshot-Model'!
+SystemOrganization addCategory: 'PackageSnapshot-Tests'!
+SystemOrganization addCategory: 'PackageSnapshot'!
 
 
-!classDefinition: #SourceCodeSnapshot category: #'PackageSnapshot-Model'!
+!classDefinition: #SourceCodeSnapshot category: 'PackageSnapshot-Model'!
 ParseNodeVisitor subclass: #SourceCodeSnapshot
 	instanceVariableNames: 'packageSnapshot'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Model'!
-!classDefinition: 'SourceCodeSnapshot class' category: #'PackageSnapshot-Model'!
+!classDefinition: 'SourceCodeSnapshot class' category: 'PackageSnapshot-Model'!
 SourceCodeSnapshot class
 	instanceVariableNames: ''!
 
-!classDefinition: #PackageSnapshotTest category: #'PackageSnapshot-Tests'!
+!classDefinition: #PackageSnapshotTest category: 'PackageSnapshot-Tests'!
 TestCase subclass: #PackageSnapshotTest
 	instanceVariableNames: 'classFactory testSystemCategory packageToCopy packageSnapshot'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Tests'!
-!classDefinition: 'PackageSnapshotTest class' category: #'PackageSnapshot-Tests'!
+!classDefinition: 'PackageSnapshotTest class' category: 'PackageSnapshot-Tests'!
 PackageSnapshotTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #PackageSnapshot category: #'PackageSnapshot-Model'!
+!classDefinition: #PackageSnapshot category: 'PackageSnapshot-Model'!
 Object subclass: #PackageSnapshot
 	instanceVariableNames: 'id sourcePackage systemOrganizer snapshotOfClassesByOriginalClassName extensionMethodsToTakeSnapshots classesToTakeSnapshots snapshotsOfExtensionMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Model'!
-!classDefinition: 'PackageSnapshot class' category: #'PackageSnapshot-Model'!
+!classDefinition: 'PackageSnapshot class' category: 'PackageSnapshot-Model'!
 PackageSnapshot class
 	instanceVariableNames: ''!
 
-!classDefinition: #ClassFactoryForTesting category: #'PackageSnapshot-Tests'!
+!classDefinition: #ClassFactoryForTesting category: 'PackageSnapshot-Tests'!
 Object subclass: #ClassFactoryForTesting
 	instanceVariableNames: 'testSystemCategory testSharedPool testExtensionSystemCategory createdClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Tests'!
-!classDefinition: 'ClassFactoryForTesting class' category: #'PackageSnapshot-Tests'!
+!classDefinition: 'ClassFactoryForTesting class' category: 'PackageSnapshot-Tests'!
 ClassFactoryForTesting class
 	instanceVariableNames: ''!
 
@@ -697,40 +697,40 @@ takeSnapshotOfClass: aClass
 		takeSnapshotOfInstanceSideOf: aClass;	
 		takeSnapshotOfClassSideOf: aClass! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/25/2022 13:27:12'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'HAW 4/24/2023 12:43:00'!
 takeSnapshotOfClassSideOf: aClass 
 	
 	| snapshotOfClass |
 	
-	snapshotOfClass _ self snapshotOf: aClass.
+	snapshotOfClass := self snapshotOf: aClass.
 	
 	snapshotOfClass class
 		instanceVariableNames: aClass class instanceVariablesString.
 		
-	snapshotOfClass disableLiveTyping.! !
+	snapshotOfClass disableLiveTyping; doNotCheckForUnload.! !
 
 !PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/22/2022 15:05:11'!
 takeSnapshotOfClasses
 
 	classesToTakeSnapshots do: [ :class | self takeSnapshotOfClass: class ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/25/2022 13:27:18'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'HAW 4/24/2023 12:42:30'!
 takeSnapshotOfInstanceSideOf: aClass 
 	
 	| superclass snapshotOfClass |
 	
-	superclass _ self
+	superclass := self
 		snapshotOf: aClass superclass
 		ifAbsent: [ aClass superclass ].
 	
-	snapshotOfClass _ superclass
+	snapshotOfClass := superclass
 		subclass: (self classNameFor: aClass name)
 		instanceVariableNames: aClass instanceVariablesString 
 		classVariableNames: aClass classVariablesString
 		poolDictionaries: aClass sharedPoolsString
 		category: (self systemCategoryFor: aClass category).
 	
-	snapshotOfClass disableLiveTyping.
+	snapshotOfClass disableLiveTyping; doNotCheckForUnload.
 	
 	self
 		register: snapshotOfClass
