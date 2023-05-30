@@ -29,6 +29,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Supports reusing a compiled method coverage analyzer if one is already installed for the compiled method to be analyzed. 
   This allows multiple `CodeCoverageAnalyzer` instances to register their report builders in the same `CompiledMethodCoverageAnalyzer` instance for a method.
 * Optimized traced source code generation by ~2x.
+* Uses the LiveTyping disable capabilities now present in the stock Cuis University image (thanks @hernanwilkinson!).
 
 ### Fixed
 
