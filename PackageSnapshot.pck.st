@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #5831] on 29 May 2023 at 11:40:23 pm'!
-'Description Improves LiveTyping disabling mechanism. '!
-!provides: 'PackageSnapshot' 1 6!
+'From Cuis 6.0 [latest update: #5962] on 10 August 2023 at 4:50:03 pm'!
+'Description Uses notOptimizedMethodNode to access the unoptimized method node of a compiled method.'!
+!provides: 'PackageSnapshot' 1 8!
 SystemOrganization addCategory: 'PackageSnapshot-Model'!
 SystemOrganization addCategory: 'PackageSnapshot-Tests'!
 SystemOrganization addCategory: 'PackageSnapshot'!
@@ -62,11 +62,11 @@ takeOf: aCompiledMethod
 		takeOf: aCompiledMethod
 		beforeGeneratingSourceCodeDo: [ "Do nothing." ]! !
 
-!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 10/22/2022 15:09:31'!
+!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'HAW 7/26/2023 17:51:12'!
 takeOf: aCompiledMethod beforeGeneratingSourceCodeDo: aBlock
 
 	| methodNode |
-	methodNode _ aCompiledMethod methodNode.
+	methodNode := aCompiledMethod notOptimizedMethodNode.
 
 	methodNode accept: self.
 	aBlock valueWithPossibleArgument: methodNode.

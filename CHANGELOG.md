@@ -30,6 +30,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
   This allows multiple `CodeCoverageAnalyzer` instances to register their report builders in the same `CompiledMethodCoverageAnalyzer` instance for a method.
 * Optimized traced source code generation by ~2x.
 * Uses the LiveTyping disable capabilities now present in the stock Cuis University image (thanks @hernanwilkinson!).
+* Uses `notOptimizedMethodNode` to access unoptimized method nodes (feature already available in Cuis) instead of clearing the Parser's class cache (hack to make it work).
 
 ### Fixed
 

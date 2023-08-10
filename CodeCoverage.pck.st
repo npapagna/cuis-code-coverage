@@ -1,8 +1,8 @@
-'From Cuis 6.0 [latest update: #5510] on 17 November 2022 at 1:24:12 am'!
-'Description Fixes a bug that caused message receives to be evaluated twice when tracking code coverage for message sends.'!
-!provides: 'CodeCoverage' 1 68!
-!requires: 'Cuis-Base' 50 4527 nil!
-!requires: 'PackageSnapshot' 1 3 nil!
+'From Cuis 6.0 [latest update: #5962] on 10 August 2023 at 4:58:34 pm'!
+'Description Updates the way unoptimized method nodes of compiled methods are accessed.'!
+!provides: 'CodeCoverage' 1 70!
+!requires: 'Cuis-Base' 60 5962 nil!
+!requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: 'CodeCoverage-Model'!
 SystemOrganization addCategory: 'CodeCoverage-Tests'!
 SystemOrganization addCategory: 'CodeCoverage-UI'!
@@ -1259,7 +1259,7 @@ valueFor: aCompiledMethod
 	
 	^ (self for: aCompiledMethod) value.! !
 
-!CodeCoverageSourceCodeGenerator class methodsFor: 'instance creation' stamp: 'NPM 1/10/2021 03:07:39'!
+!CodeCoverageSourceCodeGenerator class methodsFor: 'instance creation' stamp: 'HAW 7/26/2023 18:26:54'!
 for: aCompiledMethod 
 	
 	"Return a new instance to generate a source code for aCompiledMethod with code coverage tracing.
@@ -1272,18 +1272,17 @@ for: aCompiledMethod
 	The issue with optimizations is that the parser adds hidden parse nodes or modifies the original message nodes in the source code
 	and those nodes can be missing from the method node's raw source ranges making it impossible to me to correctly trace their execution.
 	
-	To get around that, I recreate the method node temporarily disabling parser optimizations.
+	To get around that, I use notOptimizedMethodNode.
 	Note that the removal of the optimizations are used only to work correctly with message nodes.
 	The unoptimized message nodes will be re-optimized when the traced source code is compiled (optimizations turned on by default).
 	
 	For more information about the optimizations that are done by the parser to message nodes see the 'macro transformations' protocol in MessageNode."
 	
-	^ aCompiledMethod methodNode unoptimizedMethodNodeAndRawSourceRangesDo: [ :rawSourceRanges :methodNode |
-		self
-			new
-			initializeToTrace: methodNode
-			with: rawSourceRanges
-			]
+	| methodNode |
+	
+	methodNode := aCompiledMethod notOptimizedMethodNode.
+	^self new initializeToTrace: methodNode  with: methodNode encoder rawSourceRanges
+			
 
 	! !
 
@@ -2094,7 +2093,7 @@ emptyBlock
 	
 	[] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/11/2021 17:29:25'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'HAW 7/27/2023 14:55:13'!
 emptyMethod! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:43:30'!
@@ -5993,8 +5992,8 @@ runWithCodeCoverage: aTestSuite
 		analyzingCodeCoverageWith: (CodeCoverageAnalyzerBuilder valueFrom: aTestSuite)
 	! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:33:51'!
-basicCompile: code
+!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/26/2023 18:45:28'!
+basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
 
 	"Extracted from #compile:notifying: to compile code without installing the
 	compiled method in my method dictionary."
@@ -6002,11 +6001,12 @@ basicCompile: code
 	"TODO(NPM): this could be refactored and integrated into cuis core"
 	 
 	| methodAndNode |
-	methodAndNode _ self
+	methodAndNode := self
 		basicCompile: code "a Text"
 		notifying: nil
 		trailer: self defaultMethodTrailer
-		ifFail: [^nil].
+		ifFail: [^nil]
+		optimizeSpecialSends: doOptimizeSpecialSends.
 		
 	methodAndNode method putSource: code fromParseNode: methodAndNode node inFile: 2
 			withPreamble: [:f | f newLine; nextPut: $!!; nextChunkPut: 'Behavior method'; newLine].
@@ -6018,15 +6018,15 @@ isTestCaseClass
 	
 	^ self isKindOf: TestCase class! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 2/2/2021 20:14:10'!
+!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/27/2023 15:07:07'!
 safelyBasicCompile: sourceCode 
 	
 	"I try to compile sourceCode the default way (with compiled optimizations turned in).
 	If that fails, I try to compile it without compiler optimizations."
 	
-	^  [ self basicCompile: sourceCode ]
+	^  [ self basicCompile: sourceCode optimizeSpecialSends: true ]
 		on: Error
-		do: [ :error | MessageNode disableClassCachedStateDuring: [ self basicCompile: sourceCode ] ].! !
+		do: [ :error | self basicCompile: sourceCode optimizeSpecialSends: false].! !
 
 !CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
 codeCoverageAnalyzer: aCodeCoverageAnalyzer
@@ -6074,29 +6074,6 @@ rawSourceRangesAndMethodNodeDo: aBinaryBlock
 	^ aBinaryBlock
 		value: methodNode encoder rawSourceRanges
 		value: methodNode! !
-
-!MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 12/20/2020 13:05:48'!
-unoptimizedMethodNodeAndRawSourceRangesDo: aBlock
-	
-	^ MessageNode disableClassCachedStateDuring: [ self rawSourceRangesAndMethodNodeDo: aBlock ]! !
-
-!MessageNode class methodsFor: '*CodeCoverage' stamp: 'NPM 12/20/2020 01:31:17'!
-disableClassCache
-	
-	MacroSelectors _ #().
-	MacroTransformers _ #().
-	MacroEmitters _ #().
-	MacroSizers _ #().
-	MacroPrinters _ #().! !
-
-!MessageNode class methodsFor: '*CodeCoverage' stamp: 'NPM 12/22/2020 21:10:15'!
-disableClassCachedStateDuring: aBlockClosure 
-	
-	[
-		self disableClassCache.
-		^ aBlockClosure value
-	] ensure: [ self initialize ]
-	! !
 
 !Editor methodsFor: '*CodeCoverage' stamp: 'NPM 11/9/2022 02:06:44'!
 codeCoverageInfoAt: mousePositionInText 
