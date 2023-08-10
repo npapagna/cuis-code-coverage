@@ -3,9 +3,9 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [1.70](https://github.com/npapagna/cuis-code-coverage/compare/v1.33...v1.70) - 2023-08-10
 
-## Added
+### Added
 * Reflexion support to allow Code Coverage to analyze itself.
 * Decision coverage support for `#ifTrue:`, `#ifFalse:`, `#ifTrue:ifFalse:`, and `#ifFalse:ifTrue: selectors`.
 * Display code coverage messages using tooltips in the editor.
