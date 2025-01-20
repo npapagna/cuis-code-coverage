@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:16:25 pm'!
+'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:19:59 pm'!
 'Description Udated to Cuis 7.3 - Menu changes'!
-!provides: 'CodeCoverage' 1 75!
+!provides: 'CodeCoverage' 1 76!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -2702,7 +2702,7 @@ displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport
 		open: browser
 		label: browser defaultBrowserTitle! !
 
-!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 16:38:06'!
+!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/20/2025 14:19:40'!
 displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
 	
 	| newBrowser report |
@@ -2713,9 +2713,10 @@ displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport
 	
 	report := aCodeCoverageAnalyzerReport mostCoveredCompiledMethodReport.
 	
-	newBrowser
-		setClass: report methodClass
-		selector: report selector.
+	report ifNotNil: [
+		newBrowser
+			setClass: report methodClass
+			selector: report selector ].
 	
 	^ newBrowser ! !
 
