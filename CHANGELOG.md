@@ -3,6 +3,11 @@ This file follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) f
 
 Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev) manages package versions, this project does not follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+* Build menus to run tests with coverage using the new Cuis menu API (thanks @hernanwilkinson!).
+
 ## [1.70](https://github.com/npapagna/cuis-code-coverage/compare/v1.33...v1.70) - 2023-08-10
 
 ### Added

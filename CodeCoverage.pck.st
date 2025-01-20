@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 1:58:44 pm'!
-'Description Updates the way unoptimized method nodes of compiled methods are accessed.'!
-!provides: 'CodeCoverage' 1 70!
+'From Cuis7.3 [latest update: #6960] on 31 December 2024 at 7:04:25 pm'!
+'Description Udated to Cuis 7.3 - Menu changes'!
+!provides: 'CodeCoverage' 1 74!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -1698,73 +1698,49 @@ from: aTestSuite
 		initializeFrom: aTestSuite
 		querying: SystemOrganization ! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:27'!
-classListMenuOptions
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:31:12'!
+classListMenuSpec
+	
+	^#(
+		#(123		'Run Tests with Coverage' 				nil 	model 			runClassTestsWithCodeCoverage 									weatherFewCloudsIcon)
+	)! !
 
-	^ `{
-		{
-			#itemGroup 		-> 		70.
-			#itemOrder 		-> 		11.
-			#label 			-> 	'run tests with coverage'.
-			#object 			-> 	#model.
-			#selector 		   -> 		#runClassTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:36:07'!
+messageListMenuSpec
+	
+	^#(
+		#(75		'Run Tests with Coverage' 				nil 	model 			runMethodTestWithCodeCoverage 									weatherFewCloudsIcon)
+	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:57'!
-messageCategoryMenuOptions
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:34:21'!
+methodCategoriesListMenuSpec
+	
+	^#(
+		#(145		'Run Tests with Coverage' 				nil 	model 			runMessageCategoryTestsWithCodeCoverage 									weatherFewCloudsIcon)
+	)! !
 
-	^`{
-		{
-			#itemGroup 		-> 		40.
-			#itemOrder 		-> 		11.
-			#label 			-> 	'run tests with coverage'.
-			#object 			-> 	#model.
-			#selector 		   -> 		#runMessageCategoryTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/30/2024 19:13:44'!
+systemCategoriesListMenuSpec
+	
+	^#(
+		#(240		'Run Tests with Coverage' 									nil 	model 			runSystemCategoryTestsWithCodeCoverage 												weatherFewCloudsIcon)
+		#(250		'Run Package Tests with Coverage' 									nil 	model 			runPackageTestsWithCodeCoverage 												weatherFewCloudsIcon)
+	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:38:00'!
-messageListMenuOptions
+!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 12/30/2024 18:24:30'!
+initialize
 
-	^ `{
-		{
-			#itemGroup 		-> 		60.
-			#itemOrder 		-> 		21.
-			#label 			-> 	'run test with coverage'.
-			#object 			-> 	#model.
-			#selector 		   -> 		#runMethodTestWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
+	BrowserWindow at: #systemCatListMenuSpec registerMenuAndShortcutsSpecProvider:
+		(MessageSend receiver: self selector: #systemCategoriesListMenuSpec).
 
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:33'!
-systemCategoryMenuOptions
+	BrowserWindow at: #classListMenuSpec registerMenuAndShortcutsSpecProvider:
+		(MessageSend receiver: self selector: #classListMenuSpec).
 
-	^ `{
-		{
-			#itemGroup 		-> 		70.
-			#itemOrder 		-> 		11.
-			#label 			-> 	'run tests with coverage'.
-			#object 			-> 	#model.
-			#selector 	   	-> 		#runSystemCategoryTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-		{
-			#itemGroup 		-> 		70.
-			#itemOrder 		-> 		12.
-			#label 			-> 	'run package tests with coverage'.
-			#object 			-> 	#model.
-			#selector 	   	-> 		#runPackageTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
+	BrowserWindow at: #messageCatListMenuSpec registerMenuAndShortcutsSpecProvider:
+		(MessageSend receiver: self selector: #methodCategoriesListMenuSpec).
+
+	BrowserWindow at: #messageListMenuSpec registerMenuAndShortcutsSpecProvider:
+		(MessageSend receiver: self selector: #messageListMenuSpec).! !
 
 !CodeCoverageTextStylerFactory methodsFor: 'initialization' stamp: 'NPM 1/18/2021 17:46:25'!
 initializeWith: aCodeCoverageReport 
@@ -6014,11 +5990,10 @@ safelyBasicCompile: sourceCode
 		on: Error
 		do: [ :error | self basicCompile: sourceCode optimizeSpecialSends: false].! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 01:15:28'!
+!Browser methodsFor: '*CodeCoverage' stamp: 'HAW 12/31/2024 18:38:40'!
 runClassTestsWithCodeCoverage
 	
-	self selectedClassName ifNotNil: [ :aClassName | | selectedClass |
-		selectedClass _ Smalltalk classNamed: aClassName.
+	self selectedClass ifNotNil: [ :selectedClass |
 		self runWithCodeCoverage: (TestSuite forClass: selectedClass) ]! !
 
 !Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:30:27'!
@@ -6108,3 +6083,4 @@ forCodePackage: aCodePackage
 	^ self
 		forClasses: aCodePackage testCaseClasses
 		named: aCodePackage packageName, ' tests'.! !
+CodeCoverageBrowserMenues initialize!
