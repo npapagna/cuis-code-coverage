@@ -1,49 +1,49 @@
-'From Cuis 6.0 [latest update: #5962] on 10 August 2023 at 4:50:03 pm'!
+'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:02:52 pm'!
 'Description Uses notOptimizedMethodNode to access the unoptimized method node of a compiled method.'!
 !provides: 'PackageSnapshot' 1 8!
-SystemOrganization addCategory: 'PackageSnapshot-Model'!
-SystemOrganization addCategory: 'PackageSnapshot-Tests'!
-SystemOrganization addCategory: 'PackageSnapshot'!
+SystemOrganization addCategory: #'PackageSnapshot-Model'!
+SystemOrganization addCategory: #'PackageSnapshot-Tests'!
+SystemOrganization addCategory: #PackageSnapshot!
 
 
-!classDefinition: #SourceCodeSnapshot category: 'PackageSnapshot-Model'!
+!classDefinition: #SourceCodeSnapshot category: #'PackageSnapshot-Model'!
 ParseNodeVisitor subclass: #SourceCodeSnapshot
 	instanceVariableNames: 'packageSnapshot'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Model'!
-!classDefinition: 'SourceCodeSnapshot class' category: 'PackageSnapshot-Model'!
+!classDefinition: 'SourceCodeSnapshot class' category: #'PackageSnapshot-Model'!
 SourceCodeSnapshot class
 	instanceVariableNames: ''!
 
-!classDefinition: #PackageSnapshotTest category: 'PackageSnapshot-Tests'!
-TestCase subclass: #PackageSnapshotTest
-	instanceVariableNames: 'classFactory testSystemCategory packageToCopy packageSnapshot'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'PackageSnapshot-Tests'!
-!classDefinition: 'PackageSnapshotTest class' category: 'PackageSnapshot-Tests'!
-PackageSnapshotTest class
-	instanceVariableNames: ''!
-
-!classDefinition: #PackageSnapshot category: 'PackageSnapshot-Model'!
+!classDefinition: #PackageSnapshot category: #'PackageSnapshot-Model'!
 Object subclass: #PackageSnapshot
 	instanceVariableNames: 'id sourcePackage systemOrganizer snapshotOfClassesByOriginalClassName extensionMethodsToTakeSnapshots classesToTakeSnapshots snapshotsOfExtensionMethods'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Model'!
-!classDefinition: 'PackageSnapshot class' category: 'PackageSnapshot-Model'!
+!classDefinition: 'PackageSnapshot class' category: #'PackageSnapshot-Model'!
 PackageSnapshot class
 	instanceVariableNames: ''!
 
-!classDefinition: #ClassFactoryForTesting category: 'PackageSnapshot-Tests'!
+!classDefinition: #ClassFactoryForTesting category: #'PackageSnapshot-Tests'!
 Object subclass: #ClassFactoryForTesting
 	instanceVariableNames: 'testSystemCategory testSharedPool testExtensionSystemCategory createdClasses'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PackageSnapshot-Tests'!
-!classDefinition: 'ClassFactoryForTesting class' category: 'PackageSnapshot-Tests'!
+!classDefinition: 'ClassFactoryForTesting class' category: #'PackageSnapshot-Tests'!
 ClassFactoryForTesting class
+	instanceVariableNames: ''!
+
+!classDefinition: #PackageSnapshotTest category: #'PackageSnapshot-Tests'!
+TestCase subclass: #PackageSnapshotTest
+	instanceVariableNames: 'classFactory testSystemCategory packageToCopy packageSnapshot'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PackageSnapshot-Tests'!
+!classDefinition: 'PackageSnapshotTest class' category: #'PackageSnapshot-Tests'!
+PackageSnapshotTest class
 	instanceVariableNames: ''!
 
 
@@ -134,412 +134,6 @@ using: aPackageSnapshot
 	^ self
 		new
 		initializeUsing: aPackageSnapshot ! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
-assert: aClass performs: aSelector returningCopyOf: aResult
-
-	| copyOfClass copyOfSelector |
-	copyOfClass _ packageSnapshot snapshotOf: aResult.
-	copyOfSelector _  packageSnapshot extensionMethodSelectorFor: aSelector.
-
-	self assert: copyOfClass equals: (aClass perform: copyOfSelector).! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/19/2022 02:53:05'!
-assert: anObject performsSnapshotOfExtensionMethodNamed: aSelector returning: aResult
-
-	| copyOfSelector |
-	copyOfSelector _ packageSnapshot extensionMethodSelectorFor: aSelector.
-
-	self assert: aResult equals: (anObject perform: copyOfSelector).
-! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
-assertCopyOf: aSubclass isSubclassOfCopyOf: aSuperclass
-
-	| copyOfSubclass copyOfSuperclass |
-	copyOfSubclass _ packageSnapshot snapshotOf: aSubclass.
-	copyOfSuperclass _ packageSnapshot snapshotOf: aSuperclass.
-
-	self assert: copyOfSuperclass equals: copyOfSubclass superclass.! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
-assertCopyOf: aClass performs: aSelector returning: aResult
-
-	| copyOfClass |
-	copyOfClass _ packageSnapshot snapshotOf: aClass.
-
-	self assert: aResult equals: (copyOfClass perform: aSelector).! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
-assertCopyOf: aClass performs: aSelector returningCopyOf: aResult
-
-	| copyOfClass copyOfResult |
-	copyOfClass _ packageSnapshot snapshotOf: aClass.
-	copyOfResult _  packageSnapshot snapshotOf: aResult.
-
-	self assert: copyOfResult equals: (copyOfClass perform: #m1).
-	! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
-assertInstanceOfCopyOf: aClass performs: aSelector returning: aResult
-
-	| copyOfClass |
-	copyOfClass _ packageSnapshot snapshotOf: aClass.
-
-	self assert: aResult equals: (copyOfClass new perform: aSelector).! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
-assertInstanceOfCopyOf: aClass performs: aSelector returningCopyOf: aResult
-
-	| copyOfClass copyOfResult |
-	copyOfClass _ packageSnapshot snapshotOf: aClass.
-	copyOfResult _  packageSnapshot snapshotOf: aResult.
-
-	self assert: copyOfResult equals: (copyOfClass new perform: aSelector).! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 01:22:26'!
-assertNumberOfClassesIn: aString is: aQuantity
-
-
-	| classes |
-	classes _ SystemOrganization classesAt: (packageSnapshot systemCategoryFor: aString).
-
-	self
-		assert: aQuantity
-		equals: classes size.! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 15:16:18'!
-assertSnapshotOfExtensionMethod: aSelector isClassifiedUnderTheSnapshotExtensionIn: aBehavior
-
-	| snapshotOfM1 snapshotOfM1Selector originalMethodCategory |
-	snapshotOfM1Selector _ packageSnapshot extensionMethodSelectorFor: aSelector.
-	snapshotOfM1 _ aBehavior compiledMethodAt: snapshotOfM1Selector.
-	originalMethodCategory := (aBehavior compiledMethodAt: aSelector) category.
-
-	self assert:
-		 (packageSnapshot extensionMethodCategoryFor: originalMethodCategory)
-		 equals: snapshotOfM1 category.
-! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/26/2022 01:09:14'!
-assertWasCopied: aClass
-
-	| copyOfClass |
-	copyOfClass _ packageSnapshot snapshotOf: aClass.
-
-	self deny: aClass = copyOfClass.
-	self
-		assert: copyOfClass instanceVariablesString
-		equals: aClass instanceVariablesString.
-	self
-		assert: copyOfClass classVarNames
-		equals: aClass classVarNames.
-	self assert: copyOfClass sharedPools isEmpty.
-	self
-		assert: (packageSnapshot systemCategoryFor: aClass category)
-		equals: copyOfClass category.
-	self
-		assert: copyOfClass class instanceVariablesString
-		equals: aClass class instanceVariablesString.
-	! !
-
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 01:22:26'!
-denyAPackageSnapshotWasTaken
-
-	| copyOfTestSustemCategory |
-	copyOfTestSustemCategory := packageSnapshot systemCategoryFor: testSystemCategory.
-
-	self deny: (SystemOrganization categories includes: copyOfTestSustemCategory)! !
-
-!PackageSnapshotTest methodsFor: 'exercising' stamp: 'NPM 10/26/2022 01:11:00'!
-takeASnapshotOfTestPackage
-
-	packageSnapshot _ PackageSnapshot takeOf: packageToCopy! !
-
-!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 10/22/2022 01:49:33'!
-setUp
-
-	super setUp.
-
-	classFactory _ ClassFactoryForTesting new.
-	testSystemCategory _ classFactory systemCategory.
-
-	packageToCopy _ CodePackage new packageName: testSystemCategory.
-	packageSnapshot  _ PackageSnapshot toTakeOf: packageToCopy.! !
-
-!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 10/26/2022 01:25:36'!
-tearDown
-
-	super tearDown.
-	classFactory tearDown.
-	packageSnapshot discard.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test000_doesNotCreateSystemCategoriesWhenAPackageIsEmpty
-
-	self takeASnapshotOfTestPackage.
-
-	self denyAPackageSnapshotWasTaken.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test001_takesASnapshotOfClassesWithClassAndInstanceVariables
-
-	| classToCopy anotherClassToCopy |
-	classToCopy _ classFactory createClassWithClassAndInstanceVariables.
-	anotherClassToCopy _ classFactory createClassWithClassAndInstanceVariables.
-
-	self takeASnapshotOfTestPackage.
-
-	self assertNumberOfClassesIn: testSystemCategory is: 2.
-	self assertWasCopied: classToCopy.
-	self assertWasCopied: anotherClassToCopy.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:13:18'!
-test003_doesNotTakeASnapshotWhenThereAreClassesWithSharedPools
-
-	classFactory
-		createClassWithClassAndInstanceVariables;
-		createClassWithSharedPool.
-
-	self
-		should: [ self takeASnapshotOfTestPackage ]
-		raise: Error
-		withMessageText: packageSnapshot takingSnapshotOfClassesWithSharedPoolsIsNotSupportedYetErrorMessage.
-
-	self denyAPackageSnapshotWasTaken.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test004_takesASnapshotOfInstanceMethodsNotReferencingClassesInThePackage
-
-	| classWithInstanceMethod |
-	classWithInstanceMethod _ classFactory createClassWithInstanceMethod: 'm1 ^1'.
-
-	self takeASnapshotOfTestPackage.
-
-	classWithInstanceMethod removeSelector: #m1.
-	self
-		assertInstanceOfCopyOf: classWithInstanceMethod
-		performs: #m1
-		returning: 1.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test005_takesASnapshotOfClassMethodsNotReferencingClassesInThePackage
-
-	| classToCopy |
-	classToCopy _ classFactory createClassWithClassMethod:  'm1 ^1'.
-
-	self takeASnapshotOfTestPackage.
-
-	classToCopy class removeSelector: #m1.
-	self
-		assertCopyOf: classToCopy
-		performs: #m1
-		returning: 1.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test006_takesASnapshotOfExtensionMethodsNotReferencingClassesInThePackage
-
-	| classWithExtensionMethod |
-	classWithExtensionMethod _ classFactory createClassWithClassExtensionMethod:  'm1 ^1'.
-
-	self takeASnapshotOfTestPackage.
-
-	classWithExtensionMethod class removeSelector: #m1	.
-	self
-		assert: classWithExtensionMethod
-		performsSnapshotOfExtensionMethodNamed: #m1
-		returning: 1! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test007_renamesReferencesToClassesInThePackageInInstanceMethods
-
-	| class1 classReferencingClass1 |
-	class1 _ classFactory createClassWithClassAndInstanceVariables.
-	classReferencingClass1 _ classFactory createClassWithInstanceMethod: 'm1 ^', class1 name.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assertInstanceOfCopyOf: classReferencingClass1
-		performs: #m1
-		returningCopyOf: class1
-	! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test008_doesNotRenameReferencesToClassesOutsideThePackageInInstanceMethods
-
-	| classReferencingClassesOutsideThePackage |
-	classReferencingClassesOutsideThePackage _ classFactory createClassWithInstanceMethod: 'm1 ^ Object'.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assertInstanceOfCopyOf: classReferencingClassesOutsideThePackage
-		performs: #m1
-		returning: Object! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test009_renamesReferencesToClassesInThePackageInClassMethods
-
-	| class1 classReferencingClass1 |
-	class1 _ classFactory createClassWithClassAndInstanceVariables.
-	classReferencingClass1 _ classFactory createClassWithClassMethod: 'm1 ^', class1 name.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assertCopyOf: classReferencingClass1
-		performs: #m1
-		returningCopyOf: class1! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test010_doesNotRenameReferencesToClassesOutsideThePackageInClassMethods
-
-	| classReferencingClassesOutsideThePackage |
-	classReferencingClassesOutsideThePackage _ classFactory createClassWithClassMethod: 'm1 ^ Object'.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assertCopyOf: classReferencingClassesOutsideThePackage
-		performs: #m1
-		returning: Object
-
-	! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test011_renamesReferencesToClassesInThePackageInExtensionMethods
-
-	| classWithExtensionMethod class1 |
-	class1 _ classFactory createClassWithClassAndInstanceVariables.
-	classWithExtensionMethod _ classFactory createClassWithClassExtensionMethod: 'm1 ^ ', class1 name.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assert: classWithExtensionMethod
-		performs: #m1
-		returningCopyOf: class1 ! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test012_doesNotRenameReferencesToClassesOutsideThePackageInExtensionMethods
-
-	| classReferencingClassesOutsideThePackage |
-	classReferencingClassesOutsideThePackage _ classFactory createClassWithClassExtensionMethod:  'm1 ^ Object'.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assert: classReferencingClassesOutsideThePackage
-		performsSnapshotOfExtensionMethodNamed: #m1
-		returning: Object! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test013_renamesReferencesToExtensionMethodsInInstanceMethods
-
-	| classWithExtensionMethod classCallingExtensionMethod |
-	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1 ^ 1'.
-	classCallingExtensionMethod _ classFactory createClassWithInstanceMethod: 'm2 ^', classWithExtensionMethod name, ' new m1'.
-
-	self takeASnapshotOfTestPackage.
-
-	classWithExtensionMethod removeSelector: #m1.
-	self
-		assertInstanceOfCopyOf: classCallingExtensionMethod
-		performs: #m2
-		returning: 1.
-	! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test014_renamesReferencesToExtensionMethodsInClassMethods
-
-	| classWithExtensionMethod classCallingExtensionMethod |
-	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1 ^ 1'.
-	classCallingExtensionMethod _ classFactory createClassWithClassMethod: 'm2 ^', classWithExtensionMethod name, ' new m1'.
-
-	self takeASnapshotOfTestPackage.
-
-	classWithExtensionMethod removeSelector: #m1.
-	self
-		assertCopyOf: classCallingExtensionMethod
-		performs: #m2
-		returning: 1.
-	! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test015_renamesReferencesToExtensionMethodsInExtensionMethods
-
-	| classWithExtensionMethod classCallingExtensionMethod |
-	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1 ^ 1'.
-	classCallingExtensionMethod _ classFactory createClassWithClassExtensionMethod: 'm2 ^', classWithExtensionMethod name, ' new m1'.
-
-	self takeASnapshotOfTestPackage.
-
-	classWithExtensionMethod removeSelector: #m1.
-	self
-		assert: classCallingExtensionMethod
-		performsSnapshotOfExtensionMethodNamed: #m2
-		returning: 1.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test016_takesSnapshotsOfClassHierarchies
-
-	| classWithExtensionMethod classCallingExtensionMethod |
-	classWithExtensionMethod _ classFactory createClass.
-	classCallingExtensionMethod _ classFactory createSubclassOf: classWithExtensionMethod.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assertCopyOf: classCallingExtensionMethod
-		isSubclassOfCopyOf: classWithExtensionMethod.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test017_takesSnapshotsOfExtensionMethodsInTheSnapshotCategory
-
-	| classWithExtensionMethod |
-	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1'.
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		assertSnapshotOfExtensionMethod: #m1
-		isClassifiedUnderTheSnapshotExtensionIn: classWithExtensionMethod
-
-	! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
-test018_migratesInstancesOfSnapshotClassesToTheOriginalClasses
-
-	| originalClass snapshotOfOriginalClass snapshotInstance |
-	originalClass _ classFactory createClass.
-	self takeASnapshotOfTestPackage.
-	snapshotOfOriginalClass _ packageSnapshot snapshotOf: originalClass.
-	snapshotInstance _ snapshotOfOriginalClass new.
-
-	packageSnapshot migrateSnapshotInstancesToOriginalClasses.
-
-	self assert: originalClass equals: snapshotInstance class.! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:13:00'!
-test019_doesNotAllowToAskForSnapshotOfClassesOutsideThePackage
-
-	self takeASnapshotOfTestPackage.
-
-	self
-		should: [ packageSnapshot snapshotOf: Object ]
-		raise: Error
-		withMessageText: packageSnapshot theBehaviorIsNotIncludedInThisSnapshotErrorMessage! !
-
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:22:25'!
-test020_keepsReferencesToNonBehaviorLiteralVariableNodes
-
-	| originalClass |
-	originalClass _ classFactory createClassWithClassMethod: 'm1 ^ Smalltalk'.
-
-	self takeASnapshotOfTestPackage.
-
-	self assert: Smalltalk equals: originalClass m1.! !
 
 !PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 10/26/2022 01:12:51'!
 snapshotOf: aBehavior
@@ -948,10 +542,411 @@ initialize
 
 	createdClasses _ OrderedCollection new.! !
 
-!ClassDescription methodsFor: '*PackageSnapshot' stamp: 'HAW 5/29/2023 23:39:59'!
-disableLiveTyping
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+assert: aClass performs: aSelector returningCopyOf: aResult
 
-	Smalltalk isLiveTypingInstalled ifTrue: [ instanceVariablesRawTypes := nil ]! !
+	| copyOfClass copyOfSelector |
+	copyOfClass _ packageSnapshot snapshotOf: aResult.
+	copyOfSelector _  packageSnapshot extensionMethodSelectorFor: aSelector.
+
+	self assert: copyOfClass equals: (aClass perform: copyOfSelector).! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/19/2022 02:53:05'!
+assert: anObject performsSnapshotOfExtensionMethodNamed: aSelector returning: aResult
+
+	| copyOfSelector |
+	copyOfSelector _ packageSnapshot extensionMethodSelectorFor: aSelector.
+
+	self assert: aResult equals: (anObject perform: copyOfSelector).
+! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+assertCopyOf: aSubclass isSubclassOfCopyOf: aSuperclass
+
+	| copyOfSubclass copyOfSuperclass |
+	copyOfSubclass _ packageSnapshot snapshotOf: aSubclass.
+	copyOfSuperclass _ packageSnapshot snapshotOf: aSuperclass.
+
+	self assert: copyOfSuperclass equals: copyOfSubclass superclass.! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+assertCopyOf: aClass performs: aSelector returning: aResult
+
+	| copyOfClass |
+	copyOfClass _ packageSnapshot snapshotOf: aClass.
+
+	self assert: aResult equals: (copyOfClass perform: aSelector).! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+assertCopyOf: aClass performs: aSelector returningCopyOf: aResult
+
+	| copyOfClass copyOfResult |
+	copyOfClass _ packageSnapshot snapshotOf: aClass.
+	copyOfResult _  packageSnapshot snapshotOf: aResult.
+
+	self assert: copyOfResult equals: (copyOfClass perform: #m1).
+	! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+assertInstanceOfCopyOf: aClass performs: aSelector returning: aResult
+
+	| copyOfClass |
+	copyOfClass _ packageSnapshot snapshotOf: aClass.
+
+	self assert: aResult equals: (copyOfClass new perform: aSelector).! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+assertInstanceOfCopyOf: aClass performs: aSelector returningCopyOf: aResult
+
+	| copyOfClass copyOfResult |
+	copyOfClass _ packageSnapshot snapshotOf: aClass.
+	copyOfResult _  packageSnapshot snapshotOf: aResult.
+
+	self assert: copyOfResult equals: (copyOfClass new perform: aSelector).! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 01:22:26'!
+assertNumberOfClassesIn: aString is: aQuantity
+
+
+	| classes |
+	classes _ SystemOrganization classesAt: (packageSnapshot systemCategoryFor: aString).
+
+	self
+		assert: aQuantity
+		equals: classes size.! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 15:16:18'!
+assertSnapshotOfExtensionMethod: aSelector isClassifiedUnderTheSnapshotExtensionIn: aBehavior
+
+	| snapshotOfM1 snapshotOfM1Selector originalMethodCategory |
+	snapshotOfM1Selector _ packageSnapshot extensionMethodSelectorFor: aSelector.
+	snapshotOfM1 _ aBehavior compiledMethodAt: snapshotOfM1Selector.
+	originalMethodCategory := (aBehavior compiledMethodAt: aSelector) category.
+
+	self assert:
+		 (packageSnapshot extensionMethodCategoryFor: originalMethodCategory)
+		 equals: snapshotOfM1 category.
+! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/26/2022 01:09:14'!
+assertWasCopied: aClass
+
+	| copyOfClass |
+	copyOfClass _ packageSnapshot snapshotOf: aClass.
+
+	self deny: aClass = copyOfClass.
+	self
+		assert: copyOfClass instanceVariablesString
+		equals: aClass instanceVariablesString.
+	self
+		assert: copyOfClass classVarNames
+		equals: aClass classVarNames.
+	self assert: copyOfClass sharedPools isEmpty.
+	self
+		assert: (packageSnapshot systemCategoryFor: aClass category)
+		equals: copyOfClass category.
+	self
+		assert: copyOfClass class instanceVariablesString
+		equals: aClass class instanceVariablesString.
+	! !
+
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 01:22:26'!
+denyAPackageSnapshotWasTaken
+
+	| copyOfTestSustemCategory |
+	copyOfTestSustemCategory := packageSnapshot systemCategoryFor: testSystemCategory.
+
+	self deny: (SystemOrganization categories includes: copyOfTestSustemCategory)! !
+
+!PackageSnapshotTest methodsFor: 'exercising' stamp: 'NPM 10/26/2022 01:11:00'!
+takeASnapshotOfTestPackage
+
+	packageSnapshot _ PackageSnapshot takeOf: packageToCopy! !
+
+!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 10/22/2022 01:49:33'!
+setUp
+
+	super setUp.
+
+	classFactory _ ClassFactoryForTesting new.
+	testSystemCategory _ classFactory systemCategory.
+
+	packageToCopy _ CodePackage new packageName: testSystemCategory.
+	packageSnapshot  _ PackageSnapshot toTakeOf: packageToCopy.! !
+
+!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 10/26/2022 01:25:36'!
+tearDown
+
+	super tearDown.
+	classFactory tearDown.
+	packageSnapshot discard.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test000_doesNotCreateSystemCategoriesWhenAPackageIsEmpty
+
+	self takeASnapshotOfTestPackage.
+
+	self denyAPackageSnapshotWasTaken.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test001_takesASnapshotOfClassesWithClassAndInstanceVariables
+
+	| classToCopy anotherClassToCopy |
+	classToCopy _ classFactory createClassWithClassAndInstanceVariables.
+	anotherClassToCopy _ classFactory createClassWithClassAndInstanceVariables.
+
+	self takeASnapshotOfTestPackage.
+
+	self assertNumberOfClassesIn: testSystemCategory is: 2.
+	self assertWasCopied: classToCopy.
+	self assertWasCopied: anotherClassToCopy.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:13:18'!
+test003_doesNotTakeASnapshotWhenThereAreClassesWithSharedPools
+
+	classFactory
+		createClassWithClassAndInstanceVariables;
+		createClassWithSharedPool.
+
+	self
+		should: [ self takeASnapshotOfTestPackage ]
+		raise: Error
+		withMessageText: packageSnapshot takingSnapshotOfClassesWithSharedPoolsIsNotSupportedYetErrorMessage.
+
+	self denyAPackageSnapshotWasTaken.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test004_takesASnapshotOfInstanceMethodsNotReferencingClassesInThePackage
+
+	| classWithInstanceMethod |
+	classWithInstanceMethod _ classFactory createClassWithInstanceMethod: 'm1 ^1'.
+
+	self takeASnapshotOfTestPackage.
+
+	classWithInstanceMethod removeSelector: #m1.
+	self
+		assertInstanceOfCopyOf: classWithInstanceMethod
+		performs: #m1
+		returning: 1.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test005_takesASnapshotOfClassMethodsNotReferencingClassesInThePackage
+
+	| classToCopy |
+	classToCopy _ classFactory createClassWithClassMethod:  'm1 ^1'.
+
+	self takeASnapshotOfTestPackage.
+
+	classToCopy class removeSelector: #m1.
+	self
+		assertCopyOf: classToCopy
+		performs: #m1
+		returning: 1.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test006_takesASnapshotOfExtensionMethodsNotReferencingClassesInThePackage
+
+	| classWithExtensionMethod |
+	classWithExtensionMethod _ classFactory createClassWithClassExtensionMethod:  'm1 ^1'.
+
+	self takeASnapshotOfTestPackage.
+
+	classWithExtensionMethod class removeSelector: #m1	.
+	self
+		assert: classWithExtensionMethod
+		performsSnapshotOfExtensionMethodNamed: #m1
+		returning: 1! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test007_renamesReferencesToClassesInThePackageInInstanceMethods
+
+	| class1 classReferencingClass1 |
+	class1 _ classFactory createClassWithClassAndInstanceVariables.
+	classReferencingClass1 _ classFactory createClassWithInstanceMethod: 'm1 ^', class1 name.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assertInstanceOfCopyOf: classReferencingClass1
+		performs: #m1
+		returningCopyOf: class1
+	! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test008_doesNotRenameReferencesToClassesOutsideThePackageInInstanceMethods
+
+	| classReferencingClassesOutsideThePackage |
+	classReferencingClassesOutsideThePackage _ classFactory createClassWithInstanceMethod: 'm1 ^ Object'.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assertInstanceOfCopyOf: classReferencingClassesOutsideThePackage
+		performs: #m1
+		returning: Object! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test009_renamesReferencesToClassesInThePackageInClassMethods
+
+	| class1 classReferencingClass1 |
+	class1 _ classFactory createClassWithClassAndInstanceVariables.
+	classReferencingClass1 _ classFactory createClassWithClassMethod: 'm1 ^', class1 name.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assertCopyOf: classReferencingClass1
+		performs: #m1
+		returningCopyOf: class1! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test010_doesNotRenameReferencesToClassesOutsideThePackageInClassMethods
+
+	| classReferencingClassesOutsideThePackage |
+	classReferencingClassesOutsideThePackage _ classFactory createClassWithClassMethod: 'm1 ^ Object'.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assertCopyOf: classReferencingClassesOutsideThePackage
+		performs: #m1
+		returning: Object
+
+	! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test011_renamesReferencesToClassesInThePackageInExtensionMethods
+
+	| classWithExtensionMethod class1 |
+	class1 _ classFactory createClassWithClassAndInstanceVariables.
+	classWithExtensionMethod _ classFactory createClassWithClassExtensionMethod: 'm1 ^ ', class1 name.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assert: classWithExtensionMethod
+		performs: #m1
+		returningCopyOf: class1 ! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test012_doesNotRenameReferencesToClassesOutsideThePackageInExtensionMethods
+
+	| classReferencingClassesOutsideThePackage |
+	classReferencingClassesOutsideThePackage _ classFactory createClassWithClassExtensionMethod:  'm1 ^ Object'.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assert: classReferencingClassesOutsideThePackage
+		performsSnapshotOfExtensionMethodNamed: #m1
+		returning: Object! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test013_renamesReferencesToExtensionMethodsInInstanceMethods
+
+	| classWithExtensionMethod classCallingExtensionMethod |
+	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1 ^ 1'.
+	classCallingExtensionMethod _ classFactory createClassWithInstanceMethod: 'm2 ^', classWithExtensionMethod name, ' new m1'.
+
+	self takeASnapshotOfTestPackage.
+
+	classWithExtensionMethod removeSelector: #m1.
+	self
+		assertInstanceOfCopyOf: classCallingExtensionMethod
+		performs: #m2
+		returning: 1.
+	! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test014_renamesReferencesToExtensionMethodsInClassMethods
+
+	| classWithExtensionMethod classCallingExtensionMethod |
+	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1 ^ 1'.
+	classCallingExtensionMethod _ classFactory createClassWithClassMethod: 'm2 ^', classWithExtensionMethod name, ' new m1'.
+
+	self takeASnapshotOfTestPackage.
+
+	classWithExtensionMethod removeSelector: #m1.
+	self
+		assertCopyOf: classCallingExtensionMethod
+		performs: #m2
+		returning: 1.
+	! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test015_renamesReferencesToExtensionMethodsInExtensionMethods
+
+	| classWithExtensionMethod classCallingExtensionMethod |
+	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1 ^ 1'.
+	classCallingExtensionMethod _ classFactory createClassWithClassExtensionMethod: 'm2 ^', classWithExtensionMethod name, ' new m1'.
+
+	self takeASnapshotOfTestPackage.
+
+	classWithExtensionMethod removeSelector: #m1.
+	self
+		assert: classCallingExtensionMethod
+		performsSnapshotOfExtensionMethodNamed: #m2
+		returning: 1.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test016_takesSnapshotsOfClassHierarchies
+
+	| classWithExtensionMethod classCallingExtensionMethod |
+	classWithExtensionMethod _ classFactory createClass.
+	classCallingExtensionMethod _ classFactory createSubclassOf: classWithExtensionMethod.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assertCopyOf: classCallingExtensionMethod
+		isSubclassOfCopyOf: classWithExtensionMethod.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test017_takesSnapshotsOfExtensionMethodsInTheSnapshotCategory
+
+	| classWithExtensionMethod |
+	classWithExtensionMethod _ classFactory createClassWithInstanceExtensionMethod: 'm1'.
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		assertSnapshotOfExtensionMethod: #m1
+		isClassifiedUnderTheSnapshotExtensionIn: classWithExtensionMethod
+
+	! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+test018_migratesInstancesOfSnapshotClassesToTheOriginalClasses
+
+	| originalClass snapshotOfOriginalClass snapshotInstance |
+	originalClass _ classFactory createClass.
+	self takeASnapshotOfTestPackage.
+	snapshotOfOriginalClass _ packageSnapshot snapshotOf: originalClass.
+	snapshotInstance _ snapshotOfOriginalClass new.
+
+	packageSnapshot migrateSnapshotInstancesToOriginalClasses.
+
+	self assert: originalClass equals: snapshotInstance class.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:13:00'!
+test019_doesNotAllowToAskForSnapshotOfClassesOutsideThePackage
+
+	self takeASnapshotOfTestPackage.
+
+	self
+		should: [ packageSnapshot snapshotOf: Object ]
+		raise: Error
+		withMessageText: packageSnapshot theBehaviorIsNotIncludedInThisSnapshotErrorMessage! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:22:25'!
+test020_keepsReferencesToNonBehaviorLiteralVariableNodes
+
+	| originalClass |
+	originalClass _ classFactory createClassWithClassMethod: 'm1 ^ Smalltalk'.
+
+	self takeASnapshotOfTestPackage.
+
+	self assert: Smalltalk equals: originalClass m1.! !
 
 !CompiledMethod methodsFor: '*PackageSnapshot' stamp: 'HAW 5/29/2023 23:22:17'!
 disableLiveTyping
@@ -961,3 +956,8 @@ disableLiveTyping
 			self
 				withPropertiesDo: [:additionalMethodState | additionalMethodState disableLiveTyping ]
 				ifSelector: [ :aSelector | ]]! !
+
+!ClassDescription methodsFor: '*PackageSnapshot' stamp: 'HAW 5/29/2023 23:39:59'!
+disableLiveTyping
+
+	Smalltalk isLiveTypingInstalled ifTrue: [ instanceVariablesRawTypes := nil ]! !

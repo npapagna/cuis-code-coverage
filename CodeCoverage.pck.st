@@ -1,268 +1,248 @@
-'From Cuis 6.0 [latest update: #5962] on 10 August 2023 at 4:58:34 pm'!
+'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 1:58:44 pm'!
 'Description Updates the way unoptimized method nodes of compiled methods are accessed.'!
 !provides: 'CodeCoverage' 1 70!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
-SystemOrganization addCategory: 'CodeCoverage-Model'!
-SystemOrganization addCategory: 'CodeCoverage-Tests'!
-SystemOrganization addCategory: 'CodeCoverage-UI'!
-SystemOrganization addCategory: 'CodeCoverage'!
+SystemOrganization addCategory: #'CodeCoverage-Model'!
+SystemOrganization addCategory: #'CodeCoverage-Tests'!
+SystemOrganization addCategory: #'CodeCoverage-UI'!
+SystemOrganization addCategory: #CodeCoverage!
 
 
-!classDefinition: #CodeCoverageAnalyzerBrowser category: 'CodeCoverage-UI'!
-Browser subclass: #CodeCoverageAnalyzerBrowser
-	instanceVariableNames: 'codeCoverageReport'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageAnalyzerBrowser class' category: 'CodeCoverage-UI'!
-CodeCoverageAnalyzerBrowser class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageSourceCodeGenerator category: 'CodeCoverage-Model'!
-ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode parseNodesBySourceRanges receiverTempCount'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageSourceCodeGenerator class' category: 'CodeCoverage-Model'!
-CodeCoverageSourceCodeGenerator class
-	instanceVariableNames: ''!
-
-!classDefinition: #ProgressiveCodeCoverageTestRunner category: 'CodeCoverage-UI'!
-ProgressiveTestRunner subclass: #ProgressiveCodeCoverageTestRunner
-	instanceVariableNames: 'codeCoverageAnalyzer compiledMethodAnalyzersInstallationProgressBar compiledMethodAnalyzersRunIncrement'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-UI'!
-!classDefinition: 'ProgressiveCodeCoverageTestRunner class' category: 'CodeCoverage-UI'!
-ProgressiveCodeCoverageTestRunner class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageAnalyzerTest category: 'CodeCoverage-Tests'!
-TestCase subclass: #CodeCoverageAnalyzerTest
-	instanceVariableNames: 'codeCoverageAnalyzer originalM1Method'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageAnalyzerTest class' category: 'CodeCoverage-Tests'!
-CodeCoverageAnalyzerTest class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageTest category: 'CodeCoverage-Tests'!
-TestCase subclass: #CodeCoverageTest
-	instanceVariableNames: 'codeCoverageAnalyzer instanceVariable otherInstanceVariable coverageReport messageResult messageReceiverUsageCount'
-	classVariableNames: 'ClassVariable'
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageTest class' category: 'CodeCoverage-Tests'!
-CodeCoverageTest class
-	instanceVariableNames: ''!
-
-!classDefinition: #CompiledMethodCoverageAnalyzerTest category: 'CodeCoverage-Tests'!
-TestCase subclass: #CompiledMethodCoverageAnalyzerTest
-	instanceVariableNames: 'compiledMethodAnalyzer fakeCodeCoverageAnalyzer'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CompiledMethodCoverageAnalyzerTest class' category: 'CodeCoverage-Tests'!
-CompiledMethodCoverageAnalyzerTest class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageTextStyler category: 'CodeCoverage-UI'!
-SHTextStylerST80 subclass: #CodeCoverageTextStyler
-	instanceVariableNames: 'codeCoverageReport'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageTextStyler class' category: 'CodeCoverage-UI'!
-CodeCoverageTextStyler class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageAnalyzer category: 'CodeCoverage-Model'!
-Object subclass: #CodeCoverageAnalyzer
-	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report coverageReportBuilders reportBuilderFactory'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageAnalyzer class' category: 'CodeCoverage-Model'!
-CodeCoverageAnalyzer class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageAnalyzerReport category: 'CodeCoverage-Model'!
-Object subclass: #CodeCoverageAnalyzerReport
-	instanceVariableNames: 'reportsByClass reportsBySystemCategory reportsByCompiledMethod reportsByClassAndMessageCategory summaryReport'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageAnalyzerReport class' category: 'CodeCoverage-Model'!
-CodeCoverageAnalyzerReport class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageReport category: 'CodeCoverage-Model'!
-Object subclass: #CodeCoverageReport
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageReport class' category: 'CodeCoverage-Model'!
-CodeCoverageReport class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageReportSummary category: 'CodeCoverage-Model'!
-CodeCoverageReport subclass: #CodeCoverageReportSummary
-	instanceVariableNames: 'childReports'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CodeCoverageReportSummary class' category: 'CodeCoverage-Model'!
-CodeCoverageReportSummary class
-	instanceVariableNames: ''!
-
-!classDefinition: #CompiledMethodCoverageReport category: 'CodeCoverage-Model'!
-CodeCoverageReport subclass: #CompiledMethodCoverageReport
-	instanceVariableNames: 'compiledMethod compiledMethodWasExecuted coverageRatioBySourceRange messagesBySourceRanges'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageReport class' category: 'CodeCoverage-Model'!
-CompiledMethodCoverageReport class
-	instanceVariableNames: ''!
-
-!classDefinition: #CompiledMethodCoverageAnalyzer category: 'CodeCoverage-Model'!
-Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator methodClass codeCoverageAnalyzer selector codeCoverageNotifier installCount'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageAnalyzer class' category: 'CodeCoverage-Model'!
-CompiledMethodCoverageAnalyzer class
-	instanceVariableNames: ''!
-
-!classDefinition: #CompiledMethodCoverageTracker category: 'CodeCoverage-Model'!
-Object subclass: #CompiledMethodCoverageTracker
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageTracker class' category: 'CodeCoverage-Model'!
-CompiledMethodCoverageTracker class
-	instanceVariableNames: ''!
-
-!classDefinition: #CompiledMethodCoverageNotifier category: 'CodeCoverage-Model'!
-CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageNotifier
-	instanceVariableNames: 'coverageTrackers coverageTrackers_CHANGE_ME'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'CompiledMethodCoverageNotifier class' category: 'CodeCoverage-Model'!
-CompiledMethodCoverageNotifier class
-	instanceVariableNames: ''!
-
-!classDefinition: #DecisionConditionCoverageReportBuilder category: 'CodeCoverage-Model'!
-CompiledMethodCoverageTracker subclass: #DecisionConditionCoverageReportBuilder
-	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted sourceRanges2 decisionReceverRanges decisionSelectors'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Model'!
-!classDefinition: 'DecisionConditionCoverageReportBuilder class' category: 'CodeCoverage-Model'!
-DecisionConditionCoverageReportBuilder class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageTestClass1 category: 'CodeCoverage-Tests'!
-Object subclass: #CodeCoverageTestClass1
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageTestClass1 class' category: 'CodeCoverage-Tests'!
-CodeCoverageTestClass1 class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageTestClass2 category: 'CodeCoverage-Tests'!
-Object subclass: #CodeCoverageTestClass2
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'CodeCoverageTestClass2 class' category: 'CodeCoverage-Tests'!
-CodeCoverageTestClass2 class
-	instanceVariableNames: ''!
-
-!classDefinition: #FakeCodeCoverageAnalyzer category: 'CodeCoverage-Tests'!
-Object subclass: #FakeCodeCoverageAnalyzer
-	instanceVariableNames: 'enabled'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'FakeCodeCoverageAnalyzer class' category: 'CodeCoverage-Tests'!
-FakeCodeCoverageAnalyzer class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageAnalyzerBuilder category: 'CodeCoverage-UI'!
-Object subclass: #CodeCoverageAnalyzerBuilder
-	instanceVariableNames: 'testSuite systemOrganizer packageSnapshot'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageAnalyzerBuilder class' category: 'CodeCoverage-UI'!
-CodeCoverageAnalyzerBuilder class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageBrowserMenues category: 'CodeCoverage-UI'!
-Object subclass: #CodeCoverageBrowserMenues
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageBrowserMenues class' category: 'CodeCoverage-UI'!
-CodeCoverageBrowserMenues class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageTextStylerFactory category: 'CodeCoverage-UI'!
-Object subclass: #CodeCoverageTextStylerFactory
-	instanceVariableNames: 'report'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageTextStylerFactory class' category: 'CodeCoverage-UI'!
-CodeCoverageTextStylerFactory class
-	instanceVariableNames: ''!
-
-!classDefinition: #CodeCoverageResultItem category: 'CodeCoverage-UI'!
+!classDefinition: #CodeCoverageResultItem category: #'CodeCoverage-UI'!
 ProtoObject subclass: #CodeCoverageResultItem
 	instanceVariableNames: 'item report label numberOfCharactersToSkip'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
-!classDefinition: 'CodeCoverageResultItem class' category: 'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageResultItem class' category: #'CodeCoverage-UI'!
 CodeCoverageResultItem class
 	instanceVariableNames: ''!
 
+!classDefinition: #CodeCoverageAnalyzer category: #'CodeCoverage-Model'!
+Object subclass: #CodeCoverageAnalyzer
+	instanceVariableNames: 'compiledMethodsToAnalyze compiledMethodCoverageAnalyzer installedCompiledMethodAnalyzers running report coverageReportBuilders reportBuilderFactory'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageAnalyzer class' category: #'CodeCoverage-Model'!
+CodeCoverageAnalyzer class
+	instanceVariableNames: ''!
 
-!CodeCoverageAnalyzerBrowser commentStamp: 'NPM 1/18/2021 01:02:23' prior: 0!
-I am a specialized browser that displays results from a code coverage report.
+!classDefinition: #CodeCoverageAnalyzerReport category: #'CodeCoverage-Model'!
+Object subclass: #CodeCoverageAnalyzerReport
+	instanceVariableNames: 'reportsByClass reportsBySystemCategory reportsByCompiledMethod reportsByClassAndMessageCategory summaryReport'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageAnalyzerReport class' category: #'CodeCoverage-Model'!
+CodeCoverageAnalyzerReport class
+	instanceVariableNames: ''!
 
-I customize the labels for system categories, classes, message categories and messages, adding their code coverage percentage.
-I also highlight the parse nodes that have been covered in a compiled method's source code.
+!classDefinition: #CodeCoverageReport category: #'CodeCoverage-Model'!
+Object subclass: #CodeCoverageReport
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageReport class' category: #'CodeCoverage-Model'!
+CodeCoverageReport class
+	instanceVariableNames: ''!
 
-See my 'styling - code coverage results' protocol to see how I do the labels customization/source code highlighting.
+!classDefinition: #CodeCoverageReportSummary category: #'CodeCoverage-Model'!
+CodeCoverageReport subclass: #CodeCoverageReportSummary
+	instanceVariableNames: 'childReports'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageReportSummary class' category: #'CodeCoverage-Model'!
+CodeCoverageReportSummary class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageReport category: #'CodeCoverage-Model'!
+CodeCoverageReport subclass: #CompiledMethodCoverageReport
+	instanceVariableNames: 'compiledMethod compiledMethodWasExecuted coverageRatioBySourceRange messagesBySourceRanges'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageReport class' category: #'CodeCoverage-Model'!
+CompiledMethodCoverageReport class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageAnalyzer category: #'CodeCoverage-Model'!
+Object subclass: #CompiledMethodCoverageAnalyzer
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator methodClass codeCoverageAnalyzer selector codeCoverageNotifier installCount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageAnalyzer class' category: #'CodeCoverage-Model'!
+CompiledMethodCoverageAnalyzer class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageTracker category: #'CodeCoverage-Model'!
+Object subclass: #CompiledMethodCoverageTracker
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageTracker class' category: #'CodeCoverage-Model'!
+CompiledMethodCoverageTracker class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageNotifier category: #'CodeCoverage-Model'!
+CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageNotifier
+	instanceVariableNames: 'coverageTrackers coverageTrackers_CHANGE_ME'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CompiledMethodCoverageNotifier class' category: #'CodeCoverage-Model'!
+CompiledMethodCoverageNotifier class
+	instanceVariableNames: ''!
+
+!classDefinition: #DecisionConditionCoverageReportBuilder category: #'CodeCoverage-Model'!
+CompiledMethodCoverageTracker subclass: #DecisionConditionCoverageReportBuilder
+	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted sourceRanges2 decisionReceverRanges decisionSelectors'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'DecisionConditionCoverageReportBuilder class' category: #'CodeCoverage-Model'!
+DecisionConditionCoverageReportBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageTestClass1 category: #'CodeCoverage-Tests'!
+Object subclass: #CodeCoverageTestClass1
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageTestClass1 class' category: #'CodeCoverage-Tests'!
+CodeCoverageTestClass1 class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageTestClass2 category: #'CodeCoverage-Tests'!
+Object subclass: #CodeCoverageTestClass2
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageTestClass2 class' category: #'CodeCoverage-Tests'!
+CodeCoverageTestClass2 class
+	instanceVariableNames: ''!
+
+!classDefinition: #FakeCodeCoverageAnalyzer category: #'CodeCoverage-Tests'!
+Object subclass: #FakeCodeCoverageAnalyzer
+	instanceVariableNames: 'enabled'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Tests'!
+!classDefinition: 'FakeCodeCoverageAnalyzer class' category: #'CodeCoverage-Tests'!
+FakeCodeCoverageAnalyzer class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageAnalyzerBuilder category: #'CodeCoverage-UI'!
+Object subclass: #CodeCoverageAnalyzerBuilder
+	instanceVariableNames: 'testSuite systemOrganizer packageSnapshot'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageAnalyzerBuilder class' category: #'CodeCoverage-UI'!
+CodeCoverageAnalyzerBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageBrowserMenues category: #'CodeCoverage-UI'!
+Object subclass: #CodeCoverageBrowserMenues
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageBrowserMenues class' category: #'CodeCoverage-UI'!
+CodeCoverageBrowserMenues class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageTextStylerFactory category: #'CodeCoverage-UI'!
+Object subclass: #CodeCoverageTextStylerFactory
+	instanceVariableNames: 'report'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageTextStylerFactory class' category: #'CodeCoverage-UI'!
+CodeCoverageTextStylerFactory class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageSourceCodeGenerator category: #'CodeCoverage-Model'!
+ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
+	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode parseNodesBySourceRanges receiverTempCount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Model'!
+!classDefinition: 'CodeCoverageSourceCodeGenerator class' category: #'CodeCoverage-Model'!
+CodeCoverageSourceCodeGenerator class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageAnalyzerBrowser category: #'CodeCoverage-UI'!
+Browser subclass: #CodeCoverageAnalyzerBrowser
+	instanceVariableNames: 'codeCoverageReport'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageAnalyzerBrowser class' category: #'CodeCoverage-UI'!
+CodeCoverageAnalyzerBrowser class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageTextStyler category: #'CodeCoverage-UI'!
+SHTextStylerST80 subclass: #CodeCoverageTextStyler
+	instanceVariableNames: 'codeCoverageReport'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-UI'!
+!classDefinition: 'CodeCoverageTextStyler class' category: #'CodeCoverage-UI'!
+CodeCoverageTextStyler class
+	instanceVariableNames: ''!
+
+!classDefinition: #ProgressiveCodeCoverageTestRunner category: #'CodeCoverage-UI'!
+ProgressiveTestRunner subclass: #ProgressiveCodeCoverageTestRunner
+	instanceVariableNames: 'codeCoverageAnalyzer compiledMethodAnalyzersInstallationProgressBar compiledMethodAnalyzersRunIncrement'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-UI'!
+!classDefinition: 'ProgressiveCodeCoverageTestRunner class' category: #'CodeCoverage-UI'!
+ProgressiveCodeCoverageTestRunner class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageAnalyzerTest category: #'CodeCoverage-Tests'!
+TestCase subclass: #CodeCoverageAnalyzerTest
+	instanceVariableNames: 'codeCoverageAnalyzer originalM1Method'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageAnalyzerTest class' category: #'CodeCoverage-Tests'!
+CodeCoverageAnalyzerTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageTest category: #'CodeCoverage-Tests'!
+TestCase subclass: #CodeCoverageTest
+	instanceVariableNames: 'codeCoverageAnalyzer instanceVariable otherInstanceVariable coverageReport messageResult messageReceiverUsageCount'
+	classVariableNames: 'ClassVariable'
+	poolDictionaries: ''
+	category: 'CodeCoverage-Tests'!
+!classDefinition: 'CodeCoverageTest class' category: #'CodeCoverage-Tests'!
+CodeCoverageTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #CompiledMethodCoverageAnalyzerTest category: #'CodeCoverage-Tests'!
+TestCase subclass: #CompiledMethodCoverageAnalyzerTest
+	instanceVariableNames: 'compiledMethodAnalyzer fakeCodeCoverageAnalyzer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverage-Tests'!
+!classDefinition: 'CompiledMethodCoverageAnalyzerTest class' category: #'CodeCoverage-Tests'!
+CompiledMethodCoverageAnalyzerTest class
+	instanceVariableNames: ''!
+
+
+!CodeCoverageResultItem commentStamp: 'NPM 1/18/2021 01:11:26' prior: 0!
+I wrap an item to customize its label (#displayOrText) appending its code coverage percentage.
 !
-
-!CodeCoverageSourceCodeGenerator commentStamp: 'NPM 1/11/2021 21:33:07' prior: 0!
-I take a compiled method and, based on its source code, generate a new source code by wrapping each AST node with a tracing message node I create.
-When executed, those tracing message nodes will execute the parse node they wrap and notify the active compiled method's code coverage analyzer that the source range of the wrapped parse node that was covered.
-
-See comments in my methods for more information about how I implement code coverage tracing and how I trace message nodes that the Parser optimizes (such as #to:do).!
-
-!ProgressiveCodeCoverageTestRunner commentStamp: 'NPM 1/18/2021 01:56:29' prior: 0!
-I am a specialized progressive test runner that runs a test suite collecting code coverage information.!
-
-!CodeCoverageTextStyler commentStamp: 'NPM 1/19/2021 19:56:05' prior: 0!
-I am an specialized text styler that highlights covered code.
-
-I use a translucent colors for highighting covered and uncoverd code to allow the selected text's background to be visible.
-If the color was solid, the user would not have feedback about which par of the code is selected.!
 
 !CodeCoverageAnalyzer commentStamp: 'NPM 1/16/2021 21:04:01' prior: 0!
 I monitor the execution of compiled methods to analyze their code coverage, and provide access to the code coverage reports.
@@ -315,214 +295,1486 @@ The problem with this is that the code coverage report is needed to highlight th
 To overcome this problem, I hold a reference to the code coverage report that has to be used to highlight covered code, and when someone sends the #new message to me (thinking I'm a text styler class), I create an instance of CodeCoverageTextStyler passing the code coverage report that should be used for code highlighting.
 !
 
-!CodeCoverageResultItem commentStamp: 'NPM 1/18/2021 01:11:26' prior: 0!
-I wrap an item to customize its label (#displayOrText) appending its code coverage percentage.
+!CodeCoverageSourceCodeGenerator commentStamp: 'NPM 1/11/2021 21:33:07' prior: 0!
+I take a compiled method and, based on its source code, generate a new source code by wrapping each AST node with a tracing message node I create.
+When executed, those tracing message nodes will execute the parse node they wrap and notify the active compiled method's code coverage analyzer that the source range of the wrapped parse node that was covered.
+
+See comments in my methods for more information about how I implement code coverage tracing and how I trace message nodes that the Parser optimizes (such as #to:do).!
+
+!CodeCoverageAnalyzerBrowser commentStamp: 'NPM 1/18/2021 01:02:23' prior: 0!
+I am a specialized browser that displays results from a code coverage report.
+
+I customize the labels for system categories, classes, message categories and messages, adding their code coverage percentage.
+I also highlight the parse nodes that have been covered in a compiled method's source code.
+
+See my 'styling - code coverage results' protocol to see how I do the labels customization/source code highlighting.
 !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 11/27/2021 00:20:42'!
-classList
+!CodeCoverageTextStyler commentStamp: 'NPM 1/19/2021 19:56:05' prior: 0!
+I am an specialized text styler that highlights covered code.
 
-	^ super classList
-		collect: [ :className | self styleClassNamed: className ]! !
+I use a translucent colors for highighting covered and uncoverd code to allow the selected text's background to be visible.
+If the color was solid, the user would not have feedback about which par of the code is selected.!
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 19:49:24'!
-classOrMetaclassNamed: aClassName
+!ProgressiveCodeCoverageTestRunner commentStamp: 'NPM 1/18/2021 01:56:29' prior: 0!
+I am a specialized progressive test runner that runs a test suite collecting code coverage information.!
 
-	| selectedClass |
+!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:10'!
+item
+
+	^ item! !
+
+!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:01'!
+string
 	
-	"NPM: aClassName has to be trimmed as it can contain leading spaces used for indenting it in the hierarchy view."
-	selectedClass := Smalltalk classNamed: aClassName withBlanksTrimmed.
+	^ item string! !
+
+!CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 11/2/2022 00:08:49'!
+initializeFor: anItem with: aCodeCoverageReport skippingAllButFirst: numberOfCharacters 
+
+	item := anItem.
+	report := aCodeCoverageReport.
+	numberOfCharactersToSkip := numberOfCharacters.! !
+
+!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:46:33'!
+displayStringOrText
 	
-	^ metaClassIndicated
-		ifTrue: [ selectedClass theMetaClass ]
-		ifFalse: [ selectedClass theNonMetaClass ]! !
+	^ label ifNil: [ self initializeLabel ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 02:31:59'!
-selectedClassOrMetaclass
+!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:47:30'!
+initializeLabel
 
-	^ self classOrMetaclassNamed: selectedClassName! !
+	^ label := ('{1} ({2}%)' format: { item. report percentCovered asFloat printStringFractionDigits: 2 })! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 1/20/2021 02:47:06'!
-defaultBrowserTitle
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:11:22'!
+allButFirst: numberOfCharacters
+
+	^ self class
+		for: item
+		report: report
+		skippingAllButFirst: numberOfCharacters ! !
+
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:08:49'!
+asString
+
+	^ self displayStringOrText
+		allButFirst: numberOfCharactersToSkip! !
+
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:03:19'!
+doesNotUnderstand: aMessage
+
+	^ aMessage sendTo: item! !
+
+!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 11/2/2022 00:08:49'!
+appendToString: aString
+
+	^ aString, (item allButFirst: numberOfCharactersToSkip)! !
+
+!CodeCoverageResultItem methodsFor: 'as yet unclassified' stamp: 'NPM 11/2/2022 00:22:10'!
+percentCovered
+
+	^ report percentCovered! !
+
+!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:10:12'!
+for: anItem report: aCodeCoverageReport 
 	
-	^ (CodeCoverageResultItem
-		for: 'Code Coverage Browser'
-		report: codeCoverageReport) displayStringOrText ! !
+	^ self
+		for: anItem
+		report: aCodeCoverageReport
+		skippingAllButFirst: 0 ! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 1/17/2021 19:50:10'!
-initializeDisplayingReportsFrom: aCodeCoverageReport 
-
-	codeCoverageReport := aCodeCoverageReport.! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 1/18/2021 20:48:08'!
-messageCategoryList
-		
-	^ super messageCategoryList
-		select: [ :messageCategory | codeCoverageReport wasMessageCategoryAnalyzed: messageCategory in: self selectedClassOrMetaclass ]
-		thenCollect: [ :messageCategory | self styleMessageCategory: messageCategory ]
-		
-		
-		
-		
+!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:09:47'!
+for: anItem report: aCodeCoverageReport  skippingAllButFirst: numberOfCharacters 
 	
+	^ self
+		new
+		initializeFor: anItem
+		with: aCodeCoverageReport
+		skippingAllButFirst: numberOfCharacters! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:31:48'!
+installCompiledMethodAnalizers
+	
+	self triggerInstallStartedEvent.
+	
+	installedCompiledMethodAnalyzers := compiledMethodsToAnalyze
+		select: [ :compiledMethodToAnalyze | compiledMethodToAnalyze isAbstract not ]
+	 	thenCollect: [ :compiledMethodToAnalyze | self installCompiledMethodAnalyzer: compiledMethodToAnalyze ].
+	
+	coverageReportBuilders := installedCompiledMethodAnalyzers
+		collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilderUsing: reportBuilderFactory ].
+		
+	self triggerIntallFinishedEvent.
+	! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:09:23'!
+resetInstalledCompiledMethodAnalyzers
+
+	installedCompiledMethodAnalyzers := Set new.
+	coverageReportBuilders := Set new.! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 07:54:47'!
+triggerInstallStartedEvent
+
+	^ self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:29:52'!
+triggerIntallFinishedEvent
+
+	^ self triggerEvent: #endInstallingCompiledMethodAnalyzers! !
+
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/11/2021 21:15:02'!
+uninstallCompiledMethodAnalyzers
+	
+	compiledMethodCoverageAnalyzer uninstallAll: installedCompiledMethodAnalyzers.
+	
+	self resetInstalledCompiledMethodAnalyzers.! !
+
+!CodeCoverageAnalyzer methodsFor: 'assertions' stamp: 'NPM 1/16/2021 17:44:47'!
+assertReportsAreAvailable
+	
+	self
+		assert: running not
+		description: self class reportsAreNotAvailableWhileRunningErrorMessage! !
+
+!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 9/10/2022 15:09:30'!
+generateReport
+	
+	| compiledMethodReports |
+	compiledMethodReports := coverageReportBuilders collect: [ :reportBuilder | reportBuilder value ].
+	
+	report := CodeCoverageAnalyzerReport withAll: compiledMethodReports.
+	! !
+
+!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 1/20/2021 02:43:01'!
+report
+	
+	self assertReportsAreAvailable.
+	
+	^ report! !
+
+!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 1/16/2021 20:28:26'!
+startTrackingCodeCoverage
+	
+	self ifRunning: [ ^ self ].
+
+	self installCompiledMethodAnalizers.
+	
+	running := true.! !
+
+!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 9/12/2022 02:31:04'!
+stopTrackingCodeCoverage
+	
+	self ifRunning: [
+		running := false.
+		
+		[ self generateReport ]
+		ensure: [
+			self uninstallCompiledMethodAnalyzers.
+			self triggerStopEvent ]
+	]
+	
+	! !
+
+!CodeCoverageAnalyzer methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 20:00:08'!
+value: aBlock
+	
+	"Convenience method for collecting code coverage for compiledMethodsToAnalyze
+	and cleaning up after myself in one-shot."
+	
+	[
+		self startTrackingCodeCoverage.
+		^ aBlock value
+	] ensure: [
+		self stopTrackingCodeCoverage
+	]
+	! !
+
+!CodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/7/2022 02:04:41'!
+initializeToAnalyze: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory   
+	
+	compiledMethodsToAnalyze := compiledMethods.
+	compiledMethodCoverageAnalyzer := aCompiledMethodCoverageAnalyzer.
+	reportBuilderFactory := aReportBuilderFactory.
+	running := false.
+	report := IdentitySet new.
+	
+	self resetInstalledCompiledMethodAnalyzers.! !
+
+!CodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 16:22:58'!
+ifRunning: aBlock
+	
+	running ifTrue: aBlock! !
+
+!CodeCoverageAnalyzer methodsFor: 'events - triggering' stamp: 'NPM 9/12/2022 02:30:20'!
+triggerStopEvent
+
+	self triggerEvent: #stop.! !
+
+!CodeCoverageAnalyzer methodsFor: 'events - registering' stamp: 'NPM 9/12/2022 02:29:38'!
+onStopSend: aSelector to: anObject
+
+	self when: #stop send: aSelector to: anObject.! !
+
+!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 08:31:30'!
+installCompiledMethodAnalyzer: compiledMethodToAnalyze 
+
+	self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
+	
+	^ compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self! !
+
+!CodeCoverageAnalyzer class methodsFor: 'code coverage tracking' stamp: 'NPM 1/11/2021 22:08:50'!
+stopTrackingCoverageInAllInstances
+
+	"Stops tracking coverage in all of my instances.
+	Useful during development or testing, where an exception can leave dangling instances around.
+	
+	self stopTrackingCoverageInAllInstances.
+	"
+	
+	self allInstancesDo: [ :codeCoverageAnalyzer | codeCoverageAnalyzer stopTrackingCodeCoverage ]! !
+
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:30:24'!
+classWasNotAnalyzedErrorMessage
+	
+	^ 'Class was not analyzed'! !
+
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/9/2021 17:11:16'!
+compiledMethodWasNotAnalyzedErrorMessage
+	
+	^ 'The compiled method was not requested to be analyzed'! !
+
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:42:41'!
+reportsAreNotAvailableWhileRunningErrorMessage
+	
+	^ 'Code coverage reports are not available while code coverage analyzer is running'! !
+
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:36:10'!
+systemCategoryWasNotAnalyzedErrorMessage
+	
+	^ 'The requested system category was not analyzed'! !
+
+!CodeCoverageAnalyzer class methodsFor: 'evaluating' stamp: 'NPM 1/20/2021 03:38:07'!
+value: aBlock analyzingAll: compiledMethods 
+	
+	"Convenience method for analyzing code coverage of compiledMethods
+	during the evaluation of aBlock."
+	
+	| analzer |
+	analzer := self toAnalyzeAll: compiledMethods.
+	
+	analzer value: aBlock.
+	
+	"Insted of returning aBlock result, I return the instance that its code coverage
+	to retrieve coverage reports from it."
+	^ analzer report! !
+
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 03:44:16'!
+toAnalyzeAll: compiledMethods 
+	
+	^ self
+		toAnalyzeAll: compiledMethods
+		creatingReportBuildersWith: DecisionConditionCoverageReportBuilder! !
+
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:17'!
+toAnalyzeAll: compiledMethods creatingReportBuildersWith: aReportBuilderFactory
+	
+	^ self
+		toAnalyzeAll: compiledMethods
+		with: CompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: aReportBuilderFactory! !
+
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:07:32'!
+toAnalyzeAll: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
+	
+	(self anyBelongToMySystemCategory: compiledMethods)
+		ifTrue: [
+			^ self
+				toAnalyzeAllInMyPackage: compiledMethods
+				with: aCompiledMethodCoverageAnalyzer
+				creatingReportBuildersWith: aReportBuilderFactory ].
+
+	^ self
+		toAnalyzeAllOutsideMyPackage: compiledMethods
+		with: aCompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: aReportBuilderFactory! !
+
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:08:10'!
+toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
+
+	"To analyze methods in my own package (aka analyze instances of myself) I create a temporary copy of my whole package
+	and instantiate classes from it to avoid infinite recursions"
+	
+	| snapshotOfCompiledMethodCoverageAnalyzer codeCoverageAnalyzer snapshotOfMyself myPackage snapshotOfMyPackage snapshotOfReportBuilderFactory |
+	"First I create a copy of my own package"
+	myPackage := CodePackage packageOfClass: self ifNone: [ self shouldNotHappen ].
+	snapshotOfMyPackage := PackageSnapshot takeOf: myPackage.
+	
+	"Find a snapshot of myself and my collaborator in the package snapshot"
+	snapshotOfMyself := snapshotOfMyPackage snapshotOf: self.
+	snapshotOfCompiledMethodCoverageAnalyzer _ snapshotOfMyPackage snapshotOf: aCompiledMethodCoverageAnalyzer.
+	snapshotOfReportBuilderFactory _ snapshotOfMyPackage snapshotOf: aReportBuilderFactory.
+	
+	"Create the code coverage analyzer instance. It will be an instance of my snapshot (not myself)"
+	codeCoverageAnalyzer := snapshotOfMyself
+		toAnalyzeAll: compiledMethods
+		with: snapshotOfCompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: snapshotOfReportBuilderFactory.
+		
+	"Once codeCoverageAnalyzer is done running, it will need the package snapshot to discard it.
+	I need to pin it or else it will be garbage collected."
+	snapshotOfMyPackage pin.
+	
+	"Migrate instances of classes in the snapshot package (e.g. coverage reports) to their original classes before discarding the package snapshot"
+	codeCoverageAnalyzer onStopSend: #migrateSnapshotInstancesToOriginalClasses to: snapshotOfMyPackage.
+	codeCoverageAnalyzer onStopSend: #discard to: snapshotOfMyPackage.
+	
+	"Finally, I unpin the package snapshot so it can be garbage collected"
+	codeCoverageAnalyzer onStopSend: #unpin to: snapshotOfMyPackage.
+		
+	^ codeCoverageAnalyzer
+		
+	! !
+
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:05:31'!
+toAnalyzeAllOutsideMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
+
+	^ self
+		new
+		initializeToAnalyze: compiledMethods
+		with: aCompiledMethodCoverageAnalyzer
+		creatingReportBuildersWith: aReportBuilderFactory! !
+
+!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 10/26/2022 02:33:31'!
+anyBelongToMySystemCategory: compiledMethods
+
+	^ compiledMethods
+		anySatisfy: [ :compiledMethod | self belongsToMySystemCategory: compiledMethod ]! !
+
+!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 9/12/2022 02:22:35'!
+belongsToMySystemCategory: compiledMethod
+
+	^ compiledMethod methodClass category = self category! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 11/7/2022 01:24:19'!
+for: aCompiledMethod codeCoverageInfoAt: aSourcePosition
+
+	^ reportsByCompiledMethod 
+		at: aCompiledMethod
+			ifPresent:[ :report | report messageAt: aSourcePosition ]
+			ifAbsent:[ '' ].! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:16:45'!
+mostCoveredCompiledMethodReport
+	
+	^ summaryReport mostCoveredReport! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:04:26'!
+reportForClass: aClass
+
+	^ reportsByClass
+		at: aClass
+		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer classWasNotAnalyzedErrorMessage ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:17:39'!
+reportForCompiledMethod: aCompiledMethod 
+	
+	^ reportsByCompiledMethod
+		at: aCompiledMethod 
+		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer compiledMethodWasNotAnalyzedErrorMessage ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:17:40'!
+reportForCompiledMethod: aCompiledMethod ifAnalyzed: foundBlock ifNotAnalyzed: noneBlock
+
+	^ reportsByCompiledMethod
+		at: aCompiledMethod
+		ifPresent: foundBlock
+		ifAbsent: noneBlock! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:03:30'!
+reportForMessageCategory: aMessageCategory inClass: aClass
+	
+	^ (reportsByClassAndMessageCategory at: aClass)
+		at: aMessageCategory! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:03:34'!
+reportForSystemCategory: aSystemCategory
+	
+	^ reportsBySystemCategory
+		at: aSystemCategory
+		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer systemCategoryWasNotAnalyzedErrorMessage ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 21:21:28'!
+indexReportsByClassAndMessageCategory: compiledMethodReports
+
+	reportsByClass := Dictionary new.
+	reportsByClassAndMessageCategory := Dictionary new.
+	
+	(compiledMethodReports groupBy: [ :report | report methodClass ]) keysAndValuesDo: [ :class :compiledMethodReportss |
+		reportsByClass
+			at: class
+			put: (CodeCoverageReport toSummarize: compiledMethodReportss).
+		
+		reportsByClassAndMessageCategory
+			at: class
+			put: (self indexReportsByMessageCategory: compiledMethodReportss) ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 20:40:59'!
+indexReportsByCompiledMethod: compiledMethodReports
+
+	reportsByCompiledMethod := compiledMethodReports
+		inject: IdentityDictionary new
+		into: [ :reportIndex :report | reportIndex at: report compiledMethod put: report; yourself ].! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/19/2021 21:21:43'!
+indexReportsByMessageCategory: compiledMethodReports
+
+	^ (compiledMethodReports groupBy: [ :report | report messageCategory ])
+		collect: [ :reports | CodeCoverageReport toSummarize: reports ]
+		! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 21:21:48'!
+indexReportsBySystemCategory: compiledMethodReports
+	
+	reportsBySystemCategory := (compiledMethodReports groupBy: [ :report | report systemCategory ])
+		collect: [ :reports | CodeCoverageReport toSummarize: reports ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'initialization' stamp: 'NPM 1/19/2021 21:16:16'!
+initializeWithAll: compiledMethodReports
+
+	summaryReport := CodeCoverageReport toSummarize: compiledMethodReports.
+	
+	self
+		indexReportsByCompiledMethod: compiledMethodReports;
+		indexReportsByClassAndMessageCategory: compiledMethodReports;
+		indexReportsBySystemCategory: compiledMethodReports! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'statistics' stamp: 'NPM 1/19/2021 21:16:15'!
+percentCovered
+	
+	^ summaryReport percentCovered ! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:46:52'!
+wasClassAnalyzed: aClass 
+	
+	^ reportsByClass includesKey: aClass! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 21:47:02'!
+wasClassOrMetaclassAnalyzed: aClassOrMetaclass
+
+	^ (self wasClassAnalyzed: aClassOrMetaclass theNonMetaClass) or: [
+		self wasClassAnalyzed: aClassOrMetaclass theMetaClass ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:50:47'!
+wasCompiledMethodAnalyzed: aCompiledMethod 
+	
+	^ reportsByCompiledMethod includesKey: aCompiledMethod! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:49:48'!
+wasMessageCategoryAnalyzed: aMessageCategory in: aClass 
+	
+	^ reportsByClassAndMessageCategory
+		at: aClass
+		ifPresent: [ :classReports | classReports includesKey: aMessageCategory ]
+		ifAbsent: [ false ]! !
+
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:44:59'!
+wasSystemCategoryAnalyzed: aSystemCategory
+
+	^ reportsBySystemCategory includesKey: aSystemCategory! !
+
+!CodeCoverageAnalyzerReport class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 20:31:24'!
+withAll: compiledMethodReports 
+	
+	^ self
+		new
+		initializeWithAll: compiledMethodReports! !
+
+!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 1/11/2021 18:48:17'!
+coverageRatio
+
+	self subclassResponsibility! !
+
+!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:35:04'!
+percentCovered
+
+	^ (self coverageRatio * 100)
+		roundTo: 0.01! !
+
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/6/2022 12:21:54'!
+for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
+	
+	^ CompiledMethodCoverageReport
+		for: aCompiledMethod
+		executed: aBoolean
+		with: coverageResults
+		messages: messagesBySourceRanges! !
+
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:51:58'!
+toSummarize: codeCoverageReports 
+	
+	^ CodeCoverageReportSummary withAll: codeCoverageReports! !
+
+!CodeCoverageReportSummary methodsFor: 'initialization' stamp: 'NPM 1/11/2021 18:47:03'!
+initializeWithAll: codeCoverageReports 
+
+	childReports := codeCoverageReports.! !
+
+!CodeCoverageReportSummary methodsFor: 'querying' stamp: 'NPM 1/19/2021 21:17:08'!
+mostCoveredReport
+	
+	^ childReports detectMax: [ :report | report percentCovered ]! !
+
+!CodeCoverageReportSummary methodsFor: 'statistics' stamp: 'NPM 1/11/2021 18:47:03'!
+coverageRatio
+	
+	childReports ifEmpty: [ ^ 0 ].
+	
+	^ (childReports sum: [ :coverageReport | coverageReport coverageRatio ]) / childReports size! !
+
+!CodeCoverageReportSummary class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:12:26'!
+withAll: anArray 
+	
+	^ self
+		new
+		initializeWithAll: anArray ! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 20:52:31'!
+compiledMethod
+
+	^ compiledMethod! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:53'!
+fullyCoveredSourceRanges
+
+	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio = 1 ]! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 11/7/2022 01:26:55'!
+messageAt: aSourcePosition
+
+	^ messagesBySourceRanges associations
+		detect: [ :association | association key includes: aSourcePosition ]
+		ifFound: [ :association | association value ]
+		ifNone: [ ^ '' ]! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:21:43'!
+messageCategory
+	
+	^ compiledMethod category! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:36'!
+methodClass
+	
+	^ compiledMethod methodClass! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:08:38'!
+partiallyCoveredSourceRanges
+	
+	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio |
+		0 < coverageRatio and: [ coverageRatio < 1 ]]! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:07:40'!
+selectSourceRangesByCoverageRatio: aBlock
+	
+	^ coverageRatioBySourceRange associations
+		select: [ :sourceRangeAndCoverageRatio | aBlock value: sourceRangeAndCoverageRatio value ]
+		thenCollect: [ :sourceRangeAndCoverageRatio | sourceRangeAndCoverageRatio key ]! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:51'!
+selector
+	
+	^ compiledMethod selector! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:31:23'!
+systemCategory
+	
+	^ compiledMethod
+		methodClass
+		category ! !
+
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:46'!
+uncoveredSourceRanges
+	
+	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio isZero ]! !
+
+!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 11/7/2022 01:20:28'!
+initializeFor: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
+
+	compiledMethod := aCompiledMethod.
+	compiledMethodWasExecuted := aBoolean. 
+	coverageRatioBySourceRange := coverageResults.
+	messagesBySourceRanges := messages.! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:14:00'!
+coverageRatio
+	
+	compiledMethodWasExecuted ifFalse: [ ^ 0 ].
+	
+	coverageRatioBySourceRange ifEmpty: [ ^ 1 ].
+
+	^ (coverageRatioBySourceRange values sum) / coverageRatioBySourceRange size! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:13:23'!
+coverageRatioOf: aSourceRange
+
+	^ coverageRatioBySourceRange at: aSourceRange! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:10:50'!
+numberOfSourceRanges
+	
+	^ coverageRatioBySourceRange size! !
+
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:05:11'!
+totalCoveredSourceRanges
+	
+	^ coverageRatioBySourceRange size - self uncoveredSourceRanges size! !
+
+!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/16/2021 20:09:07'!
+isFor: aCompiledMethod 
+	
+	^ compiledMethod == aCompiledMethod ! !
+
+!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 01:22:40'!
+for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
+
+	^ self
+		new
+		initializeFor: aCompiledMethod
+		executed: aBoolean
+		with: coverageResults
+		messages: messagesBySourceRanges
+		! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/4/2022 02:44:55'!
+initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
+
+	originalCompiledMethod := aCompiledMethod.
+	codeCoverageAnalyzer := aCodeCoverageAnalyzer.
+	sourceCodeGenerator := aCodeCoverageSourceCodeGenerator.
+	codeCoverageNotifier := CompiledMethodCoverageTracker notifier.
+	installCount _ 0.
+	methodClass := originalCompiledMethod methodClass.
 ! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 11/6/2022 03:26:39'!
-messageCategoryListIndex: anInteger
-	"Set the selected message category to be the one indexed by anInteger."
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:43:51'!
+compileTracedMethod
 
-	| index messageCategoryList |
+	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
+	is too big to be compiled with optimizations.
 	
-	messageCategoryList _ self messageCategoryList.
-	index _ messageCategoryList ifInBounds: anInteger ifNot: 0.
-
-	selectedMessageCategory _ index = 0 ifFalse: [(messageCategoryList at: index) item ].
-	selectedMessage _ nil.
-	self changed: #messageCategorySelectionChanged.
-	self changed: #messageCategoryListIndex. "update my selection"
-	self changed: #messageList.
-	self editSelection: (index > 0
-		ifTrue: [#newMessage]
-		ifFalse: [self classListIndex > 0
-			ifTrue: [#editClass]
-			ifFalse: [#newClass]]).
-	self acceptedContentsChanged.! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 11/6/2022 03:27:29'!
-messageList
-
-	^ super messageList
-		select: [ :message | codeCoverageReport wasCompiledMethodAnalyzed: self selectedClassOrMetaclass>>message ]
-		thenCollect: [ :message | self styleMessage: message ]! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'metaclass' stamp: 'NPM 1/18/2021 16:31:13'!
-metaClassIndicated: trueOrFalse
-
-	super metaClassIndicated: trueOrFalse.
+	At the time of writing this (2021-01-29) trying to analyze the code coverage of ArgentineLaw23555RuleTest>>#testCreation
+	(from the Chalten package (https://github.com/Cuis-Smalltalk/Calendars/commits/master/Chalten, at commit 63ac3888936b008e85679cdc474e4cc0685686bf)
+	fails with the following compiler error:
 	
-	"I need to notify the class list changed, as the class labels have to be updated to display
-	either the instance or the class side coverage percentage."
-	self changed: #classList.! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/18/2021 21:48:51'!
-styleClassNamed: aClassName
-
-	| classOrMetaclass |
-	classOrMetaclass := (self classOrMetaclassNamed: aClassName).
+	    'genJumpLong: distance index -1042 is out of range -1024 to 1023'
 	
-	(codeCoverageReport wasClassAnalyzed: classOrMetaclass)
-		ifFalse: [ ^ aClassName ].
+	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
+	| tracedCompiledMethod reportBuilderLiteralIndex |
+	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
 	
-	^ CodeCoverageResultItem
-		for: aClassName
-		report: (codeCoverageReport reportForClass: classOrMetaclass)! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/19/2021 21:11:35'!
-styleMessage: aSelector
-
-	^ CodeCoverageResultItem
-		for: aSelector
-		report: (codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector)! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/19/2021 21:02:21'!
-styleMessageCategory: messageCategory
-
-	^ CodeCoverageResultItem
-		for: messageCategory
-		report: (codeCoverageReport
-				reportForMessageCategory: messageCategory
-				inClass: self selectedClassOrMetaclass)! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/18/2021 21:00:27'!
-styleSystemCategory: aSystemCategory 
+	reportBuilderLiteralIndex _ tracedCompiledMethod indexOfLiteral: sourceCodeGenerator coverageTrackerLiteralName.
+	reportBuilderLiteralIndex > 0
+		ifTrue: [
+			tracedCompiledMethod
+				literalAt: reportBuilderLiteralIndex
+				put: codeCoverageNotifier ].
+			
+	tracedCompiledMethod codeCoverageAnalyzer: self.
 	
-	^ CodeCoverageResultItem
-		for: aSystemCategory
-		report: (codeCoverageReport reportForSystemCategory: aSystemCategory)! !
+	^ tracedCompiledMethod
+! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 1/18/2021 20:44:27'!
-systemCategoryList
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:29:45'!
+decrementInstallCount
 
-	^ super systemCategoryList
-		select: [ :systemCategory | codeCoverageReport wasSystemCategoryAnalyzed: systemCategory ]
-		thenCollect: [ :systemCategory | self styleSystemCategory: systemCategory ]! !
+	self isInstalled
+		ifTrue: [ installCount := installCount - 1 ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 11/2/2022 00:29:31'!
-systemCategoryRoots
-	"Answer the roots of the forest of system categories."
-	| categories subcategories roots name |
-	categories _ self systemCategoryList.
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:23:12'!
+ifShouldBeUninstalled: aBlock
 
-	subcategories _ Dictionary new.
-	categories do: [:each|
-		name _ (each findTokens: '-') first.
-		(subcategories at: name ifAbsentPut: [OrderedCollection new]) add: each].
-	roots _ OrderedCollection new.
-	categories do: [:each|
-		name _ (each findTokens: '-') first.
-		(roots includes: name) ifFalse:
-			[(subcategories at: name) size > 1 ifTrue: [roots add: name] ifFalse: [roots add: (subcategories at: name) first]]].
-	^ roots collect: [:each|
-		| averagePercentCoveredInSubcategories rootName | 
-		averagePercentCoveredInSubcategories := ((subcategories at: name) collect: [ :subcategory | subcategory percentCovered ]) average.
-		rootName := each, ' (', (averagePercentCoveredInSubcategories printStringFractionDigits: 2 ) asString, '%)'.
+	installCount = 0
+		ifTrue: aBlock ! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:30:03'!
+incrementInstallCount
+
+	installCount _ installCount + 1! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:39:54'!
+install
+	
+	"Replace the original compiled method with myself to intercept its execution".
+	
+	self isInstalled
+		ifFalse: [ self installTracedCompiledMethod ].
 		
-		SystemCategoryWrapper with: each name: (rootName)  model: self]! !
+	self incrementInstallCount.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 11/7/2022 01:12:27'!
-codeCoverageInfoAt: aSourcePosition
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:44:37'!
+installCompiledMethod: aCompiledMethod
 	
-	| selectedCompiledMethod |
-	self selectedMessageName ifNil: [ ^ '' ].
-	selectedCompiledMethod := self selectedClassOrMetaClass compiledMethodAt: self selectedMessageName.
-	
-	^ codeCoverageReport
-		for: selectedCompiledMethod
-		codeCoverageInfoAt: aSourcePosition ! !
+	methodClass
+		addSelectorSilently: aCompiledMethod selector
+		withMethod: aCompiledMethod! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 1/18/2021 21:06:58'!
-textStylerClassFor: textGetter
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:40:27'!
+installOriginalMethod
 
-	"TODO(NPM): I had no choice but to re-implement my superclass's #textStylerClassFor: method as I
-	needed to customize the text styler to be used when displaying the source code of a covered method."
+	self installCompiledMethod: originalCompiledMethod! !
 
-	textGetter = #acceptedContents ifFalse: [
-		^ super textStylerClassFor: textGetter ].
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:41:33'!
+installTracedCompiledMethod
 	
-	currentCompiledMethod ifNotNil: [ 
-		^ codeCoverageReport
-			reportForCompiledMethod: currentCompiledMethod
-			ifAnalyzed: [ :report | CodeCoverageTextStylerFactory new initializeWith: report]
-			ifNotAnalyzed: [ super textStylerClassFor: textGetter ] ].
-	
-	^ SHTextStylerST80! !
+	self installCompiledMethod: self compileTracedMethod
+! !
 
-!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 20:47:01'!
-displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:14:26'!
+isInstalled
 	
-	| browser |
-	browser _ self displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport.
-	
-	^ BrowserWindow
-		open: browser
-		label: browser defaultBrowserTitle! !
+	^ installCount > 0! !
 
-!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 16:38:06'!
-displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:39:29'!
+uninstall
 	
-	| newBrowser report |
-	newBrowser := self
+	"Restore the original compiled method"
+	
+	self isInstalled ifFalse: [ ^ self ].
+	
+	self decrementInstallCount.
+	self ifShouldBeUninstalled: [ self installOriginalMethod. ].
+
+	
+	! !
+
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 11/7/2022 02:03:51'!
+registerNewCoverageReportBuilderUsing: aReportBuilderFactory
+
+	| newReportBuilder |
+	newReportBuilder := aReportBuilderFactory
+		for: originalCompiledMethod
+		withSourceRanges: sourceCodeGenerator tracedSourceRanges.
+		
+	codeCoverageNotifier sendCoverageNotificationsTo: newReportBuilder.
+		
+	^ newReportBuilder! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/4/2022 01:59:45'!
+for: aCompiledMethod using: aCodeCoverageAnalyzer
+	
+	"Create an instance of myself to analyze code coverage of aCompiledMethod.
+	aTracedSourceCodeGenerator is used to generate the traced version of aCompiledMethod that will report code coverage
+	to aCodeCoverageAnalyzer."
+	
+	"Because I change the method dictionary where aCompiledMethod is installed, I really need to make sure that aCompiledMethod
+	is an instance of CompiledMethod and not, say, a MethodReference or even an instance of myself. That could end up leaving
+	the class aCompiledMethod is installed in an inconsistent way."
+	self assertIsCompiledMethod: aCompiledMethod.
+	
+	"Double check that aCompiledMethod is not being analyzed.
+	It might be the case that a compiled method analyzer is already installed instead of aCompiledMethod.
+	This can happen if the analyzer was installed after aCompiledMethod was retrieved from its class by its selector
+	(e.g. using #compiledMethodAt:).
+	If that is the case, return the existing analyzer instead of creating a new one."
+	self
+		withCompiledMethodAnayzerFor: aCompiledMethod
+		do: [ :analyzer | ^ analyzer ].	
+		
+	^ self
 		new
-		initializeDisplayingReportsFrom: aCodeCoverageAnalyzerReport.
+		initializeFor: aCompiledMethod
+		using: aCodeCoverageAnalyzer
+		generatingSourceCodeWith: (CodeCoverageSourceCodeGenerator valueFor: aCompiledMethod)! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/4/2022 02:37:04'!
+withCompiledMethodAnayzerFor: aCompiledMethod do: aBlockClosure 
+	
+	| currentCompiledMethod |
+	currentCompiledMethod _ aCompiledMethod methodClass
+		compiledMethodAt: aCompiledMethod selector.
+
+	currentCompiledMethod withCodeCoverageAnalyzerDo: aBlockClosure! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:46:35'!
+installOn: aCompiledMethod using: aCodeCoverageAnalyzer
+
+	"Convenience method to create an instance of myself and install it in one-shot."
+	
+	^ (self for: aCompiledMethod using: aCodeCoverageAnalyzer) install! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:48:44'!
+uninstallAll: compiledMethodAnalyzers
+
+	"Convenience method to uninstall all compiledMethodAnalyzers"
+	
+	compiledMethodAnalyzers do: [ :compiledMethodAnalyzer | compiledMethodAnalyzer uninstall ]
+! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:48:21'!
+uninstallAllInstances
+	
+	"Uninstall all existing instances of myself.
+	Useful during development or testing, where an exception can leave dangling instances around.
+	
+	self uninstallAllInstances.
+	"
+	
+	self uninstallAll: self allInstances! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:48:57'!
+assertIsCompiledMethod: aCompiledMethod 
+	
+	self
+		assert: aCompiledMethod class isCompiledMethodClass
+		description: [ self shouldOnlyBeCreatedForCompiledMethodsErrorMessage ].! !
+
+!CompiledMethodCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/9/2021 21:29:18'!
+shouldOnlyBeCreatedForCompiledMethodsErrorMessage
+	
+	^ self name, ' should only be created for compiled methods'.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:47'!
+cover: aSourceRange declaredAt: declarationSourceRange by: anObject
+
+	"Register that anObject covered aSourceRange and its declaration at declarationSourceRange.
+	Return anObject."
+	
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:24:56'!
+coverAll: sourceRanges
+
+	"Register that sourceRanges were covered."
+
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/4/2022 00:05:13'!
+coverAll: sourceRanges by: anObject 
+
+	"Register that anObject covered sourceRanges.
+	Return anObject."
+	
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:01'!
+coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
+
+	"Register that anObject covered sourceRanges.
+	Return anObject."
+
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:25'!
+coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver   
+	
+	"Register that the evaluation of aBlock covered sourceRanges.
+	Return the result of evaluating aBlock."
+	
+	^ [
+		| result |
+		result := aBlock value.
 		
+		self
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: aReceiver
+			withResult: result.
+		
+		result ]
+	 ifCurtailed: [
+		self
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: aReceiver
+		] ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:43'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
-	report := aCodeCoverageAnalyzerReport mostCoveredCompiledMethodReport.
+	self subclassResponsibility ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
+
+	self subclassResponsibility ! !
+
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
+markAsExecuted
+
+	"Register that the compiled method was executed.
+	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
+	based on the number of source ranges that were covered (they don't have any source range)."
 	
-	newBrowser
-		setClass: report methodClass
-		selector: report selector.
+	self subclassResponsibility.! !
+
+!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 15:36:57'!
+notifier 
+
+	^ CompiledMethodCoverageNotifier new! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
+sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
+
+	coverageTrackers add: aCoverageTrackerToBeNotified ! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 15:36:20'!
+initialize
 	
-	^ newBrowser ! !
+	coverageTrackers := OrderedCollection new.! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:15:06'!
+cover: aSourceRange declaredAt: declarationSourceRange by: anObject
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker cover: aSourceRange declaredAt: declarationSourceRange by: anObject ].
+	
+	^ anObject! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:21:23'!
+coverAll: sourceRanges
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges ].
+	! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:23:31'!
+coverAll: anArray by: anObject 
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: anArray by: anObject ].
+	
+	^ anObject! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:13:06'!
+coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
+
+	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges byLiteralOrPseudoVariable: anObject ].
+	
+	^ anObject! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:31'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver 
+	
+	coverageTrackers do: [ :coverageTracker |
+		coverageTracker
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: aReceiver ] ! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
+coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
+	
+	coverageTrackers do: [ :coverageTracker | 
+		coverageTracker
+			coverAll: sourceRanges
+			fromSending: aSelector
+			to: anObject
+			withResult: result  ]! !
+
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:08:40'!
+markAsExecuted
+	
+	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
+collectWithUsages: sourceRanges
+	
+	^ sourceRanges
+		inject: Set new
+		into: [ :result :sourceRange |
+			result
+				add: sourceRange;
+				addAll: (self usagesOf: sourceRange);
+				yourself ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:37'!
+coveredSourceRanges
+	
+	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:27'!
+fulllyCoveredNonBooleanSourceRanges
+	
+	^ self collectWithUsages: coveredNonBooleanSourceRanges! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 12:32:12'!
+fullyCoveredBooleanSourceRanges
+	
+	"A fully-covered boolean source range is one that referenced both true and false."
+	
+	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 2 ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 13:13:10'!
+fullyCoveredSourceRanges
+
+	^ self fulllyCoveredNonBooleanSourceRanges, self fullyCoveredBooleanSourceRanges! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:23:30'!
+partiallyCoveredBooleanRanges
+	
+	"A partially-covered boolean source range is one that referenced either true or false."
+	
+	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 1 ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:27:43'!
+selectBooleanSourceRanges: aCondition
+	
+	"Select the boolean source range declarations passing the covered boolean values referenced by them to aCondition.
+	Return both the declarations that satisfies aCondition and their usages."
+	
+	| selectedDeclarations |
+	selectedDeclarations := booleanValuesByDeclaration associations
+		select: [ :sourceRangeAndCoveredValues | aCondition value: sourceRangeAndCoveredValues value ]
+		thenCollect: [ :sourceRangeAndCoveredValues | sourceRangeAndCoveredValues key ].
+	
+	^ self collectWithUsages: selectedDeclarations! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:12'!
+uncoveredSourceRanges
+
+	^ analyzedSourceRanges difference: self coveredSourceRanges! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 20:25:52'!
+usagesOf: aDeclaration
+
+	^ usagesByDeclaration
+		at: aDeclaration
+		ifAbsent: [ Set new ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:22:04'!
+value
+
+	^ CodeCoverageReport
+		for: compiledMethod
+		executed: compiledMethodWasExecuted
+		with: self consolidateCoverageResults
+		messages: self messages.! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/6/2022 02:54:29'!
+initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
+
+	compiledMethod := aCompiledMethod.
+	analyzedSourceRanges := aCollecitonOfAnalizedSourceRanges.
+	coveredNonBooleanSourceRanges := Set new.
+	booleanValuesByDeclaration := Dictionary new.
+	usagesByDeclaration := Dictionary new.
+	compiledMethodWasExecuted := false.
+	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
+consolidateCoverageResults
+	
+	| coverageRatioBySourceRange |
+	coverageRatioBySourceRange := Dictionary new.
+
+	(self fullyCoveredSourceRanges)
+		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 1 ].
+		
+	self partiallyCoveredBooleanRanges
+		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0.5 ].
+		
+	(self uncoveredSourceRanges)
+		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0 ].
+	
+	^ coverageRatioBySourceRange! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 02:10:01'!
+cover: aSourceRange declaredAt: declarationSourceRange by: anObject
+
+	"Register thatanObject covered aSourceRange and its declaration at declarationSourceRange."
+	
+	(anObject isKindOf: Boolean)
+		ifTrue: [
+			self
+				registerBoolean: anObject
+				usedAt: aSourceRange 
+				declaredAt: declarationSourceRange ] 
+		ifFalse: [
+			self
+				coverNonBooleanUsage: aSourceRange
+				of: declarationSourceRange ].
+			
+	^ anObject! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:22:17'!
+coverAll: sourceRanges
+
+	self coverAsNonBooleanAll: sourceRanges! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:30:50'!
+coverAll: sourceRanges by: anObject 
+	
+	(anObject isKindOf: Boolean)
+		ifTrue: [ self registerBoolean: anObject declaredAtAll: sourceRanges ]
+		ifFalse: [ self coverAsNonBooleanAll: sourceRanges ].
+		
+	^ anObject! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:38:10'!
+coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
+
+	"Register that anObject covered sourceRanges"
+	
+	"Literal or pseudo-variables should not be covered as boolean because
+	true would always be covered 50% when it should be 100% (it is the true pseudo-variable)"
+	self coverAsNonBooleanAll: sourceRanges.
+	
+	^ anObject! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:49'!
+coverAll: sourceRanges fromSending: aSelector to: aReceiver 
+	
+	(self isDecisionSelector: aSelector )
+		ifTrue: [
+			self
+				coverDecisionMessageSendTo: aReceiver
+				atAll: sourceRanges ]
+		ifFalse: [
+			self coverAll: sourceRanges  ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 02:53:47'!
+coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
+
+	(self isDecisionSelector: aSelector )
+		ifTrue: [
+			self
+				coverDecisionMessageSendTo: anObject
+				atAll: sourceRanges ]
+		ifFalse: [
+			self coverAll: sourceRanges by: result ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
+coverAsNonBoolean: aSourceRange
+
+	"Consider aSourceRange as a covered non-boolean source range.
+	A non-boolean source range is one that does not returns, references, or is assignted to neither true nor false."
+
+	"If aSourceRange is already considered as a boolean source range,
+	I transform it to non-boolean because now it is related to both boolean and non-boolean objects."
+	self transformToNonBoolean: aSourceRange.
+		
+	coveredNonBooleanSourceRanges add: aSourceRange.! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:19:29'!
+coverAsNonBooleanAll: sourceRanges
+	
+	sourceRanges do: [ :sourceRange | self coverAsNonBoolean: sourceRange ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:55:56'!
+coverDecisionMessageSendTo: aReceiver atAll: sourceRanges 
+	
+	coveredNonBooleanSourceRanges
+		removeAllFoundIn: sourceRanges.
+		
+	self
+		registerBoolean: aReceiver
+		declaredAtAll: sourceRanges ! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:00:53'!
+coverNonBooleanUsage: usageSourceRange of: declarationSourceRange 
+	
+	"Consider both usageSourceRange and declarationSourceRange as covered.
+
+	This is used, for instance, when a temporary variable is assigned:
+	    - the temporary variable in the assignment is found at usageSourceRange.
+	    - the temporary variable declaration is found at  declarationSourceRange."
+
+	self
+		registerUsage: usageSourceRange of: declarationSourceRange;
+		coverAsNonBoolean: declarationSourceRange.! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/31/2022 01:45:45'!
+markAsExecuted
+	
+	compiledMethodWasExecuted := true.! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 01:31:28'!
+messages
+	
+	^ booleanValuesByDeclaration
+		select: [ :coveredValues | coveredValues size = 1 ]
+		thenCollect: [ :coveredValues |
+			| exercisedTestCase missingTestCase |
+			exercisedTestCase := coveredValues anyOne.
+			missingTestCase := exercisedTestCase ifTrue: [ false ] ifFalse: [ true ].
+			String newLineString,
+			'Code Coverge: missing test case: ', missingTestCase asString, '. Only exercised with ',
+			exercisedTestCase asString, '.' ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:22:34'!
+registerBoolean: aValue declaredAt: declarationSourceRange
+
+	"Consider declarationSourceRange as a covered boolean source range."
+
+	"If declarationSourceRange is currently considered non-boolean (e.g. it is related to non-boolean objects),
+	don't consider it a boolean declaration."
+	(coveredNonBooleanSourceRanges includes: declarationSourceRange)
+		ifTrue: [ ^ self coverAsNonBoolean: declarationSourceRange ].
+		
+		
+	(booleanValuesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
+		add: aValue! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:08:31'!
+registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
+
+	"Consider declarationSourceRanges as covered boolean source ranges.
+	
+	An example of a boolean having multilple declarations is a keyword message that returned the boolean value:
+	
+	self foo: 1 bar: 2 baz: 3.
+		
+	Assuming that #foo:bar:baz: returns a boolean, it is considered to be declared at 3 source ranges: one for each keyword in the selector."
+
+	declarationSourceRanges do: [ :declarationSourceRange |
+		self registerBoolean: aBoolean declaredAt: declarationSourceRange ]! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:12:48'!
+registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
+	
+	self
+		registerUsage: usageSourceRange of: declarationSourceRange;
+		registerBoolean: aBoolean declaredAt: declarationSourceRange.
+	
+	
+	! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:10:42'!
+registerUsage: aSourceRange of: declarationSourceRange
+
+	(usagesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
+		add: aSourceRange! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:17:06'!
+transformToNonBoolean: declarationSourceRange 
+	
+	"Discard boolean values related to declarationSourceRange"
+	booleanValuesByDeclaration
+		removeKey: declarationSourceRange
+		ifAbsent: [
+			"if declarationSourceRange is not a boolean source range, there is nothing left to do."
+			^ self ].
+	
+	"Consider declarationSourceRange covered, as it had at least one boolean value related to it."
+	self coverAsNonBoolean: declarationSourceRange.
+		
+	"Consider all source ranges related to declarationSourceRange covered as well."
+	self coverAsNonBooleanAll: (self usagesOf: declarationSourceRange)
+	! !
+
+!DecisionConditionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/6/2022 01:59:03'!
+isDecisionSelector: aSelector  
+	
+	^ decisionSelectors includes: aSelector! !
+
+!DecisionConditionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
+for: aCompiledMethod withSourceRanges: sourceRanges
+	
+	^ self
+		new
+		initializeFor: aCompiledMethod
+		with: sourceRanges! !
+
+!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/16/2021 21:01:44'!
+m1
+
+	^ #foo! !
+
+!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:59:27'!
+raiseError
+	
+	self error: 'oops'! !
+
+!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:37:27'!
+m2! !
+
+!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:42:59'!
+m3! !
+
+!FakeCodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 1/10/2021 13:25:35'!
+enable
+	
+	enabled := true! !
+
+!FakeCodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 1/16/2021 21:26:08'!
+initialize
+
+	super initialize.
+	
+	enabled := false.! !
+
+!FakeCodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 16:25:26'!
+ifRunning: aBlock 
+	
+	enabled ifTrue: aBlock! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 11/11/2022 15:36:34'!
+value
+
+	^ CodeCoverageAnalyzer toAnalyzeAll: self compiledMethodsToAnalyze! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'initialization' stamp: 'NPM 1/18/2021 01:49:18'!
+initializeFrom: aTestSuite querying: aSystemOrganizer  
+
+	testSuite := aTestSuite.
+	systemOrganizer := aSystemOrganizer. ! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:46:55'!
+classesToAnalyze
+	
+	^ self targetClasses difference: self testCaseClasses! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:47:03'!
+compiledMethodsToAnalyze
+	
+	"NPM: I use an IdentitySet to hold the compiled methods to analyze because the equality of compiled methods
+	returns true for two different instances with the same collaborations."
+	
+	^ self classesToAnalyze
+		inject: IdentitySet new
+		into: [ :compiledMethodsToAnalyze :classToAnalyze |
+			compiledMethodsToAnalyze
+				addAll: classToAnalyze methodDict values;
+				addAll: classToAnalyze theMetaClass methodDict values;
+				yourself ]! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:32'!
+rootSystemCategories
+
+	^ (self testSystemCategories collect: [ :systemCategory | self rootSystemCategoryOf: systemCategory ])
+		asSet! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:54'!
+rootSystemCategoryOf: aSystemCategory
+
+	"I consider the root prefix of a system category as the first name before the token, if any.
+
+	For example:
+
+	  * the root system category of Foo is Foo
+	  * the root system category of Foo-Bar is Foo
+	  * the root system category of Foo-Bar-Baz is Foo."
+
+	^ (aSystemCategory findTokens: $-) first! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:46:34'!
+targetClasses
+	
+	^ self targetSystemCategories
+		inject: Set new
+		into: [ :targetClasses :systemCategory |
+			targetClasses
+				addAll: (systemOrganizer classesAt: systemCategory);
+				yourself ]! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'HAW 8/20/2022 19:08:08'!
+targetSystemCategories
+
+	^ self rootSystemCategories
+		inject: Set new
+		into: [ :targetSystemCategories :systemCategory |
+			targetSystemCategories
+				addAll: (systemOrganizer withSubCategoriesOf: systemCategory);
+				yourself ]! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:28:23'!
+testCaseClasses
+	
+	^ testSuite tests collect: [ :testCase | testCase class ]! !
+
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/19/2021 21:55:08'!
+testSystemCategories
+	
+	^ (self testCaseClasses collect: [ :testCaseClass | testCaseClass category ])
+		asSet! !
+
+!CodeCoverageAnalyzerBuilder class methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 01:44:17'!
+valueFrom: aTestSuite 
+	
+	^ (self from: aTestSuite) value! !
+
+!CodeCoverageAnalyzerBuilder class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 01:50:00'!
+from: aTestSuite 
+	
+	^ self
+		new
+		initializeFrom: aTestSuite
+		querying: SystemOrganization ! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:27'!
+classListMenuOptions
+
+	^ `{
+		{
+			#itemGroup 		-> 		70.
+			#itemOrder 		-> 		11.
+			#label 			-> 	'run tests with coverage'.
+			#object 			-> 	#model.
+			#selector 		   -> 		#runClassTestsWithCodeCoverage.
+			#icon 			-> 	#weatherFewCloudsIcon
+		} asDictionary.
+	   }`.
+	! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:57'!
+messageCategoryMenuOptions
+
+	^`{
+		{
+			#itemGroup 		-> 		40.
+			#itemOrder 		-> 		11.
+			#label 			-> 	'run tests with coverage'.
+			#object 			-> 	#model.
+			#selector 		   -> 		#runMessageCategoryTestsWithCodeCoverage.
+			#icon 			-> 	#weatherFewCloudsIcon
+		} asDictionary.
+	   }`.
+	! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:38:00'!
+messageListMenuOptions
+
+	^ `{
+		{
+			#itemGroup 		-> 		60.
+			#itemOrder 		-> 		21.
+			#label 			-> 	'run test with coverage'.
+			#object 			-> 	#model.
+			#selector 		   -> 		#runMethodTestWithCodeCoverage.
+			#icon 			-> 	#weatherFewCloudsIcon
+		} asDictionary.
+	   }`.
+	! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:33'!
+systemCategoryMenuOptions
+
+	^ `{
+		{
+			#itemGroup 		-> 		70.
+			#itemOrder 		-> 		11.
+			#label 			-> 	'run tests with coverage'.
+			#object 			-> 	#model.
+			#selector 	   	-> 		#runSystemCategoryTestsWithCodeCoverage.
+			#icon 			-> 	#weatherFewCloudsIcon
+		} asDictionary.
+		{
+			#itemGroup 		-> 		70.
+			#itemOrder 		-> 		12.
+			#label 			-> 	'run package tests with coverage'.
+			#object 			-> 	#model.
+			#selector 	   	-> 		#runPackageTestsWithCodeCoverage.
+			#icon 			-> 	#weatherFewCloudsIcon
+		} asDictionary.
+	   }`.
+	! !
+
+!CodeCoverageTextStylerFactory methodsFor: 'initialization' stamp: 'NPM 1/18/2021 17:46:25'!
+initializeWith: aCodeCoverageReport 
+
+	report := aCodeCoverageReport.! !
+
+!CodeCoverageTextStylerFactory methodsFor: 'factory methods' stamp: 'NPM 1/18/2021 18:34:38'!
+new
+	
+	^ CodeCoverageTextStyler highlightingCoveredCodeFrom: report! !
 
 !CodeCoverageSourceCodeGenerator methodsFor: 'assertions' stamp: 'NPM 12/22/2020 20:17:25'!
 denyIsOptimized: aMessageNode
@@ -1285,6 +2537,335 @@ for: aCompiledMethod
 			
 
 	! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 11/27/2021 00:20:42'!
+classList
+
+	^ super classList
+		collect: [ :className | self styleClassNamed: className ]! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 19:49:24'!
+classOrMetaclassNamed: aClassName
+
+	| selectedClass |
+	
+	"NPM: aClassName has to be trimmed as it can contain leading spaces used for indenting it in the hierarchy view."
+	selectedClass := Smalltalk classNamed: aClassName withBlanksTrimmed.
+	
+	^ metaClassIndicated
+		ifTrue: [ selectedClass theMetaClass ]
+		ifFalse: [ selectedClass theNonMetaClass ]! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 02:31:59'!
+selectedClassOrMetaclass
+
+	^ self classOrMetaclassNamed: selectedClassName! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 1/20/2021 02:47:06'!
+defaultBrowserTitle
+	
+	^ (CodeCoverageResultItem
+		for: 'Code Coverage Browser'
+		report: codeCoverageReport) displayStringOrText ! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 1/17/2021 19:50:10'!
+initializeDisplayingReportsFrom: aCodeCoverageReport 
+
+	codeCoverageReport := aCodeCoverageReport.! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 1/18/2021 20:48:08'!
+messageCategoryList
+		
+	^ super messageCategoryList
+		select: [ :messageCategory | codeCoverageReport wasMessageCategoryAnalyzed: messageCategory in: self selectedClassOrMetaclass ]
+		thenCollect: [ :messageCategory | self styleMessageCategory: messageCategory ]
+		
+		
+		
+		
+	
+! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 11/6/2022 03:26:39'!
+messageCategoryListIndex: anInteger
+	"Set the selected message category to be the one indexed by anInteger."
+
+	| index messageCategoryList |
+	
+	messageCategoryList _ self messageCategoryList.
+	index _ messageCategoryList ifInBounds: anInteger ifNot: 0.
+
+	selectedMessageCategory _ index = 0 ifFalse: [(messageCategoryList at: index) item ].
+	selectedMessage _ nil.
+	self changed: #messageCategorySelectionChanged.
+	self changed: #messageCategoryListIndex. "update my selection"
+	self changed: #messageList.
+	self editSelection: (index > 0
+		ifTrue: [#newMessage]
+		ifFalse: [self classListIndex > 0
+			ifTrue: [#editClass]
+			ifFalse: [#newClass]]).
+	self acceptedContentsChanged.! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 11/6/2022 03:27:29'!
+messageList
+
+	^ super messageList
+		select: [ :message | codeCoverageReport wasCompiledMethodAnalyzed: self selectedClassOrMetaclass>>message ]
+		thenCollect: [ :message | self styleMessage: message ]! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'metaclass' stamp: 'NPM 1/18/2021 16:31:13'!
+metaClassIndicated: trueOrFalse
+
+	super metaClassIndicated: trueOrFalse.
+	
+	"I need to notify the class list changed, as the class labels have to be updated to display
+	either the instance or the class side coverage percentage."
+	self changed: #classList.! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/18/2021 21:48:51'!
+styleClassNamed: aClassName
+
+	| classOrMetaclass |
+	classOrMetaclass := (self classOrMetaclassNamed: aClassName).
+	
+	(codeCoverageReport wasClassAnalyzed: classOrMetaclass)
+		ifFalse: [ ^ aClassName ].
+	
+	^ CodeCoverageResultItem
+		for: aClassName
+		report: (codeCoverageReport reportForClass: classOrMetaclass)! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/19/2021 21:11:35'!
+styleMessage: aSelector
+
+	^ CodeCoverageResultItem
+		for: aSelector
+		report: (codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector)! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/19/2021 21:02:21'!
+styleMessageCategory: messageCategory
+
+	^ CodeCoverageResultItem
+		for: messageCategory
+		report: (codeCoverageReport
+				reportForMessageCategory: messageCategory
+				inClass: self selectedClassOrMetaclass)! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/18/2021 21:00:27'!
+styleSystemCategory: aSystemCategory 
+	
+	^ CodeCoverageResultItem
+		for: aSystemCategory
+		report: (codeCoverageReport reportForSystemCategory: aSystemCategory)! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 1/18/2021 20:44:27'!
+systemCategoryList
+
+	^ super systemCategoryList
+		select: [ :systemCategory | codeCoverageReport wasSystemCategoryAnalyzed: systemCategory ]
+		thenCollect: [ :systemCategory | self styleSystemCategory: systemCategory ]! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 11/2/2022 00:29:31'!
+systemCategoryRoots
+	"Answer the roots of the forest of system categories."
+	| categories subcategories roots name |
+	categories _ self systemCategoryList.
+
+	subcategories _ Dictionary new.
+	categories do: [:each|
+		name _ (each findTokens: '-') first.
+		(subcategories at: name ifAbsentPut: [OrderedCollection new]) add: each].
+	roots _ OrderedCollection new.
+	categories do: [:each|
+		name _ (each findTokens: '-') first.
+		(roots includes: name) ifFalse:
+			[(subcategories at: name) size > 1 ifTrue: [roots add: name] ifFalse: [roots add: (subcategories at: name) first]]].
+	^ roots collect: [:each|
+		| averagePercentCoveredInSubcategories rootName | 
+		averagePercentCoveredInSubcategories := ((subcategories at: name) collect: [ :subcategory | subcategory percentCovered ]) average.
+		rootName := each, ' (', (averagePercentCoveredInSubcategories printStringFractionDigits: 2 ) asString, '%)'.
+		
+		SystemCategoryWrapper with: each name: (rootName)  model: self]! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 11/7/2022 01:12:27'!
+codeCoverageInfoAt: aSourcePosition
+	
+	| selectedCompiledMethod |
+	self selectedMessageName ifNil: [ ^ '' ].
+	selectedCompiledMethod := self selectedClassOrMetaClass compiledMethodAt: self selectedMessageName.
+	
+	^ codeCoverageReport
+		for: selectedCompiledMethod
+		codeCoverageInfoAt: aSourcePosition ! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 1/18/2021 21:06:58'!
+textStylerClassFor: textGetter
+
+	"TODO(NPM): I had no choice but to re-implement my superclass's #textStylerClassFor: method as I
+	needed to customize the text styler to be used when displaying the source code of a covered method."
+
+	textGetter = #acceptedContents ifFalse: [
+		^ super textStylerClassFor: textGetter ].
+	
+	currentCompiledMethod ifNotNil: [ 
+		^ codeCoverageReport
+			reportForCompiledMethod: currentCompiledMethod
+			ifAnalyzed: [ :report | CodeCoverageTextStylerFactory new initializeWith: report]
+			ifNotAnalyzed: [ super textStylerClassFor: textGetter ] ].
+	
+	^ SHTextStylerST80! !
+
+!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 20:47:01'!
+displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
+	
+	| browser |
+	browser _ self displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport.
+	
+	^ BrowserWindow
+		open: browser
+		label: browser defaultBrowserTitle! !
+
+!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 16:38:06'!
+displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
+	
+	| newBrowser report |
+	newBrowser := self
+		new
+		initializeDisplayingReportsFrom: aCodeCoverageAnalyzerReport.
+		
+	
+	report := aCodeCoverageAnalyzerReport mostCoveredCompiledMethodReport.
+	
+	newBrowser
+		setClass: report methodClass
+		selector: report selector.
+	
+	^ newBrowser ! !
+
+!CodeCoverageTextStyler methodsFor: 'initialization' stamp: 'NPM 1/18/2021 18:35:36'!
+initializeHighlightingCoveredCodeFrom: aCodeCoverageReport 
+
+	codeCoverageReport := aCodeCoverageReport.! !
+
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:38:28'!
+canBeConsolidated: sourceCode
+
+	^ sourceCode isEmpty or: [
+		(self isAssignmentSymbol: sourceCode) or: [
+			self includesOnlyParenthesis: sourceCode ]]! !
+
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:43:22'!
+consolidate: currentSourceRange in: consolidatedSourceRanges using: sourceCode 
+	
+	| previousSourceRange sourceCodeBetweenRanges |
+	
+	"If there are no consolidated source ranges yet there is nothing left to do"
+	consolidatedSourceRanges ifEmpty: [ ^ consolidatedSourceRanges add: currentSourceRange ].
+	
+	previousSourceRange := consolidatedSourceRanges last.
+	
+	"Grab the source code between previousSourceRange and currentSourceRange"
+	sourceCodeBetweenRanges := sourceCode
+		copyFrom: consolidatedSourceRanges last last + 1
+		to: currentSourceRange first - 1.
+
+	"I do not consolidate them when the source code between them happens to include a new line character
+	because that will generate a single source range spanning two lines, and it does not look good."
+	(sourceCodeBetweenRanges includes: Character newLineCharacter)
+		ifTrue: [ ^ consolidatedSourceRanges add: currentSourceRange ].
+	
+	"Do not consolidate source ranges if it cannot be done"
+	(self canBeConsolidated: sourceCodeBetweenRanges	 withBlanksTrimmed)
+		ifFalse: [ ^ consolidatedSourceRanges add: currentSourceRange ].
+		
+	"Finally, I create a single source range by merging previousSourceRange and currentSourceRange.
+	I remove the last source range instad of sending #remove: with previousSourceRange as it might be duplicated."
+	consolidatedSourceRanges
+		removeLast;
+		add: (previousSourceRange first to: currentSourceRange last).! !
+
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:36:24'!
+consolidate: sourceRanges using: sourceCode
+
+	"Try to close the gaps between source ranges in sourceRanges to highlight source code without
+	interruptions as much as possible.
+	
+	TODO(NPM): this is a hack, and it is done here to make highlighted code look better. It can probably be
+	solved better when compiled methods are traced."
+
+	^ (sourceRanges asSortedCollection: [ :sourceRange :otherSourceRange |  sourceRange first < otherSourceRange first ])
+		inject: OrderedCollection new
+		into: [ :consolidatedSourceRanges :sourceRage |
+			self consolidate: sourceRage in: consolidatedSourceRanges using: sourceCode.
+			consolidatedSourceRanges ]! !
+
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:29:30'!
+includesOnlyParenthesis: sourceCode
+
+	^ {$(. $)} includesAllOf: sourceCode! !
+
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:29:20'!
+isAssignmentSymbol: sourceCode
+
+	^ sourceCode = ':='! !
+
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:37:32'!
+coveredCodeColor
+
+	^ `Color lightGreen alpha: 0.4`! !
+
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/8/2021 09:47:10'!
+halfCoveredCodeColor
+	
+	^ Color yellow alpha: 0.3! !
+
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:39:34'!
+highlight: sourceRanges with: aColor 
+	
+	(self consolidate: sourceRanges using: formattedText asString)
+		do: [ :sourceRange |
+			formattedText
+				addAttribute: (TextBackgroundColor color: aColor)
+				from: sourceRange first
+				to: sourceRange last ]
+	! !
+
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/14/2021 13:06:18'!
+highlightCodeCoverageResults
+
+	self
+		highlight: codeCoverageReport fullyCoveredSourceRanges
+		with: self coveredCodeColor.
+	
+	self
+		highlight: codeCoverageReport partiallyCoveredSourceRanges
+		with: self halfCoveredCodeColor.
+			
+	self
+		highlight: codeCoverageReport uncoveredSourceRanges
+		with: self uncoveredCodeColor.! !
+
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:44:01'!
+uncoveredCodeColor
+
+	^ `Color lightRed alpha: 0.2`! !
+
+!CodeCoverageTextStyler methodsFor: 'private' stamp: 'NPM 1/19/2021 19:56:40'!
+privateStyle
+
+	super privateStyle.
+
+	self highlightCodeCoverageResults.
+	
+	! !
+
+!CodeCoverageTextStyler class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 18:35:24'!
+highlightingCoveredCodeFrom: aCodeCoverageReport
+	
+	^ self
+		new
+		initializeHighlightingCoveredCodeFrom: aCodeCoverageReport ! !
 
 !ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/17/2021 12:18:01'!
 registerCodeCoverageAnalyzerActions
@@ -4350,1586 +5931,88 @@ test006_RestoresTheWrappedMethodWhenUninstalled
 		assert: compiledMethod
 		equals: self compiledMethodAtM1Selector! !
 
-!CodeCoverageTextStyler methodsFor: 'initialization' stamp: 'NPM 1/18/2021 18:35:36'!
-initializeHighlightingCoveredCodeFrom: aCodeCoverageReport 
+!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
+codeCoverageAnalyzer: aCodeCoverageAnalyzer
 
-	codeCoverageReport := aCodeCoverageReport.! !
+	self
+		propertyValueAt: self codeCoverageAnalyzerPropertyName
+		put: aCodeCoverageAnalyzer.! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:38:28'!
-canBeConsolidated: sourceCode
+!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
+codeCoverageAnalyzerPropertyName
 
-	^ sourceCode isEmpty or: [
-		(self isAssignmentSymbol: sourceCode) or: [
-			self includesOnlyParenthesis: sourceCode ]]! !
+	^ #coverageAnalyzer! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:43:22'!
-consolidate: currentSourceRange in: consolidatedSourceRanges using: sourceCode 
-	
-	| previousSourceRange sourceCodeBetweenRanges |
-	
-	"If there are no consolidated source ranges yet there is nothing left to do"
-	consolidatedSourceRanges ifEmpty: [ ^ consolidatedSourceRanges add: currentSourceRange ].
-	
-	previousSourceRange := consolidatedSourceRanges last.
-	
-	"Grab the source code between previousSourceRange and currentSourceRange"
-	sourceCodeBetweenRanges := sourceCode
-		copyFrom: consolidatedSourceRanges last last + 1
-		to: currentSourceRange first - 1.
+!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
+withCodeCoverageAnalyzerDo: aBlock
 
-	"I do not consolidate them when the source code between them happens to include a new line character
-	because that will generate a single source range spanning two lines, and it does not look good."
-	(sourceCodeBetweenRanges includes: Character newLineCharacter)
-		ifTrue: [ ^ consolidatedSourceRanges add: currentSourceRange ].
-	
-	"Do not consolidate source ranges if it cannot be done"
-	(self canBeConsolidated: sourceCodeBetweenRanges	 withBlanksTrimmed)
-		ifFalse: [ ^ consolidatedSourceRanges add: currentSourceRange ].
+	| codeCoverageAnalyzer |
+	codeCoverageAnalyzer := self
+		propertyValueAt: self codeCoverageAnalyzerPropertyName
+		ifAbsent: [ ^ self ].
 		
-	"Finally, I create a single source range by merging previousSourceRange and currentSourceRange.
-	I remove the last source range instad of sending #remove: with previousSourceRange as it might be duplicated."
-	consolidatedSourceRanges
-		removeLast;
-		add: (previousSourceRange first to: currentSourceRange last).! !
-
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:36:24'!
-consolidate: sourceRanges using: sourceCode
-
-	"Try to close the gaps between source ranges in sourceRanges to highlight source code without
-	interruptions as much as possible.
-	
-	TODO(NPM): this is a hack, and it is done here to make highlighted code look better. It can probably be
-	solved better when compiled methods are traced."
-
-	^ (sourceRanges asSortedCollection: [ :sourceRange :otherSourceRange |  sourceRange first < otherSourceRange first ])
-		inject: OrderedCollection new
-		into: [ :consolidatedSourceRanges :sourceRage |
-			self consolidate: sourceRage in: consolidatedSourceRanges using: sourceCode.
-			consolidatedSourceRanges ]! !
-
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:29:30'!
-includesOnlyParenthesis: sourceCode
-
-	^ {$(. $)} includesAllOf: sourceCode! !
-
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:29:20'!
-isAssignmentSymbol: sourceCode
-
-	^ sourceCode = ':='! !
-
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:37:32'!
-coveredCodeColor
-
-	^ `Color lightGreen alpha: 0.4`! !
-
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/8/2021 09:47:10'!
-halfCoveredCodeColor
-	
-	^ Color yellow alpha: 0.3! !
-
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:39:34'!
-highlight: sourceRanges with: aColor 
-	
-	(self consolidate: sourceRanges using: formattedText asString)
-		do: [ :sourceRange |
-			formattedText
-				addAttribute: (TextBackgroundColor color: aColor)
-				from: sourceRange first
-				to: sourceRange last ]
+	aBlock value: codeCoverageAnalyzer
 	! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/14/2021 13:06:18'!
-highlightCodeCoverageResults
+!MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 12/22/2020 21:09:17'!
+rawSourceRangesAndMethodNodeDo: aBinaryBlock
 
-	self
-		highlight: codeCoverageReport fullyCoveredSourceRanges
-		with: self coveredCodeColor.
+	"Evaluate aBinaryBlock with the methodNode and rawSourceRanges generated from the receiver.
 	
-	self
-		highlight: codeCoverageReport partiallyCoveredSourceRanges
-		with: self halfCoveredCodeColor.
+	This method is similar to #rawSourceRangesAndMethodDo: except that it:
+	* provides the MethodNode instead of the CompiledMethod
+	* ensures that the same parse nodes instances are used for both the raw source ranges keys and the method node children.
+	
+	If #rawSourceRangesAndMethodDo: was used instead, the method node will have to be recreated from the returned compiled method and that will cause
+	its parse nodes to be different objects (have different identity) that the ones used for the raw souce ranges keys."
+	
+	| methodNode |
+	methodNode := encoder classEncoding parserClass new
+					encoderClass: encoder class;
+					parse: (sourceText "If no source, use decompile string as source to map from"
+							ifNil: [self decompileString]
+							ifNotNil: [sourceText])
+					class: self methodClass.
+
+	^ aBinaryBlock
+		value: methodNode encoder rawSourceRanges
+		value: methodNode! !
+
+!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/26/2023 18:45:28'!
+basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
+
+	"Extracted from #compile:notifying: to compile code without installing the
+	compiled method in my method dictionary."
+	
+	"TODO(NPM): this could be refactored and integrated into cuis core"
+	 
+	| methodAndNode |
+	methodAndNode := self
+		basicCompile: code "a Text"
+		notifying: nil
+		trailer: self defaultMethodTrailer
+		ifFail: [^nil]
+		optimizeSpecialSends: doOptimizeSpecialSends.
+		
+	methodAndNode method putSource: code fromParseNode: methodAndNode node inFile: 2
+			withPreamble: [:f | f newLine; nextPut: $!!; nextChunkPut: 'Behavior method'; newLine].
 			
-	self
-		highlight: codeCoverageReport uncoveredSourceRanges
-		with: self uncoveredCodeColor.! !
+	^ methodAndNode method! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:44:01'!
-uncoveredCodeColor
-
-	^ `Color lightRed alpha: 0.2`! !
-
-!CodeCoverageTextStyler methodsFor: 'private' stamp: 'NPM 1/19/2021 19:56:40'!
-privateStyle
-
-	super privateStyle.
-
-	self highlightCodeCoverageResults.
-	
-	! !
-
-!CodeCoverageTextStyler class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 18:35:24'!
-highlightingCoveredCodeFrom: aCodeCoverageReport
-	
-	^ self
-		new
-		initializeHighlightingCoveredCodeFrom: aCodeCoverageReport ! !
-
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:31:48'!
-installCompiledMethodAnalizers
-	
-	self triggerInstallStartedEvent.
-	
-	installedCompiledMethodAnalyzers := compiledMethodsToAnalyze
-		select: [ :compiledMethodToAnalyze | compiledMethodToAnalyze isAbstract not ]
-	 	thenCollect: [ :compiledMethodToAnalyze | self installCompiledMethodAnalyzer: compiledMethodToAnalyze ].
-	
-	coverageReportBuilders := installedCompiledMethodAnalyzers
-		collect: [ :compiledMethodAnalyzer | compiledMethodAnalyzer registerNewCoverageReportBuilderUsing: reportBuilderFactory ].
-		
-	self triggerIntallFinishedEvent.
-	! !
-
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:09:23'!
-resetInstalledCompiledMethodAnalyzers
-
-	installedCompiledMethodAnalyzers := Set new.
-	coverageReportBuilders := Set new.! !
-
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 07:54:47'!
-triggerInstallStartedEvent
-
-	^ self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size! !
-
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:29:52'!
-triggerIntallFinishedEvent
-
-	^ self triggerEvent: #endInstallingCompiledMethodAnalyzers! !
-
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/11/2021 21:15:02'!
-uninstallCompiledMethodAnalyzers
-	
-	compiledMethodCoverageAnalyzer uninstallAll: installedCompiledMethodAnalyzers.
-	
-	self resetInstalledCompiledMethodAnalyzers.! !
-
-!CodeCoverageAnalyzer methodsFor: 'assertions' stamp: 'NPM 1/16/2021 17:44:47'!
-assertReportsAreAvailable
-	
-	self
-		assert: running not
-		description: self class reportsAreNotAvailableWhileRunningErrorMessage! !
-
-!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 9/10/2022 15:09:30'!
-generateReport
-	
-	| compiledMethodReports |
-	compiledMethodReports := coverageReportBuilders collect: [ :reportBuilder | reportBuilder value ].
-	
-	report := CodeCoverageAnalyzerReport withAll: compiledMethodReports.
-	! !
-
-!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 1/20/2021 02:43:01'!
-report
-	
-	self assertReportsAreAvailable.
-	
-	^ report! !
-
-!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 1/16/2021 20:28:26'!
-startTrackingCodeCoverage
-	
-	self ifRunning: [ ^ self ].
-
-	self installCompiledMethodAnalizers.
-	
-	running := true.! !
-
-!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 9/12/2022 02:31:04'!
-stopTrackingCodeCoverage
-	
-	self ifRunning: [
-		running := false.
-		
-		[ self generateReport ]
-		ensure: [
-			self uninstallCompiledMethodAnalyzers.
-			self triggerStopEvent ]
-	]
-	
-	! !
-
-!CodeCoverageAnalyzer methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 20:00:08'!
-value: aBlock
-	
-	"Convenience method for collecting code coverage for compiledMethodsToAnalyze
-	and cleaning up after myself in one-shot."
-	
-	[
-		self startTrackingCodeCoverage.
-		^ aBlock value
-	] ensure: [
-		self stopTrackingCodeCoverage
-	]
-	! !
-
-!CodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/7/2022 02:04:41'!
-initializeToAnalyze: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory   
-	
-	compiledMethodsToAnalyze := compiledMethods.
-	compiledMethodCoverageAnalyzer := aCompiledMethodCoverageAnalyzer.
-	reportBuilderFactory := aReportBuilderFactory.
-	running := false.
-	report := IdentitySet new.
-	
-	self resetInstalledCompiledMethodAnalyzers.! !
-
-!CodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 16:22:58'!
-ifRunning: aBlock
-	
-	running ifTrue: aBlock! !
-
-!CodeCoverageAnalyzer methodsFor: 'events - triggering' stamp: 'NPM 9/12/2022 02:30:20'!
-triggerStopEvent
-
-	self triggerEvent: #stop.! !
-
-!CodeCoverageAnalyzer methodsFor: 'events - registering' stamp: 'NPM 9/12/2022 02:29:38'!
-onStopSend: aSelector to: anObject
-
-	self when: #stop send: aSelector to: anObject.! !
-
-!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 08:31:30'!
-installCompiledMethodAnalyzer: compiledMethodToAnalyze 
-
-	self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
-	
-	^ compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self! !
-
-!CodeCoverageAnalyzer class methodsFor: 'code coverage tracking' stamp: 'NPM 1/11/2021 22:08:50'!
-stopTrackingCoverageInAllInstances
-
-	"Stops tracking coverage in all of my instances.
-	Useful during development or testing, where an exception can leave dangling instances around.
-	
-	self stopTrackingCoverageInAllInstances.
-	"
-	
-	self allInstancesDo: [ :codeCoverageAnalyzer | codeCoverageAnalyzer stopTrackingCodeCoverage ]! !
-
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:30:24'!
-classWasNotAnalyzedErrorMessage
-	
-	^ 'Class was not analyzed'! !
-
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/9/2021 17:11:16'!
-compiledMethodWasNotAnalyzedErrorMessage
-	
-	^ 'The compiled method was not requested to be analyzed'! !
-
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:42:41'!
-reportsAreNotAvailableWhileRunningErrorMessage
-	
-	^ 'Code coverage reports are not available while code coverage analyzer is running'! !
-
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:36:10'!
-systemCategoryWasNotAnalyzedErrorMessage
-	
-	^ 'The requested system category was not analyzed'! !
-
-!CodeCoverageAnalyzer class methodsFor: 'evaluating' stamp: 'NPM 1/20/2021 03:38:07'!
-value: aBlock analyzingAll: compiledMethods 
-	
-	"Convenience method for analyzing code coverage of compiledMethods
-	during the evaluation of aBlock."
-	
-	| analzer |
-	analzer := self toAnalyzeAll: compiledMethods.
-	
-	analzer value: aBlock.
-	
-	"Insted of returning aBlock result, I return the instance that its code coverage
-	to retrieve coverage reports from it."
-	^ analzer report! !
-
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 03:44:16'!
-toAnalyzeAll: compiledMethods 
-	
-	^ self
-		toAnalyzeAll: compiledMethods
-		creatingReportBuildersWith: DecisionConditionCoverageReportBuilder! !
-
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:17'!
-toAnalyzeAll: compiledMethods creatingReportBuildersWith: aReportBuilderFactory
-	
-	^ self
-		toAnalyzeAll: compiledMethods
-		with: CompiledMethodCoverageAnalyzer
-		creatingReportBuildersWith: aReportBuilderFactory! !
-
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:07:32'!
-toAnalyzeAll: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
-	
-	(self anyBelongToMySystemCategory: compiledMethods)
-		ifTrue: [
-			^ self
-				toAnalyzeAllInMyPackage: compiledMethods
-				with: aCompiledMethodCoverageAnalyzer
-				creatingReportBuildersWith: aReportBuilderFactory ].
-
-	^ self
-		toAnalyzeAllOutsideMyPackage: compiledMethods
-		with: aCompiledMethodCoverageAnalyzer
-		creatingReportBuildersWith: aReportBuilderFactory! !
-
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:08:10'!
-toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
-
-	"To analyze methods in my own package (aka analyze instances of myself) I create a temporary copy of my whole package
-	and instantiate classes from it to avoid infinite recursions"
-	
-	| snapshotOfCompiledMethodCoverageAnalyzer codeCoverageAnalyzer snapshotOfMyself myPackage snapshotOfMyPackage snapshotOfReportBuilderFactory |
-	"First I create a copy of my own package"
-	myPackage := CodePackage packageOfClass: self ifNone: [ self shouldNotHappen ].
-	snapshotOfMyPackage := PackageSnapshot takeOf: myPackage.
-	
-	"Find a snapshot of myself and my collaborator in the package snapshot"
-	snapshotOfMyself := snapshotOfMyPackage snapshotOf: self.
-	snapshotOfCompiledMethodCoverageAnalyzer _ snapshotOfMyPackage snapshotOf: aCompiledMethodCoverageAnalyzer.
-	snapshotOfReportBuilderFactory _ snapshotOfMyPackage snapshotOf: aReportBuilderFactory.
-	
-	"Create the code coverage analyzer instance. It will be an instance of my snapshot (not myself)"
-	codeCoverageAnalyzer := snapshotOfMyself
-		toAnalyzeAll: compiledMethods
-		with: snapshotOfCompiledMethodCoverageAnalyzer
-		creatingReportBuildersWith: snapshotOfReportBuilderFactory.
-		
-	"Once codeCoverageAnalyzer is done running, it will need the package snapshot to discard it.
-	I need to pin it or else it will be garbage collected."
-	snapshotOfMyPackage pin.
-	
-	"Migrate instances of classes in the snapshot package (e.g. coverage reports) to their original classes before discarding the package snapshot"
-	codeCoverageAnalyzer onStopSend: #migrateSnapshotInstancesToOriginalClasses to: snapshotOfMyPackage.
-	codeCoverageAnalyzer onStopSend: #discard to: snapshotOfMyPackage.
-	
-	"Finally, I unpin the package snapshot so it can be garbage collected"
-	codeCoverageAnalyzer onStopSend: #unpin to: snapshotOfMyPackage.
-		
-	^ codeCoverageAnalyzer
-		
-	! !
-
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:05:31'!
-toAnalyzeAllOutsideMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
-
-	^ self
-		new
-		initializeToAnalyze: compiledMethods
-		with: aCompiledMethodCoverageAnalyzer
-		creatingReportBuildersWith: aReportBuilderFactory! !
-
-!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 10/26/2022 02:33:31'!
-anyBelongToMySystemCategory: compiledMethods
-
-	^ compiledMethods
-		anySatisfy: [ :compiledMethod | self belongsToMySystemCategory: compiledMethod ]! !
-
-!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 9/12/2022 02:22:35'!
-belongsToMySystemCategory: compiledMethod
-
-	^ compiledMethod methodClass category = self category! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 11/7/2022 01:24:19'!
-for: aCompiledMethod codeCoverageInfoAt: aSourcePosition
-
-	^ reportsByCompiledMethod 
-		at: aCompiledMethod
-			ifPresent:[ :report | report messageAt: aSourcePosition ]
-			ifAbsent:[ '' ].! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:16:45'!
-mostCoveredCompiledMethodReport
-	
-	^ summaryReport mostCoveredReport! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:04:26'!
-reportForClass: aClass
-
-	^ reportsByClass
-		at: aClass
-		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer classWasNotAnalyzedErrorMessage ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:17:39'!
-reportForCompiledMethod: aCompiledMethod 
-	
-	^ reportsByCompiledMethod
-		at: aCompiledMethod 
-		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer compiledMethodWasNotAnalyzedErrorMessage ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:17:40'!
-reportForCompiledMethod: aCompiledMethod ifAnalyzed: foundBlock ifNotAnalyzed: noneBlock
-
-	^ reportsByCompiledMethod
-		at: aCompiledMethod
-		ifPresent: foundBlock
-		ifAbsent: noneBlock! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:03:30'!
-reportForMessageCategory: aMessageCategory inClass: aClass
-	
-	^ (reportsByClassAndMessageCategory at: aClass)
-		at: aMessageCategory! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:03:34'!
-reportForSystemCategory: aSystemCategory
-	
-	^ reportsBySystemCategory
-		at: aSystemCategory
-		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer systemCategoryWasNotAnalyzedErrorMessage ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 21:21:28'!
-indexReportsByClassAndMessageCategory: compiledMethodReports
-
-	reportsByClass := Dictionary new.
-	reportsByClassAndMessageCategory := Dictionary new.
-	
-	(compiledMethodReports groupBy: [ :report | report methodClass ]) keysAndValuesDo: [ :class :compiledMethodReportss |
-		reportsByClass
-			at: class
-			put: (CodeCoverageReport toSummarize: compiledMethodReportss).
-		
-		reportsByClassAndMessageCategory
-			at: class
-			put: (self indexReportsByMessageCategory: compiledMethodReportss) ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 20:40:59'!
-indexReportsByCompiledMethod: compiledMethodReports
-
-	reportsByCompiledMethod := compiledMethodReports
-		inject: IdentityDictionary new
-		into: [ :reportIndex :report | reportIndex at: report compiledMethod put: report; yourself ].! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/19/2021 21:21:43'!
-indexReportsByMessageCategory: compiledMethodReports
-
-	^ (compiledMethodReports groupBy: [ :report | report messageCategory ])
-		collect: [ :reports | CodeCoverageReport toSummarize: reports ]
-		! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 21:21:48'!
-indexReportsBySystemCategory: compiledMethodReports
-	
-	reportsBySystemCategory := (compiledMethodReports groupBy: [ :report | report systemCategory ])
-		collect: [ :reports | CodeCoverageReport toSummarize: reports ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'initialization' stamp: 'NPM 1/19/2021 21:16:16'!
-initializeWithAll: compiledMethodReports
-
-	summaryReport := CodeCoverageReport toSummarize: compiledMethodReports.
-	
-	self
-		indexReportsByCompiledMethod: compiledMethodReports;
-		indexReportsByClassAndMessageCategory: compiledMethodReports;
-		indexReportsBySystemCategory: compiledMethodReports! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'statistics' stamp: 'NPM 1/19/2021 21:16:15'!
-percentCovered
-	
-	^ summaryReport percentCovered ! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:46:52'!
-wasClassAnalyzed: aClass 
-	
-	^ reportsByClass includesKey: aClass! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 21:47:02'!
-wasClassOrMetaclassAnalyzed: aClassOrMetaclass
-
-	^ (self wasClassAnalyzed: aClassOrMetaclass theNonMetaClass) or: [
-		self wasClassAnalyzed: aClassOrMetaclass theMetaClass ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:50:47'!
-wasCompiledMethodAnalyzed: aCompiledMethod 
-	
-	^ reportsByCompiledMethod includesKey: aCompiledMethod! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:49:48'!
-wasMessageCategoryAnalyzed: aMessageCategory in: aClass 
-	
-	^ reportsByClassAndMessageCategory
-		at: aClass
-		ifPresent: [ :classReports | classReports includesKey: aMessageCategory ]
-		ifAbsent: [ false ]! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:44:59'!
-wasSystemCategoryAnalyzed: aSystemCategory
-
-	^ reportsBySystemCategory includesKey: aSystemCategory! !
-
-!CodeCoverageAnalyzerReport class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 20:31:24'!
-withAll: compiledMethodReports 
-	
-	^ self
-		new
-		initializeWithAll: compiledMethodReports! !
-
-!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 1/11/2021 18:48:17'!
-coverageRatio
-
-	self subclassResponsibility! !
-
-!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:35:04'!
-percentCovered
-
-	^ (self coverageRatio * 100)
-		roundTo: 0.01! !
-
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/6/2022 12:21:54'!
-for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
-	
-	^ CompiledMethodCoverageReport
-		for: aCompiledMethod
-		executed: aBoolean
-		with: coverageResults
-		messages: messagesBySourceRanges! !
-
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:51:58'!
-toSummarize: codeCoverageReports 
-	
-	^ CodeCoverageReportSummary withAll: codeCoverageReports! !
-
-!CodeCoverageReportSummary methodsFor: 'initialization' stamp: 'NPM 1/11/2021 18:47:03'!
-initializeWithAll: codeCoverageReports 
-
-	childReports := codeCoverageReports.! !
-
-!CodeCoverageReportSummary methodsFor: 'querying' stamp: 'NPM 1/19/2021 21:17:08'!
-mostCoveredReport
-	
-	^ childReports detectMax: [ :report | report percentCovered ]! !
-
-!CodeCoverageReportSummary methodsFor: 'statistics' stamp: 'NPM 1/11/2021 18:47:03'!
-coverageRatio
-	
-	childReports ifEmpty: [ ^ 0 ].
-	
-	^ (childReports sum: [ :coverageReport | coverageReport coverageRatio ]) / childReports size! !
-
-!CodeCoverageReportSummary class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:12:26'!
-withAll: anArray 
-	
-	^ self
-		new
-		initializeWithAll: anArray ! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 20:52:31'!
-compiledMethod
-
-	^ compiledMethod! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:53'!
-fullyCoveredSourceRanges
-
-	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio = 1 ]! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 11/7/2022 01:26:55'!
-messageAt: aSourcePosition
-
-	^ messagesBySourceRanges associations
-		detect: [ :association | association key includes: aSourcePosition ]
-		ifFound: [ :association | association value ]
-		ifNone: [ ^ '' ]! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:21:43'!
-messageCategory
-	
-	^ compiledMethod category! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:36'!
-methodClass
-	
-	^ compiledMethod methodClass! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:08:38'!
-partiallyCoveredSourceRanges
-	
-	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio |
-		0 < coverageRatio and: [ coverageRatio < 1 ]]! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:07:40'!
-selectSourceRangesByCoverageRatio: aBlock
-	
-	^ coverageRatioBySourceRange associations
-		select: [ :sourceRangeAndCoverageRatio | aBlock value: sourceRangeAndCoverageRatio value ]
-		thenCollect: [ :sourceRangeAndCoverageRatio | sourceRangeAndCoverageRatio key ]! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:51'!
-selector
-	
-	^ compiledMethod selector! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:31:23'!
-systemCategory
-	
-	^ compiledMethod
-		methodClass
-		category ! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:46'!
-uncoveredSourceRanges
-	
-	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio isZero ]! !
-
-!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 11/7/2022 01:20:28'!
-initializeFor: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
-
-	compiledMethod := aCompiledMethod.
-	compiledMethodWasExecuted := aBoolean. 
-	coverageRatioBySourceRange := coverageResults.
-	messagesBySourceRanges := messages.! !
-
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:14:00'!
-coverageRatio
-	
-	compiledMethodWasExecuted ifFalse: [ ^ 0 ].
-	
-	coverageRatioBySourceRange ifEmpty: [ ^ 1 ].
-
-	^ (coverageRatioBySourceRange values sum) / coverageRatioBySourceRange size! !
-
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:13:23'!
-coverageRatioOf: aSourceRange
-
-	^ coverageRatioBySourceRange at: aSourceRange! !
-
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:10:50'!
-numberOfSourceRanges
-	
-	^ coverageRatioBySourceRange size! !
-
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:05:11'!
-totalCoveredSourceRanges
-	
-	^ coverageRatioBySourceRange size - self uncoveredSourceRanges size! !
-
-!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/16/2021 20:09:07'!
-isFor: aCompiledMethod 
-	
-	^ compiledMethod == aCompiledMethod ! !
-
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 01:22:40'!
-for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
-
-	^ self
-		new
-		initializeFor: aCompiledMethod
-		executed: aBoolean
-		with: coverageResults
-		messages: messagesBySourceRanges
-		! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/4/2022 02:44:55'!
-initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
-
-	originalCompiledMethod := aCompiledMethod.
-	codeCoverageAnalyzer := aCodeCoverageAnalyzer.
-	sourceCodeGenerator := aCodeCoverageSourceCodeGenerator.
-	codeCoverageNotifier := CompiledMethodCoverageTracker notifier.
-	installCount _ 0.
-	methodClass := originalCompiledMethod methodClass.
-! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:43:51'!
-compileTracedMethod
-
-	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
-	is too big to be compiled with optimizations.
-	
-	At the time of writing this (2021-01-29) trying to analyze the code coverage of ArgentineLaw23555RuleTest>>#testCreation
-	(from the Chalten package (https://github.com/Cuis-Smalltalk/Calendars/commits/master/Chalten, at commit 63ac3888936b008e85679cdc474e4cc0685686bf)
-	fails with the following compiler error:
-	
-	    'genJumpLong: distance index -1042 is out of range -1024 to 1023'
-	
-	To recover from this kind of errors, if compilation of tracedCompiledMethod fails, I give it a second chance and try to compile it wihout optimizations."
-	| tracedCompiledMethod reportBuilderLiteralIndex |
-	tracedCompiledMethod _  methodClass safelyBasicCompile: sourceCodeGenerator tracedSourceCode.
-	
-	reportBuilderLiteralIndex _ tracedCompiledMethod indexOfLiteral: sourceCodeGenerator coverageTrackerLiteralName.
-	reportBuilderLiteralIndex > 0
-		ifTrue: [
-			tracedCompiledMethod
-				literalAt: reportBuilderLiteralIndex
-				put: codeCoverageNotifier ].
-			
-	tracedCompiledMethod codeCoverageAnalyzer: self.
-	
-	^ tracedCompiledMethod
-! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:29:45'!
-decrementInstallCount
-
-	self isInstalled
-		ifTrue: [ installCount := installCount - 1 ]! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:23:12'!
-ifShouldBeUninstalled: aBlock
-
-	installCount = 0
-		ifTrue: aBlock ! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:30:03'!
-incrementInstallCount
-
-	installCount _ installCount + 1! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:39:54'!
-install
-	
-	"Replace the original compiled method with myself to intercept its execution".
-	
-	self isInstalled
-		ifFalse: [ self installTracedCompiledMethod ].
-		
-	self incrementInstallCount.! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:44:37'!
-installCompiledMethod: aCompiledMethod
-	
-	methodClass
-		addSelectorSilently: aCompiledMethod selector
-		withMethod: aCompiledMethod! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:40:27'!
-installOriginalMethod
-
-	self installCompiledMethod: originalCompiledMethod! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:41:33'!
-installTracedCompiledMethod
-	
-	self installCompiledMethod: self compileTracedMethod
-! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:14:26'!
-isInstalled
-	
-	^ installCount > 0! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:39:29'!
-uninstall
-	
-	"Restore the original compiled method"
-	
-	self isInstalled ifFalse: [ ^ self ].
-	
-	self decrementInstallCount.
-	self ifShouldBeUninstalled: [ self installOriginalMethod. ].
-
-	
-	! !
-
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 11/7/2022 02:03:51'!
-registerNewCoverageReportBuilderUsing: aReportBuilderFactory
-
-	| newReportBuilder |
-	newReportBuilder := aReportBuilderFactory
-		for: originalCompiledMethod
-		withSourceRanges: sourceCodeGenerator tracedSourceRanges.
-		
-	codeCoverageNotifier sendCoverageNotificationsTo: newReportBuilder.
-		
-	^ newReportBuilder! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/4/2022 01:59:45'!
-for: aCompiledMethod using: aCodeCoverageAnalyzer
-	
-	"Create an instance of myself to analyze code coverage of aCompiledMethod.
-	aTracedSourceCodeGenerator is used to generate the traced version of aCompiledMethod that will report code coverage
-	to aCodeCoverageAnalyzer."
-	
-	"Because I change the method dictionary where aCompiledMethod is installed, I really need to make sure that aCompiledMethod
-	is an instance of CompiledMethod and not, say, a MethodReference or even an instance of myself. That could end up leaving
-	the class aCompiledMethod is installed in an inconsistent way."
-	self assertIsCompiledMethod: aCompiledMethod.
+!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 21:58:40'!
+isTestCaseClass
 	
-	"Double check that aCompiledMethod is not being analyzed.
-	It might be the case that a compiled method analyzer is already installed instead of aCompiledMethod.
-	This can happen if the analyzer was installed after aCompiledMethod was retrieved from its class by its selector
-	(e.g. using #compiledMethodAt:).
-	If that is the case, return the existing analyzer instead of creating a new one."
-	self
-		withCompiledMethodAnayzerFor: aCompiledMethod
-		do: [ :analyzer | ^ analyzer ].	
-		
-	^ self
-		new
-		initializeFor: aCompiledMethod
-		using: aCodeCoverageAnalyzer
-		generatingSourceCodeWith: (CodeCoverageSourceCodeGenerator valueFor: aCompiledMethod)! !
+	^ self isKindOf: TestCase class! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/4/2022 02:37:04'!
-withCompiledMethodAnayzerFor: aCompiledMethod do: aBlockClosure 
+!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/27/2023 15:07:07'!
+safelyBasicCompile: sourceCode 
 	
-	| currentCompiledMethod |
-	currentCompiledMethod _ aCompiledMethod methodClass
-		compiledMethodAt: aCompiledMethod selector.
-
-	currentCompiledMethod withCodeCoverageAnalyzerDo: aBlockClosure! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:46:35'!
-installOn: aCompiledMethod using: aCodeCoverageAnalyzer
-
-	"Convenience method to create an instance of myself and install it in one-shot."
-	
-	^ (self for: aCompiledMethod using: aCodeCoverageAnalyzer) install! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:48:44'!
-uninstallAll: compiledMethodAnalyzers
-
-	"Convenience method to uninstall all compiledMethodAnalyzers"
-	
-	compiledMethodAnalyzers do: [ :compiledMethodAnalyzer | compiledMethodAnalyzer uninstall ]
-! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:48:21'!
-uninstallAllInstances
-	
-	"Uninstall all existing instances of myself.
-	Useful during development or testing, where an exception can leave dangling instances around.
-	
-	self uninstallAllInstances.
-	"
-	
-	self uninstallAll: self allInstances! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:48:57'!
-assertIsCompiledMethod: aCompiledMethod 
-	
-	self
-		assert: aCompiledMethod class isCompiledMethodClass
-		description: [ self shouldOnlyBeCreatedForCompiledMethodsErrorMessage ].! !
-
-!CompiledMethodCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/9/2021 21:29:18'!
-shouldOnlyBeCreatedForCompiledMethodsErrorMessage
-	
-	^ self name, ' should only be created for compiled methods'.! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:47'!
-cover: aSourceRange declaredAt: declarationSourceRange by: anObject
-
-	"Register that anObject covered aSourceRange and its declaration at declarationSourceRange.
-	Return anObject."
-	
-	self subclassResponsibility.! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:24:56'!
-coverAll: sourceRanges
-
-	"Register that sourceRanges were covered."
-
-	self subclassResponsibility.! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/4/2022 00:05:13'!
-coverAll: sourceRanges by: anObject 
-
-	"Register that anObject covered sourceRanges.
-	Return anObject."
-	
-	self subclassResponsibility.! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:01'!
-coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
-
-	"Register that anObject covered sourceRanges.
-	Return anObject."
-
-	self subclassResponsibility.! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:25'!
-coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver   
-	
-	"Register that the evaluation of aBlock covered sourceRanges.
-	Return the result of evaluating aBlock."
-	
-	^ [
-		| result |
-		result := aBlock value.
-		
-		self
-			coverAll: sourceRanges
-			fromSending: aSelector
-			to: aReceiver
-			withResult: result.
-		
-		result ]
-	 ifCurtailed: [
-		self
-			coverAll: sourceRanges
-			fromSending: aSelector
-			to: aReceiver
-		] ! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:43'!
-coverAll: sourceRanges fromSending: aSelector to: aReceiver 
-	
-	self subclassResponsibility ! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
-coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
-
-	self subclassResponsibility ! !
-
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
-markAsExecuted
-
-	"Register that the compiled method was executed.
-	This is needed to tell whether an empty method was executed, because in this case it is not possible to tell if the method was executed
-	based on the number of source ranges that were covered (they don't have any source range)."
-	
-	self subclassResponsibility.! !
-
-!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 15:36:57'!
-notifier 
-
-	^ CompiledMethodCoverageNotifier new! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
-sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
-
-	coverageTrackers add: aCoverageTrackerToBeNotified ! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 15:36:20'!
-initialize
-	
-	coverageTrackers := OrderedCollection new.! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:15:06'!
-cover: aSourceRange declaredAt: declarationSourceRange by: anObject
-
-	coverageTrackers do: [ :coverageTracker | coverageTracker cover: aSourceRange declaredAt: declarationSourceRange by: anObject ].
-	
-	^ anObject! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:21:23'!
-coverAll: sourceRanges
-
-	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges ].
-	! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:23:31'!
-coverAll: anArray by: anObject 
-
-	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: anArray by: anObject ].
-	
-	^ anObject! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:13:06'!
-coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
-
-	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges byLiteralOrPseudoVariable: anObject ].
-	
-	^ anObject! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:31'!
-coverAll: sourceRanges fromSending: aSelector to: aReceiver 
-	
-	coverageTrackers do: [ :coverageTracker |
-		coverageTracker
-			coverAll: sourceRanges
-			fromSending: aSelector
-			to: aReceiver ] ! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
-coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
-	
-	coverageTrackers do: [ :coverageTracker | 
-		coverageTracker
-			coverAll: sourceRanges
-			fromSending: aSelector
-			to: anObject
-			withResult: result  ]! !
-
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:08:40'!
-markAsExecuted
-	
-	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
-collectWithUsages: sourceRanges
-	
-	^ sourceRanges
-		inject: Set new
-		into: [ :result :sourceRange |
-			result
-				add: sourceRange;
-				addAll: (self usagesOf: sourceRange);
-				yourself ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:37'!
-coveredSourceRanges
-	
-	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:27'!
-fulllyCoveredNonBooleanSourceRanges
-	
-	^ self collectWithUsages: coveredNonBooleanSourceRanges! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 12:32:12'!
-fullyCoveredBooleanSourceRanges
-	
-	"A fully-covered boolean source range is one that referenced both true and false."
-	
-	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 2 ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 13:13:10'!
-fullyCoveredSourceRanges
-
-	^ self fulllyCoveredNonBooleanSourceRanges, self fullyCoveredBooleanSourceRanges! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:23:30'!
-partiallyCoveredBooleanRanges
-	
-	"A partially-covered boolean source range is one that referenced either true or false."
-	
-	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 1 ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:27:43'!
-selectBooleanSourceRanges: aCondition
-	
-	"Select the boolean source range declarations passing the covered boolean values referenced by them to aCondition.
-	Return both the declarations that satisfies aCondition and their usages."
-	
-	| selectedDeclarations |
-	selectedDeclarations := booleanValuesByDeclaration associations
-		select: [ :sourceRangeAndCoveredValues | aCondition value: sourceRangeAndCoveredValues value ]
-		thenCollect: [ :sourceRangeAndCoveredValues | sourceRangeAndCoveredValues key ].
-	
-	^ self collectWithUsages: selectedDeclarations! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:12'!
-uncoveredSourceRanges
-
-	^ analyzedSourceRanges difference: self coveredSourceRanges! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 20:25:52'!
-usagesOf: aDeclaration
-
-	^ usagesByDeclaration
-		at: aDeclaration
-		ifAbsent: [ Set new ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:22:04'!
-value
-
-	^ CodeCoverageReport
-		for: compiledMethod
-		executed: compiledMethodWasExecuted
-		with: self consolidateCoverageResults
-		messages: self messages.! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/6/2022 02:54:29'!
-initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
-
-	compiledMethod := aCompiledMethod.
-	analyzedSourceRanges := aCollecitonOfAnalizedSourceRanges.
-	coveredNonBooleanSourceRanges := Set new.
-	booleanValuesByDeclaration := Dictionary new.
-	usagesByDeclaration := Dictionary new.
-	compiledMethodWasExecuted := false.
-	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
-consolidateCoverageResults
-	
-	| coverageRatioBySourceRange |
-	coverageRatioBySourceRange := Dictionary new.
-
-	(self fullyCoveredSourceRanges)
-		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 1 ].
-		
-	self partiallyCoveredBooleanRanges
-		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0.5 ].
-		
-	(self uncoveredSourceRanges)
-		do: [ :sourceRange | coverageRatioBySourceRange at: sourceRange put: 0 ].
-	
-	^ coverageRatioBySourceRange! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 02:10:01'!
-cover: aSourceRange declaredAt: declarationSourceRange by: anObject
-
-	"Register thatanObject covered aSourceRange and its declaration at declarationSourceRange."
-	
-	(anObject isKindOf: Boolean)
-		ifTrue: [
-			self
-				registerBoolean: anObject
-				usedAt: aSourceRange 
-				declaredAt: declarationSourceRange ] 
-		ifFalse: [
-			self
-				coverNonBooleanUsage: aSourceRange
-				of: declarationSourceRange ].
-			
-	^ anObject! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:22:17'!
-coverAll: sourceRanges
-
-	self coverAsNonBooleanAll: sourceRanges! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:30:50'!
-coverAll: sourceRanges by: anObject 
-	
-	(anObject isKindOf: Boolean)
-		ifTrue: [ self registerBoolean: anObject declaredAtAll: sourceRanges ]
-		ifFalse: [ self coverAsNonBooleanAll: sourceRanges ].
-		
-	^ anObject! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:38:10'!
-coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
-
-	"Register that anObject covered sourceRanges"
-	
-	"Literal or pseudo-variables should not be covered as boolean because
-	true would always be covered 50% when it should be 100% (it is the true pseudo-variable)"
-	self coverAsNonBooleanAll: sourceRanges.
-	
-	^ anObject! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:49'!
-coverAll: sourceRanges fromSending: aSelector to: aReceiver 
-	
-	(self isDecisionSelector: aSelector )
-		ifTrue: [
-			self
-				coverDecisionMessageSendTo: aReceiver
-				atAll: sourceRanges ]
-		ifFalse: [
-			self coverAll: sourceRanges  ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 02:53:47'!
-coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
-
-	(self isDecisionSelector: aSelector )
-		ifTrue: [
-			self
-				coverDecisionMessageSendTo: anObject
-				atAll: sourceRanges ]
-		ifFalse: [
-			self coverAll: sourceRanges by: result ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
-coverAsNonBoolean: aSourceRange
-
-	"Consider aSourceRange as a covered non-boolean source range.
-	A non-boolean source range is one that does not returns, references, or is assignted to neither true nor false."
-
-	"If aSourceRange is already considered as a boolean source range,
-	I transform it to non-boolean because now it is related to both boolean and non-boolean objects."
-	self transformToNonBoolean: aSourceRange.
-		
-	coveredNonBooleanSourceRanges add: aSourceRange.! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:19:29'!
-coverAsNonBooleanAll: sourceRanges
-	
-	sourceRanges do: [ :sourceRange | self coverAsNonBoolean: sourceRange ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:55:56'!
-coverDecisionMessageSendTo: aReceiver atAll: sourceRanges 
-	
-	coveredNonBooleanSourceRanges
-		removeAllFoundIn: sourceRanges.
-		
-	self
-		registerBoolean: aReceiver
-		declaredAtAll: sourceRanges ! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:00:53'!
-coverNonBooleanUsage: usageSourceRange of: declarationSourceRange 
-	
-	"Consider both usageSourceRange and declarationSourceRange as covered.
-
-	This is used, for instance, when a temporary variable is assigned:
-	    - the temporary variable in the assignment is found at usageSourceRange.
-	    - the temporary variable declaration is found at  declarationSourceRange."
-
-	self
-		registerUsage: usageSourceRange of: declarationSourceRange;
-		coverAsNonBoolean: declarationSourceRange.! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/31/2022 01:45:45'!
-markAsExecuted
-	
-	compiledMethodWasExecuted := true.! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 01:31:28'!
-messages
-	
-	^ booleanValuesByDeclaration
-		select: [ :coveredValues | coveredValues size = 1 ]
-		thenCollect: [ :coveredValues |
-			| exercisedTestCase missingTestCase |
-			exercisedTestCase := coveredValues anyOne.
-			missingTestCase := exercisedTestCase ifTrue: [ false ] ifFalse: [ true ].
-			String newLineString,
-			'Code Coverge: missing test case: ', missingTestCase asString, '. Only exercised with ',
-			exercisedTestCase asString, '.' ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:22:34'!
-registerBoolean: aValue declaredAt: declarationSourceRange
-
-	"Consider declarationSourceRange as a covered boolean source range."
-
-	"If declarationSourceRange is currently considered non-boolean (e.g. it is related to non-boolean objects),
-	don't consider it a boolean declaration."
-	(coveredNonBooleanSourceRanges includes: declarationSourceRange)
-		ifTrue: [ ^ self coverAsNonBoolean: declarationSourceRange ].
-		
-		
-	(booleanValuesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
-		add: aValue! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:08:31'!
-registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
-
-	"Consider declarationSourceRanges as covered boolean source ranges.
-	
-	An example of a boolean having multilple declarations is a keyword message that returned the boolean value:
-	
-	self foo: 1 bar: 2 baz: 3.
-		
-	Assuming that #foo:bar:baz: returns a boolean, it is considered to be declared at 3 source ranges: one for each keyword in the selector."
-
-	declarationSourceRanges do: [ :declarationSourceRange |
-		self registerBoolean: aBoolean declaredAt: declarationSourceRange ]! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:12:48'!
-registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
-	
-	self
-		registerUsage: usageSourceRange of: declarationSourceRange;
-		registerBoolean: aBoolean declaredAt: declarationSourceRange.
-	
-	
-	! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:10:42'!
-registerUsage: aSourceRange of: declarationSourceRange
-
-	(usagesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
-		add: aSourceRange! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:17:06'!
-transformToNonBoolean: declarationSourceRange 
-	
-	"Discard boolean values related to declarationSourceRange"
-	booleanValuesByDeclaration
-		removeKey: declarationSourceRange
-		ifAbsent: [
-			"if declarationSourceRange is not a boolean source range, there is nothing left to do."
-			^ self ].
-	
-	"Consider declarationSourceRange covered, as it had at least one boolean value related to it."
-	self coverAsNonBoolean: declarationSourceRange.
-		
-	"Consider all source ranges related to declarationSourceRange covered as well."
-	self coverAsNonBooleanAll: (self usagesOf: declarationSourceRange)
-	! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/6/2022 01:59:03'!
-isDecisionSelector: aSelector  
-	
-	^ decisionSelectors includes: aSelector! !
-
-!DecisionConditionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
-for: aCompiledMethod withSourceRanges: sourceRanges
-	
-	^ self
-		new
-		initializeFor: aCompiledMethod
-		with: sourceRanges! !
-
-!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/16/2021 21:01:44'!
-m1
-
-	^ #foo! !
-
-!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:59:27'!
-raiseError
-	
-	self error: 'oops'! !
-
-!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:37:27'!
-m2! !
-
-!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:42:59'!
-m3! !
-
-!FakeCodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 1/10/2021 13:25:35'!
-enable
-	
-	enabled := true! !
-
-!FakeCodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 1/16/2021 21:26:08'!
-initialize
-
-	super initialize.
-	
-	enabled := false.! !
-
-!FakeCodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 16:25:26'!
-ifRunning: aBlock 
-	
-	enabled ifTrue: aBlock! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 11/11/2022 15:36:34'!
-value
-
-	^ CodeCoverageAnalyzer toAnalyzeAll: self compiledMethodsToAnalyze! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'initialization' stamp: 'NPM 1/18/2021 01:49:18'!
-initializeFrom: aTestSuite querying: aSystemOrganizer  
-
-	testSuite := aTestSuite.
-	systemOrganizer := aSystemOrganizer. ! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:46:55'!
-classesToAnalyze
-	
-	^ self targetClasses difference: self testCaseClasses! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:47:03'!
-compiledMethodsToAnalyze
-	
-	"NPM: I use an IdentitySet to hold the compiled methods to analyze because the equality of compiled methods
-	returns true for two different instances with the same collaborations."
-	
-	^ self classesToAnalyze
-		inject: IdentitySet new
-		into: [ :compiledMethodsToAnalyze :classToAnalyze |
-			compiledMethodsToAnalyze
-				addAll: classToAnalyze methodDict values;
-				addAll: classToAnalyze theMetaClass methodDict values;
-				yourself ]! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:32'!
-rootSystemCategories
-
-	^ (self testSystemCategories collect: [ :systemCategory | self rootSystemCategoryOf: systemCategory ])
-		asSet! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:54'!
-rootSystemCategoryOf: aSystemCategory
-
-	"I consider the root prefix of a system category as the first name before the token, if any.
-
-	For example:
-
-	  * the root system category of Foo is Foo
-	  * the root system category of Foo-Bar is Foo
-	  * the root system category of Foo-Bar-Baz is Foo."
-
-	^ (aSystemCategory findTokens: $-) first! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:46:34'!
-targetClasses
-	
-	^ self targetSystemCategories
-		inject: Set new
-		into: [ :targetClasses :systemCategory |
-			targetClasses
-				addAll: (systemOrganizer classesAt: systemCategory);
-				yourself ]! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'HAW 8/20/2022 19:08:08'!
-targetSystemCategories
-
-	^ self rootSystemCategories
-		inject: Set new
-		into: [ :targetSystemCategories :systemCategory |
-			targetSystemCategories
-				addAll: (systemOrganizer withSubCategoriesOf: systemCategory);
-				yourself ]! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:28:23'!
-testCaseClasses
-	
-	^ testSuite tests collect: [ :testCase | testCase class ]! !
-
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/19/2021 21:55:08'!
-testSystemCategories
-	
-	^ (self testCaseClasses collect: [ :testCaseClass | testCaseClass category ])
-		asSet! !
-
-!CodeCoverageAnalyzerBuilder class methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 01:44:17'!
-valueFrom: aTestSuite 
-	
-	^ (self from: aTestSuite) value! !
-
-!CodeCoverageAnalyzerBuilder class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 01:50:00'!
-from: aTestSuite 
-	
-	^ self
-		new
-		initializeFrom: aTestSuite
-		querying: SystemOrganization ! !
-
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:27'!
-classListMenuOptions
-
-	^ `{
-		{
-			#itemGroup 		-> 		70.
-			#itemOrder 		-> 		11.
-			#label 			-> 	'run tests with coverage'.
-			#object 			-> 	#model.
-			#selector 		   -> 		#runClassTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
-
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:57'!
-messageCategoryMenuOptions
-
-	^`{
-		{
-			#itemGroup 		-> 		40.
-			#itemOrder 		-> 		11.
-			#label 			-> 	'run tests with coverage'.
-			#object 			-> 	#model.
-			#selector 		   -> 		#runMessageCategoryTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
-
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:38:00'!
-messageListMenuOptions
-
-	^ `{
-		{
-			#itemGroup 		-> 		60.
-			#itemOrder 		-> 		21.
-			#label 			-> 	'run test with coverage'.
-			#object 			-> 	#model.
-			#selector 		   -> 		#runMethodTestWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
-
-!CodeCoverageBrowserMenues class methodsFor: 'browser menues' stamp: 'NPM 1/19/2021 17:22:33'!
-systemCategoryMenuOptions
-
-	^ `{
-		{
-			#itemGroup 		-> 		70.
-			#itemOrder 		-> 		11.
-			#label 			-> 	'run tests with coverage'.
-			#object 			-> 	#model.
-			#selector 	   	-> 		#runSystemCategoryTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-		{
-			#itemGroup 		-> 		70.
-			#itemOrder 		-> 		12.
-			#label 			-> 	'run package tests with coverage'.
-			#object 			-> 	#model.
-			#selector 	   	-> 		#runPackageTestsWithCodeCoverage.
-			#icon 			-> 	#weatherFewCloudsIcon
-		} asDictionary.
-	   }`.
-	! !
-
-!CodeCoverageTextStylerFactory methodsFor: 'initialization' stamp: 'NPM 1/18/2021 17:46:25'!
-initializeWith: aCodeCoverageReport 
-
-	report := aCodeCoverageReport.! !
-
-!CodeCoverageTextStylerFactory methodsFor: 'factory methods' stamp: 'NPM 1/18/2021 18:34:38'!
-new
-	
-	^ CodeCoverageTextStyler highlightingCoveredCodeFrom: report! !
-
-!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:10'!
-item
-
-	^ item! !
-
-!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:01'!
-string
-	
-	^ item string! !
-
-!CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 11/2/2022 00:08:49'!
-initializeFor: anItem with: aCodeCoverageReport skippingAllButFirst: numberOfCharacters 
-
-	item := anItem.
-	report := aCodeCoverageReport.
-	numberOfCharactersToSkip := numberOfCharacters.! !
-
-!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:46:33'!
-displayStringOrText
-	
-	^ label ifNil: [ self initializeLabel ]! !
-
-!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:47:30'!
-initializeLabel
-
-	^ label := ('{1} ({2}%)' format: { item. report percentCovered asFloat printStringFractionDigits: 2 })! !
-
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:11:22'!
-allButFirst: numberOfCharacters
-
-	^ self class
-		for: item
-		report: report
-		skippingAllButFirst: numberOfCharacters ! !
-
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:08:49'!
-asString
-
-	^ self displayStringOrText
-		allButFirst: numberOfCharactersToSkip! !
-
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:03:19'!
-doesNotUnderstand: aMessage
-
-	^ aMessage sendTo: item! !
-
-!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 11/2/2022 00:08:49'!
-appendToString: aString
-
-	^ aString, (item allButFirst: numberOfCharactersToSkip)! !
-
-!CodeCoverageResultItem methodsFor: 'as yet unclassified' stamp: 'NPM 11/2/2022 00:22:10'!
-percentCovered
-
-	^ report percentCovered! !
-
-!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:10:12'!
-for: anItem report: aCodeCoverageReport 
-	
-	^ self
-		for: anItem
-		report: aCodeCoverageReport
-		skippingAllButFirst: 0 ! !
-
-!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:09:47'!
-for: anItem report: aCodeCoverageReport  skippingAllButFirst: numberOfCharacters 
+	"I try to compile sourceCode the default way (with compiled optimizations turned in).
+	If that fails, I try to compile it without compiler optimizations."
 	
-	^ self
-		new
-		initializeFor: anItem
-		with: aCodeCoverageReport
-		skippingAllButFirst: numberOfCharacters! !
+	^  [ self basicCompile: sourceCode optimizeSpecialSends: true ]
+		on: Error
+		do: [ :error | self basicCompile: sourceCode optimizeSpecialSends: false].! !
 
 !Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 01:15:28'!
 runClassTestsWithCodeCoverage
@@ -5992,98 +6075,6 @@ runWithCodeCoverage: aTestSuite
 		analyzingCodeCoverageWith: (CodeCoverageAnalyzerBuilder valueFrom: aTestSuite)
 	! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/26/2023 18:45:28'!
-basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
-
-	"Extracted from #compile:notifying: to compile code without installing the
-	compiled method in my method dictionary."
-	
-	"TODO(NPM): this could be refactored and integrated into cuis core"
-	 
-	| methodAndNode |
-	methodAndNode := self
-		basicCompile: code "a Text"
-		notifying: nil
-		trailer: self defaultMethodTrailer
-		ifFail: [^nil]
-		optimizeSpecialSends: doOptimizeSpecialSends.
-		
-	methodAndNode method putSource: code fromParseNode: methodAndNode node inFile: 2
-			withPreamble: [:f | f newLine; nextPut: $!!; nextChunkPut: 'Behavior method'; newLine].
-			
-	^ methodAndNode method! !
-
-!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 21:58:40'!
-isTestCaseClass
-	
-	^ self isKindOf: TestCase class! !
-
-!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/27/2023 15:07:07'!
-safelyBasicCompile: sourceCode 
-	
-	"I try to compile sourceCode the default way (with compiled optimizations turned in).
-	If that fails, I try to compile it without compiler optimizations."
-	
-	^  [ self basicCompile: sourceCode optimizeSpecialSends: true ]
-		on: Error
-		do: [ :error | self basicCompile: sourceCode optimizeSpecialSends: false].! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
-codeCoverageAnalyzer: aCodeCoverageAnalyzer
-
-	self
-		propertyValueAt: self codeCoverageAnalyzerPropertyName
-		put: aCodeCoverageAnalyzer.! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
-codeCoverageAnalyzerPropertyName
-
-	^ #coverageAnalyzer! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
-withCodeCoverageAnalyzerDo: aBlock
-
-	| codeCoverageAnalyzer |
-	codeCoverageAnalyzer := self
-		propertyValueAt: self codeCoverageAnalyzerPropertyName
-		ifAbsent: [ ^ self ].
-		
-	aBlock value: codeCoverageAnalyzer
-	! !
-
-!MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 12/22/2020 21:09:17'!
-rawSourceRangesAndMethodNodeDo: aBinaryBlock
-
-	"Evaluate aBinaryBlock with the methodNode and rawSourceRanges generated from the receiver.
-	
-	This method is similar to #rawSourceRangesAndMethodDo: except that it:
-	* provides the MethodNode instead of the CompiledMethod
-	* ensures that the same parse nodes instances are used for both the raw source ranges keys and the method node children.
-	
-	If #rawSourceRangesAndMethodDo: was used instead, the method node will have to be recreated from the returned compiled method and that will cause
-	its parse nodes to be different objects (have different identity) that the ones used for the raw souce ranges keys."
-	
-	| methodNode |
-	methodNode := encoder classEncoding parserClass new
-					encoderClass: encoder class;
-					parse: (sourceText "If no source, use decompile string as source to map from"
-							ifNil: [self decompileString]
-							ifNotNil: [sourceText])
-					class: self methodClass.
-
-	^ aBinaryBlock
-		value: methodNode encoder rawSourceRanges
-		value: methodNode! !
-
-!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 11/9/2022 02:06:44'!
-codeCoverageInfoAt: mousePositionInText 
-	
-	^ [
-		(morph owningWindow model isKindOf: CodeCoverageAnalyzerBrowser)
-			ifTrue: [ morph owningWindow model codeCoverageInfoAt: mousePositionInText ]
-			ifFalse: [ '' ] ]
-		on: Error do: [ '' ] ! !
-
 !CodePackage methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:13:44'!
 compiledMethodsInNonTestCaseClasses
 	
@@ -6101,6 +6092,15 @@ testCaseClasses
 		class isTestCaseClass ifTrue: [ classes add: class ]].
 	
 	^ classes! !
+
+!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 11/9/2022 02:06:44'!
+codeCoverageInfoAt: mousePositionInText 
+	
+	^ [
+		(morph owningWindow model isKindOf: CodeCoverageAnalyzerBrowser)
+			ifTrue: [ morph owningWindow model codeCoverageInfoAt: mousePositionInText ]
+			ifFalse: [ '' ] ]
+		on: Error do: [ '' ] ! !
 
 !TestSuite class methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 21:51:18'!
 forCodePackage: aCodePackage 
