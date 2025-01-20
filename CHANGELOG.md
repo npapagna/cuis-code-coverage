@@ -8,6 +8,9 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 ### Changed
 * Build menus to run tests with coverage using the new Cuis menu API (thanks @hernanwilkinson!).
 
+### Fixed
+* Open the Code Coverage Browser when tests fail.
+
 ## [1.70](https://github.com/npapagna/cuis-code-coverage/compare/v1.33...v1.70) - 2023-08-10
 
 ### Added

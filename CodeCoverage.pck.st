@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6960] on 31 December 2024 at 7:04:25 pm'!
+'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:16:25 pm'!
 'Description Udated to Cuis 7.3 - Menu changes'!
-!provides: 'CodeCoverage' 1 74!
+!provides: 'CodeCoverage' 1 75!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -2857,16 +2857,16 @@ registerCodeCoverageAnalyzerActions
 			send: #closeCompiledMethodAnalyzersInstallationProgressBar
 			to: self! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/17/2021 12:36:40'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/20/2025 14:14:12'!
 runSuite
 
 	"I need to override this method as testSuite run should be run by the code coverage analyzer to collect coverage information.
 	Also, I need to display the code coverage results after the test suite is run."
 
-	testResult _ codeCoverageAnalyzer value: [ testSuite run ].	
+	testResult := codeCoverageAnalyzer value: [ testSuite run ].	
 	testResult hasPassed 
 		ifTrue: [ self informAllTestPassed ] 
-		ifFalse: [self showDeffects ].
+		ifFalse: [self showDefects ].
 		
 	self showCodeCoverageResults
 	! !
