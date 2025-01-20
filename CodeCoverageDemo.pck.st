@@ -1,460 +1,159 @@
-'From Cuis 6.0 [latest update: #5510] on 11 November 2022 at 7:53:13 am'!
+'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:06:14 pm'!
 'Description '!
-!provides: 'CodeCoverageDemo' 1 10!
-SystemOrganization addCategory: 'CodeCoverageDemo'!
+!provides: 'CodeCoverageDemo' 1 11!
+SystemOrganization addCategory: #CodeCoverageDemo!
 
 
-!classDefinition: #CodeEditorSlide category: 'CodeCoverageDemo'!
-LayoutMorph subclass: #CodeEditorSlide
-	instanceVariableNames: 'codeEditor compiledMethod reportBuilderFactory selector receiver toolbar2 contentPane testCases2 testCasesList argumentInputs2 argumentsBuilder'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverageDemo'!
-!classDefinition: 'CodeEditorSlide class' category: 'CodeCoverageDemo'!
-CodeEditorSlide class
-	instanceVariableNames: ''!
-
-!classDefinition: #PresentationWindow category: 'CodeCoverageDemo'!
-SystemWindow subclass: #PresentationWindow
-	instanceVariableNames: 'slides currentSlide originalTitle targetSlide'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverageDemo'!
-!classDefinition: 'PresentationWindow class' category: 'CodeCoverageDemo'!
-PresentationWindow class
-	instanceVariableNames: ''!
-
-!classDefinition: #ImageSlide category: 'CodeCoverageDemo'!
-BoxedMorph subclass: #ImageSlide
+!classDefinition: #ImageSlide category: #CodeCoverageDemo!
+ProtoObject subclass: #ImageSlide
 	instanceVariableNames: 'image toolbar'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'ImageSlide class' category: 'CodeCoverageDemo'!
+!classDefinition: 'ImageSlide class' category: #CodeCoverageDemo!
 ImageSlide class
 	instanceVariableNames: ''!
 
-!classDefinition: #BasicDecisionConditionCoverageReportBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #BasicDecisionConditionCoverageReportBuilder category: #CodeCoverageDemo!
 DecisionConditionCoverageReportBuilder subclass: #BasicDecisionConditionCoverageReportBuilder
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'BasicDecisionConditionCoverageReportBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'BasicDecisionConditionCoverageReportBuilder class' category: #CodeCoverageDemo!
 BasicDecisionConditionCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #ConditionCoverageReportBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #ConditionCoverageReportBuilder category: #CodeCoverageDemo!
 DecisionConditionCoverageReportBuilder subclass: #ConditionCoverageReportBuilder
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'ConditionCoverageReportBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'ConditionCoverageReportBuilder class' category: #CodeCoverageDemo!
 ConditionCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #DecisionCoverageReportBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #DecisionCoverageReportBuilder category: #CodeCoverageDemo!
 CompiledMethodCoverageTracker subclass: #DecisionCoverageReportBuilder
 	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted sourceRanges2 decisionReceverRanges decisionSelectors'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'DecisionCoverageReportBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'DecisionCoverageReportBuilder class' category: #CodeCoverageDemo!
 DecisionCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #LineCoverageReportBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #LineCoverageReportBuilder category: #CodeCoverageDemo!
 CompiledMethodCoverageTracker subclass: #LineCoverageReportBuilder
 	instanceVariableNames: 'compiledMethod analyzedSourceRanges compiledMethodWasExecuted coveredSourceRanges'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'LineCoverageReportBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'LineCoverageReportBuilder class' category: #CodeCoverageDemo!
 LineCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #MethodCoverageReportBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #MethodCoverageReportBuilder category: #CodeCoverageDemo!
 CompiledMethodCoverageTracker subclass: #MethodCoverageReportBuilder
 	instanceVariableNames: 'compiledMethod analyzedSourceRanges compiledMethodWasExecuted'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'MethodCoverageReportBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'MethodCoverageReportBuilder class' category: #CodeCoverageDemo!
 MethodCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #StatementCoverageReportBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #StatementCoverageReportBuilder category: #CodeCoverageDemo!
 CompiledMethodCoverageTracker subclass: #StatementCoverageReportBuilder
 	instanceVariableNames: 'compiledMethod analyzedSourceRanges compiledMethodWasExecuted coveredSourceRanges'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'StatementCoverageReportBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'StatementCoverageReportBuilder class' category: #CodeCoverageDemo!
 StatementCoverageReportBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageArgumentsBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #CodeCoverageArgumentsBuilder category: #CodeCoverageDemo!
 Object subclass: #CodeCoverageArgumentsBuilder
 	instanceVariableNames: 'booleanArgument anotherBooleanArgument'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'CodeCoverageArgumentsBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'CodeCoverageArgumentsBuilder class' category: #CodeCoverageDemo!
 CodeCoverageArgumentsBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #CodeCoverageExamples category: 'CodeCoverageDemo'!
+!classDefinition: #CodeCoverageExamples category: #CodeCoverageDemo!
 Object subclass: #CodeCoverageExamples
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'CodeCoverageExamples class' category: 'CodeCoverageDemo'!
+!classDefinition: 'CodeCoverageExamples class' category: #CodeCoverageDemo!
 CodeCoverageExamples class
 	instanceVariableNames: ''!
 
-!classDefinition: #ConditionCoverageArgumentsBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #ConditionCoverageArgumentsBuilder category: #CodeCoverageDemo!
 Object subclass: #ConditionCoverageArgumentsBuilder
 	instanceVariableNames: 'booleanArgument anotherBooleanArgument'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'ConditionCoverageArgumentsBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'ConditionCoverageArgumentsBuilder class' category: #CodeCoverageDemo!
 ConditionCoverageArgumentsBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #DecisionConditionCoverageArgumentsBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #DecisionConditionCoverageArgumentsBuilder category: #CodeCoverageDemo!
 Object subclass: #DecisionConditionCoverageArgumentsBuilder
 	instanceVariableNames: 'booleanArgument anotherBooleanArgument yetAnotherBooleanArgument'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'DecisionConditionCoverageArgumentsBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'DecisionConditionCoverageArgumentsBuilder class' category: #CodeCoverageDemo!
 DecisionConditionCoverageArgumentsBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #DecisionCoverageArgumentsBuilder category: 'CodeCoverageDemo'!
+!classDefinition: #DecisionCoverageArgumentsBuilder category: #CodeCoverageDemo!
 Object subclass: #DecisionCoverageArgumentsBuilder
 	instanceVariableNames: 'booleanArgument'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'DecisionCoverageArgumentsBuilder class' category: 'CodeCoverageDemo'!
+!classDefinition: 'DecisionCoverageArgumentsBuilder class' category: #CodeCoverageDemo!
 DecisionCoverageArgumentsBuilder class
 	instanceVariableNames: ''!
 
-!classDefinition: #Smalltalks2022Presentation category: 'CodeCoverageDemo'!
+!classDefinition: #Smalltalks2022Presentation category: #CodeCoverageDemo!
 Object subclass: #Smalltalks2022Presentation
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverageDemo'!
-!classDefinition: 'Smalltalks2022Presentation class' category: 'CodeCoverageDemo'!
+!classDefinition: 'Smalltalks2022Presentation class' category: #CodeCoverageDemo!
 Smalltalks2022Presentation class
 	instanceVariableNames: ''!
 
+!classDefinition: #CodeEditorSlide category: #CodeCoverageDemo!
+LayoutMorph subclass: #CodeEditorSlide
+	instanceVariableNames: 'codeEditor compiledMethod reportBuilderFactory selector receiver toolbar2 contentPane testCases2 testCasesList argumentInputs2 argumentsBuilder'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverageDemo'!
+!classDefinition: 'CodeEditorSlide class' category: #CodeCoverageDemo!
+CodeEditorSlide class
+	instanceVariableNames: ''!
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:14:12'!
-addTestCase
-	
-	testCases2 add: argumentsBuilder buildArguments.
-	self changed: #testCases.
-	
-	testCasesList redrawNeeded
-	! !
+!classDefinition: #PresentationWindow category: #CodeCoverageDemo!
+SystemWindow subclass: #PresentationWindow
+	instanceVariableNames: 'slides currentSlide originalTitle targetSlide'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CodeCoverageDemo'!
+!classDefinition: 'PresentationWindow class' category: #CodeCoverageDemo!
+PresentationWindow class
+	instanceVariableNames: ''!
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:23:54'!
-arguments
-	
-	^ {}! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:33:04'!
-buildArgumentInputs
-	
-	| argumentInputs arguments rightPane buttonsRow |
-	arguments := (receiver class >> selector) methodNode arguments.
-	arguments ifEmpty: [ 	
-		toolbar2 addMorph: ((PluggableButtonMorph model: self action: #runMethodWithoutArguments label: 'Run') color: Color veryVeryLightGray);
-		addMorph: ((PluggableButtonMorph model: self action: #clearTestCases label: 'Clear')		color: Color veryVeryLightGray).
-		^ self ].
-	
-	rightPane := LayoutMorph newColumn color: Color veryLightGray.
-	argumentInputs := LayoutMorph newColumn color: Color veryLightGray.
-	
-	arguments do: [ :argument |  
-		argumentInputs addMorph: (self buildInputFor: argument) fixedHeight: 20 ].
-	
-	buttonsRow := LayoutMorph newRow axisEdgeWeight: 0.5; separation: 5@0; color: Color veryLightGray.
-	buttonsRow
-		addMorph: ((PluggableButtonMorph model: self action: #addTestCase label: 'Add') color: Color veryVeryLightGray);
-		addMorph: ((PluggableButtonMorph model: self action: #clearTestCases label: 'Clear')		color: Color veryVeryLightGray);
-		addMorph: ((PluggableButtonMorph model: self action: #runTestCases label: 'Run') color: Color veryVeryLightGray).
-	
-	testCasesList := (PluggableListMorph model: self listGetter: #testCases indexGetter: #testCaseIndex indexSetter: #testCaseIndex:) color: Color veryLightGray..
-	rightPane
-		addMorph: argumentInputs fixedHeight: (arguments size * 20);
-		addMorph: buttonsRow fixedHeight: 20;
-		addMorphUseAll: testCasesList	.
-	
-	contentPane addMorph: rightPane fixedWidth: 400.! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:14:19'!
-buildInputFor: argument 
-	
-	| argumentRow selectorName |
-	argumentRow := LayoutMorph newRow separation: 5@5; color: Color veryLightGray..
-	argumentRow addMorph: (LabelMorph contents: argument key).
-	selectorName := (argument key,'Argument') asSymbol.
-	argumentRow addMorphUseAll: ((TextModelMorph textProvider: argumentsBuilder textGetter: selectorName  textSetter: (selectorName, ':') asSymbol) acceptOnAny: true).
-	
-	^ argumentRow! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:10:38'!
-clearTestCases
-	
-	testCases2 removeAll.
-	self buildCodeEditorWith: Browser new.
-	self changed: #testCases! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:05:44'!
-foo
-	 
-	| analyzer browser |
-	analyzer := CodeCoverageAnalyzer
-		toAnalyzeAll: { receiver class >> selector }
-		creatingReportBuildersWith: reportBuilderFactory.
-	
-	analyzer value: [ 
-		self testCases do: [ :arguments | 
-			receiver perform: selector withArguments: arguments ] ].
-	
-	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: analyzer report.
-	
-	
-	
-	self buildCodeEditorWith: browser! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:40:49'!
-nextSlide
-	
-	self owner owner nextSlide! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 16:59:34'!
-previousSlide
-	
-	self owningWindow previousSlide! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:07:14'!
-runMethodWithoutArguments
-	
-	self runTestCase: {{}}! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:19:24'!
-runTestCase: arguments
-	 
-	| analyzer browser |
-	analyzer := CodeCoverageAnalyzer
-		toAnalyzeAll: { receiver class >> selector }
-		creatingReportBuildersWith: reportBuilderFactory.
-	
-	analyzer value: [ 
-		arguments do: [ :args | 
-		receiver perform: selector withArguments: args ] ].
-	
-	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: analyzer report.
-	
-	
-	
-	self buildCodeEditorWith: browser! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:00:43'!
-runTestCases
-	
-	self runTestCase: testCases2 ! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:14:09'!
-testCaseIndex
-	
-	^ 0! !
-
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:15:38'!
-testCases
-	
-	^ testCases2 collect: [:t | t asString ]! !
-
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 15:46:45'!
-buildCodeEditorWith: aBrowser
-	
-	| newCodeEditor |
-	self owningWindow ifNotNil: [ :window | window model: aBrowser ].
-	
-	aBrowser setSelectedSystemCategory:receiver class category.
-	aBrowser selectClass: receiver class.
-	aBrowser selectedMessageName: selector.
-	
-	newCodeEditor := TextModelMorph
-		textProvider: aBrowser
-		textGetter: #acceptedContents
-		textSetter: #contents:notifying:
-		selectionGetter: #contentsSelection.
-	
-	newCodeEditor layoutSpec: LayoutSpec useAll.
-
-	codeEditor
-		ifNotNil: [contentPane replaceSubmorph: codeEditor by: newCodeEditor ]
-		ifNil: [ contentPane addMorphUseAll: newCodeEditor ]. 
-
-	codeEditor := newCodeEditor.! !
-
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 16:48:50'!
-buildContentPane
-
-	contentPane := LayoutMorph newRow.
-	self addMorphUseAll: contentPane.
-	self buildCodeEditorWith: Browser new.
-	self buildArgumentInputs! !
-
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 16:56:26'!
-buildToolbar
-
-	toolbar2 := LayoutMorph newRow doAdoptWidgetsColor;
-		color: Color veryLightGray;
-		separation: 10.
-		toolbar2 addMorph: ((PluggableButtonMorph model: self action: #previousSlide label: '<') color: Color veryVeryLightGray).
-	toolbar2 addMorph: ((PluggableButtonMorph model: self action: #nextSlide label: '>') color: Color veryVeryLightGray).
-
-	^ self addMorph: toolbar2 fixedHeight: 10.! !
-
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 17:23:48'!
-initializeToEdit: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder   
-
-	
-	receiver :=  aCompiledMethod.
-	selector := aSelector.
-	reportBuilderFactory := aReportBuilderFactory.
-	testCases2 := OrderedCollection new.
-	argumentsBuilder := anArgumentsBuilder.
-
-	self buildToolbar. 	
-	self buildContentPane.! !
-
-!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/8/2022 17:51:16'!
-new
-
-	^ self
-		newColumn! !
-
-!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:18:19'!
-on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory
-	
-	^ self
-		new
-		initializeToEdit: aCompiledMethod
-		selector: aSelector
-		creatingReportBuildersWith: aReportBuilderFactory
-		buildingArgumentsWith: nil! !
-
-!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:17:48'!
-on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder    
-	
-	^ self
-		new
-		initializeToEdit: aCompiledMethod
-		selector: aSelector
-		creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 19:06:05'!
-addSlide: aSlide
-
-	slides ifEmpty: [
-		aSlide morphExtent: self morphExtent.
-		layoutMorph addMorphUseAll: aSlide.
-		currentSlide := aSlide ].
-	slides add: aSlide.
-
-	! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 07:00:49'!
-fullScreen
-	"Zoom Window to Full World size with possible DeskMargins"
-
-	| left right possibleBounds |
-	
-	(self hasProperty: #originalBounds)
-		ifFalse: [ "Expand"
-			self setProperty: #originalBounds toValue: self displayBounds.
-			left := right := 0.
-			possibleBounds := (RealEstateAgent maximumUsableAreaInWorld: self world) 
-				insetBy: (left @ 0 corner: right @ 0).
-			"possibleBounds := possibleBounds insetBy: Theme current fullScreenDeskMargin"
-		] 
-		ifTrue: [ "Contract"
-			possibleBounds := self valueOfProperty: #originalBounds.
-			self removeProperty: #originalBounds.
-		].
-	self morphPosition: possibleBounds topLeft extent: possibleBounds extent! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:52:50'!
-initialize
-
-	super initialize.
-	slides := OrderedCollection new.
-	originalTitle := 'Code Coverage Examples'.! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:25:17'!
-nextSlide
-	
-	| currentIndex |
-	slides last = currentSlide ifTrue: [ ^ self ].
-	
-	currentIndex := slides indexOf: currentSlide.
-	targetSlide := slides at: (currentIndex +1).
-	
-	layoutMorph removeMorph: currentSlide.
-	currentSlide := (slides at: currentIndex + 1).
-	layoutMorph addMorphUseAll: currentSlide.
-	labelString := originalTitle.
-	super model: nil.
-	self redrawNeeded
-	
-	
-	! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:53:43'!
-openInWorld
-
-	labelString := originalTitle.
-	super openInWorld! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:55:02'!
-previousSlide
-	
-	| currentIndex |
-	slides first = currentSlide ifTrue: [ ^ self ].
-	
-	currentIndex := slides indexOf: currentSlide.
-	layoutMorph removeMorph: currentSlide.
-	currentSlide := (slides at: currentIndex - 1).
-	layoutMorph addMorphUseAll: currentSlide.
-	labelString := originalTitle.
-	super model: nil.
-	self redrawNeeded! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:26:04'!
-stepAt: millisecondSinceLast
-
-	! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/8/2022 19:12:47'!
-submorphToFocusKeyboard
-	
-	^ self! !
-
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:25:54'!
-wantsSteps
-	
-	^ true! !
 
 !ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/11/2022 06:49:00'!
 initializeForm: aForm 
@@ -1382,3 +1081,304 @@ openInWorld
 	self
 		new
 		openInWorld! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:14:12'!
+addTestCase
+	
+	testCases2 add: argumentsBuilder buildArguments.
+	self changed: #testCases.
+	
+	testCasesList redrawNeeded
+	! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:23:54'!
+arguments
+	
+	^ {}! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 1/20/2025 14:05:08'!
+buildArgumentInputs
+	
+	| argumentInputs arguments rightPane buttonsRow |
+	arguments := (receiver class >> selector) methodNode arguments.
+	arguments ifEmpty: [ 	
+		toolbar2 addMorph: ((PluggableButtonMorph model: self action: #runMethodWithoutArguments label: 'Run') color: Color veryVeryLightGray);
+		addMorph: ((PluggableButtonMorph model: self action: #clearTestCases label: 'Clear')		color: Color veryVeryLightGray).
+		^ self ].
+	
+	rightPane := LayoutMorph newColumn color: Color veryLightGray.
+	argumentInputs := LayoutMorph newColumn color: Color veryLightGray.
+	
+	arguments do: [ :argument |  
+		argumentInputs addMorph: (self buildInputFor: argument) fixedHeight: 20 ].
+	
+	buttonsRow := LayoutMorph newRow axisEdgeWeight: 0.5; separation: 5@0; color: Color veryLightGray.
+	buttonsRow
+		addMorph: ((PluggableButtonMorph model: self action: #addTestCase label: 'Add') color: Color veryVeryLightGray);
+		addMorph: ((PluggableButtonMorph model: self action: #clearTestCases label: 'Clear')		color: Color veryVeryLightGray);
+		addMorph: ((PluggableButtonMorph model: self action: #runTestCases label: 'Run') color: Color veryVeryLightGray).
+	
+	testCasesList := (PluggableListMorph withModel: self listGetter: #testCases indexGetter: #testCaseIndex indexSetter: #testCaseIndex:) color: Color veryLightGray..
+	rightPane
+		addMorph: argumentInputs fixedHeight: (arguments size * 20);
+		addMorph: buttonsRow fixedHeight: 20;
+		addMorphUseAll: testCasesList	.
+	
+	contentPane addMorph: rightPane fixedWidth: 400.! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:14:19'!
+buildInputFor: argument 
+	
+	| argumentRow selectorName |
+	argumentRow := LayoutMorph newRow separation: 5@5; color: Color veryLightGray..
+	argumentRow addMorph: (LabelMorph contents: argument key).
+	selectorName := (argument key,'Argument') asSymbol.
+	argumentRow addMorphUseAll: ((TextModelMorph textProvider: argumentsBuilder textGetter: selectorName  textSetter: (selectorName, ':') asSymbol) acceptOnAny: true).
+	
+	^ argumentRow! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:10:38'!
+clearTestCases
+	
+	testCases2 removeAll.
+	self buildCodeEditorWith: Browser new.
+	self changed: #testCases! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:05:44'!
+foo
+	 
+	| analyzer browser |
+	analyzer := CodeCoverageAnalyzer
+		toAnalyzeAll: { receiver class >> selector }
+		creatingReportBuildersWith: reportBuilderFactory.
+	
+	analyzer value: [ 
+		self testCases do: [ :arguments | 
+			receiver perform: selector withArguments: arguments ] ].
+	
+	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: analyzer report.
+	
+	
+	
+	self buildCodeEditorWith: browser! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:40:49'!
+nextSlide
+	
+	self owner owner nextSlide! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 16:59:34'!
+previousSlide
+	
+	self owningWindow previousSlide! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:07:14'!
+runMethodWithoutArguments
+	
+	self runTestCase: {{}}! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:19:24'!
+runTestCase: arguments
+	 
+	| analyzer browser |
+	analyzer := CodeCoverageAnalyzer
+		toAnalyzeAll: { receiver class >> selector }
+		creatingReportBuildersWith: reportBuilderFactory.
+	
+	analyzer value: [ 
+		arguments do: [ :args | 
+		receiver perform: selector withArguments: args ] ].
+	
+	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: analyzer report.
+	
+	
+	
+	self buildCodeEditorWith: browser! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:00:43'!
+runTestCases
+	
+	self runTestCase: testCases2 ! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:14:09'!
+testCaseIndex
+	
+	^ 0! !
+
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:15:38'!
+testCases
+	
+	^ testCases2 collect: [:t | t asString ]! !
+
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 15:46:45'!
+buildCodeEditorWith: aBrowser
+	
+	| newCodeEditor |
+	self owningWindow ifNotNil: [ :window | window model: aBrowser ].
+	
+	aBrowser setSelectedSystemCategory:receiver class category.
+	aBrowser selectClass: receiver class.
+	aBrowser selectedMessageName: selector.
+	
+	newCodeEditor := TextModelMorph
+		textProvider: aBrowser
+		textGetter: #acceptedContents
+		textSetter: #contents:notifying:
+		selectionGetter: #contentsSelection.
+	
+	newCodeEditor layoutSpec: LayoutSpec useAll.
+
+	codeEditor
+		ifNotNil: [contentPane replaceSubmorph: codeEditor by: newCodeEditor ]
+		ifNil: [ contentPane addMorphUseAll: newCodeEditor ]. 
+
+	codeEditor := newCodeEditor.! !
+
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 16:48:50'!
+buildContentPane
+
+	contentPane := LayoutMorph newRow.
+	self addMorphUseAll: contentPane.
+	self buildCodeEditorWith: Browser new.
+	self buildArgumentInputs! !
+
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 16:56:26'!
+buildToolbar
+
+	toolbar2 := LayoutMorph newRow doAdoptWidgetsColor;
+		color: Color veryLightGray;
+		separation: 10.
+		toolbar2 addMorph: ((PluggableButtonMorph model: self action: #previousSlide label: '<') color: Color veryVeryLightGray).
+	toolbar2 addMorph: ((PluggableButtonMorph model: self action: #nextSlide label: '>') color: Color veryVeryLightGray).
+
+	^ self addMorph: toolbar2 fixedHeight: 10.! !
+
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 17:23:48'!
+initializeToEdit: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder   
+
+	
+	receiver :=  aCompiledMethod.
+	selector := aSelector.
+	reportBuilderFactory := aReportBuilderFactory.
+	testCases2 := OrderedCollection new.
+	argumentsBuilder := anArgumentsBuilder.
+
+	self buildToolbar. 	
+	self buildContentPane.! !
+
+!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/8/2022 17:51:16'!
+new
+
+	^ self
+		newColumn! !
+
+!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:18:19'!
+on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory
+	
+	^ self
+		new
+		initializeToEdit: aCompiledMethod
+		selector: aSelector
+		creatingReportBuildersWith: aReportBuilderFactory
+		buildingArgumentsWith: nil! !
+
+!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:17:48'!
+on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder    
+	
+	^ self
+		new
+		initializeToEdit: aCompiledMethod
+		selector: aSelector
+		creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 19:06:05'!
+addSlide: aSlide
+
+	slides ifEmpty: [
+		aSlide morphExtent: self morphExtent.
+		layoutMorph addMorphUseAll: aSlide.
+		currentSlide := aSlide ].
+	slides add: aSlide.
+
+	! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 07:00:49'!
+fullScreen
+	"Zoom Window to Full World size with possible DeskMargins"
+
+	| left right possibleBounds |
+	
+	(self hasProperty: #originalBounds)
+		ifFalse: [ "Expand"
+			self setProperty: #originalBounds toValue: self displayBounds.
+			left := right := 0.
+			possibleBounds := (RealEstateAgent maximumUsableAreaInWorld: self world) 
+				insetBy: (left @ 0 corner: right @ 0).
+			"possibleBounds := possibleBounds insetBy: Theme current fullScreenDeskMargin"
+		] 
+		ifTrue: [ "Contract"
+			possibleBounds := self valueOfProperty: #originalBounds.
+			self removeProperty: #originalBounds.
+		].
+	self morphPosition: possibleBounds topLeft extent: possibleBounds extent! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:52:50'!
+initialize
+
+	super initialize.
+	slides := OrderedCollection new.
+	originalTitle := 'Code Coverage Examples'.! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:25:17'!
+nextSlide
+	
+	| currentIndex |
+	slides last = currentSlide ifTrue: [ ^ self ].
+	
+	currentIndex := slides indexOf: currentSlide.
+	targetSlide := slides at: (currentIndex +1).
+	
+	layoutMorph removeMorph: currentSlide.
+	currentSlide := (slides at: currentIndex + 1).
+	layoutMorph addMorphUseAll: currentSlide.
+	labelString := originalTitle.
+	super model: nil.
+	self redrawNeeded
+	
+	
+	! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:53:43'!
+openInWorld
+
+	labelString := originalTitle.
+	super openInWorld! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:55:02'!
+previousSlide
+	
+	| currentIndex |
+	slides first = currentSlide ifTrue: [ ^ self ].
+	
+	currentIndex := slides indexOf: currentSlide.
+	layoutMorph removeMorph: currentSlide.
+	currentSlide := (slides at: currentIndex - 1).
+	layoutMorph addMorphUseAll: currentSlide.
+	labelString := originalTitle.
+	super model: nil.
+	self redrawNeeded! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:26:04'!
+stepAt: millisecondSinceLast
+
+	! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/8/2022 19:12:47'!
+submorphToFocusKeyboard
+	
+	^ self! !
+
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:25:54'!
+wantsSteps
+	
+	^ true! !
