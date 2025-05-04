@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:02:52 pm'!
-'Description Uses notOptimizedMethodNode to access the unoptimized method node of a compiled method.'!
-!provides: 'PackageSnapshot' 1 8!
+'From Cuis7.3 [latest update: #7115] on 4 May 2025 at 12:19:47 pm'!
+'Description Fix tests to run them in base Cuis image'!
+!provides: 'PackageSnapshot' 1 9!
 SystemOrganization addCategory: #'PackageSnapshot-Model'!
 SystemOrganization addCategory: #'PackageSnapshot-Tests'!
 SystemOrganization addCategory: #PackageSnapshot!
@@ -291,7 +291,7 @@ takeSnapshotOfClass: aClass
 		takeSnapshotOfInstanceSideOf: aClass;
 		takeSnapshotOfClassSideOf: aClass! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'HAW 4/24/2023 12:43:00'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 5/4/2025 12:09:54'!
 takeSnapshotOfClassSideOf: aClass
 
 	| snapshotOfClass |
@@ -301,14 +301,15 @@ takeSnapshotOfClassSideOf: aClass
 	snapshotOfClass class
 		instanceVariableNames: aClass class instanceVariablesString.
 
-	snapshotOfClass disableLiveTyping; doNotCheckForUnload.! !
+	Smalltalk isLiveTypingInstalled
+		ifTrue: [ snapshotOfClass disableLiveTyping; doNotCheckForUnload ].! !
 
 !PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/22/2022 15:05:11'!
 takeSnapshotOfClasses
 
 	classesToTakeSnapshots do: [ :class | self takeSnapshotOfClass: class ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'HAW 4/24/2023 12:42:30'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 5/4/2025 12:10:01'!
 takeSnapshotOfInstanceSideOf: aClass
 
 	| superclass snapshotOfClass |
@@ -324,7 +325,8 @@ takeSnapshotOfInstanceSideOf: aClass
 		poolDictionaries: aClass sharedPoolsString
 		category: (self systemCategoryFor: aClass category).
 
-	snapshotOfClass disableLiveTyping; doNotCheckForUnload.
+	Smalltalk isLiveTypingInstalled
+		ifTrue: [ snapshotOfClass disableLiveTyping; doNotCheckForUnload ].
 
 	self
 		register: snapshotOfClass
@@ -428,6 +430,14 @@ createClass
 
 	^ self createSubclassOf: Object! !
 
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:17:39'!
+createClassInCategory: aSystemCategory
+
+	^ self
+		createSubclassOf: Object
+		category: aSystemCategory.
+! !
+
 !ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 01:31:25'!
 createClassWithClassAndInstanceVariables
 
@@ -438,15 +448,13 @@ createClassWithClassAndInstanceVariables
 		poolDictionaries: ''
 		category: testSystemCategory.! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/26/2022 01:24:03'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:17:54'!
 createClassWithClassExtensionMethod: aString
 
 	| newClass |
-	newClass _ Object subclass: ('TestClass', Time millisecondClockValue asString) asSymbol instanceVariableNames: 'instVar1' classVariableNames: 'ClassVar2' poolDictionaries: '' category: testExtensionSystemCategory.
+	newClass := self createClassInCategory: testExtensionSystemCategory.
 
 	newClass class compileSilently: aString classified: '*', testSystemCategory.
-
-	createdClasses add: newClass.
 
 	^ newClass.
 	! !
@@ -503,22 +511,30 @@ createClassWithSharedPool
 		poolDictionaries: testSharedPool
 		category: testSystemCategory! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 01:33:09'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:16:50'!
 createSubclassOf: aClass
+
+	^ self
+		createSubclassOf: aClass
+		category: testSystemCategory.
+! !
+
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:16:39'!
+createSubclassOf: aClass category: aSystemCategory
 
 	^ self createSubclassOf: aClass
 		instanceVariableNames: ''
 		classVariableNames: ''
 		poolDictionaries: ''
-		category: testSystemCategory.
+		category: aSystemCategory.
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/26/2022 01:24:03'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:07:53'!
 createSubclassOf: aClass instanceVariableNames: instanceVariableNames classVariableNames: classVariableNames poolDictionaries: poolDictionaries category: category
 
 	| newClass |
 	newClass _ aClass
-		subclass: ('TestClass', Time millisecondClockValue asString) asSymbol
+		subclass: self newClassName
 		instanceVariableNames: instanceVariableNames
 		classVariableNames: classVariableNames
 		poolDictionaries: poolDictionaries
@@ -529,6 +545,18 @@ createSubclassOf: aClass instanceVariableNames: instanceVariableNames classVaria
 	createdClasses add: newClass.
 
 	^ newClass.		! !
+
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:09:02'!
+newClassName
+
+	 | className |
+	
+	[
+		className := ('TestClass', Time millisecondClockValue asString) asSymbol.
+		Smalltalk hasClassNamed: className
+	] whileTrue.
+
+	^ className! !
 
 !ClassFactoryForTesting methodsFor: 'initialization' stamp: 'NPM 10/26/2022 01:24:03'!
 initialize
