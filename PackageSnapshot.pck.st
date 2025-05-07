@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7115] on 4 May 2025 at 12:19:47 pm'!
-'Description Fix tests to run them in base Cuis image'!
-!provides: 'PackageSnapshot' 1 9!
+'From Cuis7.3 [latest update: #7120] on 7 May 2025 at 3:08:23 pm'!
+'Description Initialize class snapshots'!
+!provides: 'PackageSnapshot' 1 10!
 SystemOrganization addCategory: #'PackageSnapshot-Model'!
 SystemOrganization addCategory: #'PackageSnapshot-Tests'!
 SystemOrganization addCategory: #PackageSnapshot!
@@ -255,7 +255,7 @@ migrateSnapshotInstancesToOriginalClasses
 		snapshotOfClass _ self snapshotOf: originalClass.
 		snapshotOfClass allInstancesDo: [ :instance | originalClass adoptInstance: instance ]]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots' stamp: 'NPM 10/26/2022 00:55:52'!
+!PackageSnapshot methodsFor: 'taking snapshots' stamp: 'NPM 5/7/2025 14:54:30'!
 take
 
 	self setupClassesToTakeSnapshots.
@@ -263,7 +263,8 @@ take
 
 	self takeSnapshotOfClasses.
 	self takeSnapshotOfMethods.
-	self takeSnapshotOfExtensionMethods.! !
+	self takeSnapshotOfExtensionMethods.
+	self initializeClassSnapshots.! !
 
 !PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/22/2022 01:20:06'!
 register: aSnapshotOfAClass asSnapshotOf: aClass
@@ -284,7 +285,7 @@ setupClassesToTakeSnapshots
 			ifNotEmpty: [
 				self error: self takingSnapshotOfClassesWithSharedPoolsIsNotSupportedYetErrorMessage  ] ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/21/2022 03:02:07'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 5/7/2025 15:04:33'!
 takeSnapshotOfClass: aClass
 
 	self
@@ -396,6 +397,12 @@ takeSnapshotsOfMethodsOf: aBehavior
 
 	aBehavior methodsDo: [ :method |
 		self takeSnapshotOfMethod: method ]! !
+
+!PackageSnapshot methodsFor: 'as yet unclassified' stamp: 'NPM 5/7/2025 15:04:35'!
+initializeClassSnapshots
+
+	snapshotOfClassesByOriginalClassName values
+		do: [ :aClass | aClass initialize ]! !
 
 !PackageSnapshot class methodsFor: 'instance creation' stamp: 'NPM 10/22/2022 01:29:45'!
 toTakeOf: aCodePackage
@@ -975,6 +982,19 @@ test020_keepsReferencesToNonBehaviorLiteralVariableNodes
 	self takeASnapshotOfTestPackage.
 
 	self assert: Smalltalk equals: originalClass m1.! !
+
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 5/7/2025 15:07:10'!
+test021_InitializesSnapshotOfClasses
+
+	| originalClass classSnapshot |
+	
+	originalClass := classFactory createClassWithClassMethod: 'initialize initializeCalled := true'.
+	originalClass theMetaClass addInstVarName: 'initializeCalled'.
+
+	self takeASnapshotOfTestPackage.
+
+	classSnapshot := packageSnapshot snapshotOf: originalClass.
+	self assert: (classSnapshot instVarNamed: 'initializeCalled')! !
 
 !CompiledMethod methodsFor: '*PackageSnapshot' stamp: 'HAW 5/29/2023 23:22:17'!
 disableLiveTyping

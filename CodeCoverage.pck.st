@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:19:59 pm'!
-'Description Udated to Cuis 7.3 - Menu changes'!
-!provides: 'CodeCoverage' 1 76!
+'From Cuis7.3 [latest update: #7102] on 29 April 2025 at 8:27:52 am'!
+'Description Menu unloading'!
+!provides: 'CodeCoverage' 1 78!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -1705,12 +1705,30 @@ classListMenuSpec
 		#(123		'Run Tests with Coverage' 				nil 	model 			runClassTestsWithCodeCoverage 									weatherFewCloudsIcon)
 	)! !
 
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/28/2025 21:01:59'!
+classListMenuSpecSend
+
+	^ MessageSend receiver: self selector: #classListMenuSpec! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/29/2025 08:10:35'!
+menuAndShortcutsSpecs
+
+	^{	{ #systemCatListMenuSpec. self systemCategoriesListMenuSpecSend }.
+		{ #classListMenuSpec. self classListMenuSpecSend }.
+		{ #methodCategoriesListMenuSpec. self methodCategoriesListMenuSpecSend }.
+		{ #messageListMenuSpec. self messageListMenuSpecSend }}! !
+
 !CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:36:07'!
 messageListMenuSpec
 	
 	^#(
 		#(75		'Run Tests with Coverage' 				nil 	model 			runMethodTestWithCodeCoverage 									weatherFewCloudsIcon)
 	)! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/28/2025 21:02:27'!
+messageListMenuSpecSend
+
+	^ MessageSend receiver: self selector: #messageListMenuSpec! !
 
 !CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:34:21'!
 methodCategoriesListMenuSpec
@@ -1719,28 +1737,33 @@ methodCategoriesListMenuSpec
 		#(145		'Run Tests with Coverage' 				nil 	model 			runMessageCategoryTestsWithCodeCoverage 									weatherFewCloudsIcon)
 	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/30/2024 19:13:44'!
-systemCategoriesListMenuSpec
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/28/2025 21:02:15'!
+methodCategoriesListMenuSpecSend
+
+	^ MessageSend receiver: self selector: #methodCategoriesListMenuSpec! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/29/2025 08:17:48'!
+systemCatListMenuSpec
 	
 	^#(
 		#(240		'Run Tests with Coverage' 									nil 	model 			runSystemCategoryTestsWithCodeCoverage 												weatherFewCloudsIcon)
 		#(250		'Run Package Tests with Coverage' 									nil 	model 			runPackageTestsWithCodeCoverage 												weatherFewCloudsIcon)
 	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 12/30/2024 18:24:30'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/29/2025 08:17:48'!
+systemCategoriesListMenuSpecSend
+
+	^ MessageSend receiver: self selector: #systemCatListMenuSpec! !
+
+!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 4/28/2025 21:13:16'!
 initialize
 
-	BrowserWindow at: #systemCatListMenuSpec registerMenuAndShortcutsSpecProvider:
-		(MessageSend receiver: self selector: #systemCategoriesListMenuSpec).
+	BrowserWindow registerAll: self menuAndShortcutsSpecs! !
 
-	BrowserWindow at: #classListMenuSpec registerMenuAndShortcutsSpecProvider:
-		(MessageSend receiver: self selector: #classListMenuSpec).
+!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 4/28/2025 21:13:26'!
+unload
 
-	BrowserWindow at: #messageCatListMenuSpec registerMenuAndShortcutsSpecProvider:
-		(MessageSend receiver: self selector: #methodCategoriesListMenuSpec).
-
-	BrowserWindow at: #messageListMenuSpec registerMenuAndShortcutsSpecProvider:
-		(MessageSend receiver: self selector: #messageListMenuSpec).! !
+	BrowserWindow unregisterAll: self menuAndShortcutsSpecs! !
 
 !CodeCoverageTextStylerFactory methodsFor: 'initialization' stamp: 'NPM 1/18/2021 17:46:25'!
 initializeWith: aCodeCoverageReport 
