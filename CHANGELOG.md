@@ -14,6 +14,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 ### Fixed
 * Open the Code Coverage Browser when tests fail.
 * Open the Code Coverage Browser when no methods area covered.
+* Bug that caused system categories to display the same coverage percentage.
 
 ### Removed
 * Unused instance variables, classes, and methods.

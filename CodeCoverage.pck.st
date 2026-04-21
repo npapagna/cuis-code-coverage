@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 2:28:03 pm'!
-'Description Don''t save instrumented code in the changes file.'!
-!provides: 'CodeCoverage' 1 93!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 4:36:09 pm'!
+'Description Fix system category coverage display bug'!
+!provides: 'CodeCoverage' 1 94!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -2581,26 +2581,27 @@ systemCategoryList
 		select: [ :systemCategory | codeCoverageReport wasSystemCategoryAnalyzed: systemCategory ]
 		thenCollect: [ :systemCategory | self styleSystemCategory: systemCategory ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 2/Nov/2022 00:29:31'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 21/Apr/2026 16:34:11'!
 systemCategoryRoots
 	"Answer the roots of the forest of system categories."
 	| categories subcategories roots name |
-	categories _ self systemCategoryList.
+	categories := self systemCategoryList.
 
-	subcategories _ Dictionary new.
+	subcategories := Dictionary new.
 	categories do: [:each|
-		name _ (each findTokens: '-') first.
+		name := (each findTokens: '-') first.
 		(subcategories at: name ifAbsentPut: [OrderedCollection new]) add: each].
-	roots _ OrderedCollection new.
+	roots := OrderedCollection new.
 	categories do: [:each|
-		name _ (each findTokens: '-') first.
+		name := (each findTokens: '-') first.
 		(roots includes: name) ifFalse:
 			[(subcategories at: name) size > 1 ifTrue: [roots add: name] ifFalse: [roots add: (subcategories at: name) first]]].
 	^ roots collect: [:each|
-		| averagePercentCoveredInSubcategories rootName | 
-		averagePercentCoveredInSubcategories := ((subcategories at: name) collect: [ :subcategory | subcategory percentCovered ]) average.
+		| averagePercentCoveredInSubcategories rootName rootPrefix | 
+		rootPrefix := (each findTokens: '-') first.
+		averagePercentCoveredInSubcategories := ((subcategories at: rootPrefix) collect: [ :subcategory | subcategory percentCovered ]) average.
 		rootName := each, ' (', (averagePercentCoveredInSubcategories printStringFractionDigits: 2 ) asString, '%)'.
-		
+	
 		SystemCategoryWrapper with: each name: (rootName)  model: self]! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 18/Jan/2021 21:06:58'!
