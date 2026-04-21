@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:08:36 am'!
-'Description Remove unused test message'!
-!provides: 'CodeCoverage' 1 88!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:18:52 am'!
+'Description Remove unused coverage browser message'!
+!provides: 'CodeCoverage' 1 89!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -61,7 +61,7 @@ CodeCoverageReportSummary class
 
 !classDefinition: #CompiledMethodCoverageReport category: #'CodeCoverage-Model'!
 CodeCoverageReport subclass: #CompiledMethodCoverageReport
-	instanceVariableNames: 'compiledMethod compiledMethodWasExecuted coverageRatioBySourceRange messagesBySourceRanges'
+	instanceVariableNames: 'compiledMethod compiledMethodWasExecuted coverageRatioBySourceRange'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -643,14 +643,6 @@ belongsToMySystemCategory: compiledMethod
 
 	^ compiledMethod methodClass category = self category! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 7/Nov/2022 01:24:19'!
-for: aCompiledMethod codeCoverageInfoAt: aSourcePosition
-
-	^ reportsByCompiledMethod 
-		at: aCompiledMethod
-			ifPresent:[ :report | report messageAt: aSourcePosition ]
-			ifAbsent:[ '' ].! !
-
 !CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 19/Jan/2021 21:16:45'!
 mostCoveredCompiledMethodReport
 	
@@ -788,14 +780,14 @@ percentCovered
 	^ (self coverageRatio * 100)
 		roundTo: 0.01! !
 
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 6/Nov/2022 12:21:54'!
-for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 21/Apr/2026 09:16:08'!
+for: aCompiledMethod executed: aBoolean with: coverageResults     
 	
 	^ CompiledMethodCoverageReport
 		for: aCompiledMethod
 		executed: aBoolean
 		with: coverageResults
-		messages: messagesBySourceRanges! !
+		! !
 
 !CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/Jan/2021 18:51:58'!
 toSummarize: codeCoverageReports 
@@ -835,14 +827,6 @@ compiledMethod
 fullyCoveredSourceRanges
 
 	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio = 1 ]! !
-
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022 01:26:55'!
-messageAt: aSourcePosition
-
-	^ messagesBySourceRanges associations
-		detect: [ :association | association key includes: aSourcePosition ]
-		ifFound: [ :association | association value ]
-		ifNone: [ ^ '' ]! !
 
 !CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 19/Jan/2021 21:21:43'!
 messageCategory
@@ -884,13 +868,12 @@ uncoveredSourceRanges
 	
 	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio isZero ]! !
 
-!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022 01:20:28'!
-initializeFor: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
+!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 21/Apr/2026 09:11:57'!
+initializeFor: aCompiledMethod executed: aBoolean with: coverageResults 
 
 	compiledMethod := aCompiledMethod.
 	compiledMethodWasExecuted := aBoolean. 
-	coverageRatioBySourceRange := coverageResults.
-	messagesBySourceRanges := messages.! !
+	coverageRatioBySourceRange := coverageResults.! !
 
 !CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 14/Feb/2021 13:14:00'!
 coverageRatio
@@ -916,15 +899,14 @@ totalCoveredSourceRanges
 	
 	^ coverageRatioBySourceRange size - self uncoveredSourceRanges size! !
 
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 01:22:40'!
-for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
+!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 21/Apr/2026 09:16:08'!
+for: aCompiledMethod executed: aBoolean with: coverageResults     
 
 	^ self
 		new
 		initializeFor: aCompiledMethod
 		executed: aBoolean
 		with: coverageResults
-		messages: messagesBySourceRanges
 		! !
 
 !CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 21/Apr/2026 08:28:44'!
@@ -1318,14 +1300,14 @@ usagesOf: aDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 6/Nov/2022 12:22:04'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 21/Apr/2026 09:16:08'!
 value
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
 		with: self consolidateCoverageResults
-		messages: self messages.! !
+		.! !
 
 !DecisionConditionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 6/Nov/2022 02:54:29'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
@@ -1464,19 +1446,6 @@ coverNonBooleanUsage: usageSourceRange of: declarationSourceRange
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
-
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022 01:31:28'!
-messages
-	
-	^ booleanValuesByDeclaration
-		select: [ :coveredValues | coveredValues size = 1 ]
-		thenCollect: [ :coveredValues |
-			| exercisedTestCase missingTestCase |
-			exercisedTestCase := coveredValues anyOne.
-			missingTestCase := exercisedTestCase ifTrue: [ false ] ifFalse: [ true ].
-			String newLineString,
-			'Code Coverge: missing test case: ', missingTestCase asString, '. Only exercised with ',
-			exercisedTestCase asString, '.' ]! !
 
 !DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:22:34'!
 registerBoolean: aValue declaredAt: declarationSourceRange
@@ -2644,17 +2613,6 @@ systemCategoryRoots
 		rootName := each, ' (', (averagePercentCoveredInSubcategories printStringFractionDigits: 2 ) asString, '%)'.
 		
 		SystemCategoryWrapper with: each name: (rootName)  model: self]! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 7/Nov/2022 01:12:27'!
-codeCoverageInfoAt: aSourcePosition
-	
-	| selectedCompiledMethod |
-	self selectedMessageName ifNil: [ ^ '' ].
-	selectedCompiledMethod := self selectedClassOrMetaClass compiledMethodAt: self selectedMessageName.
-	
-	^ codeCoverageReport
-		for: selectedCompiledMethod
-		codeCoverageInfoAt: aSourcePosition ! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 18/Jan/2021 21:06:58'!
 textStylerClassFor: textGetter
