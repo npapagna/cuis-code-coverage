@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:06:44 am'!
-'Description Remove unused test message'!
-!provides: 'CodeCoverage' 1 86!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:07:58 am'!
+'Description Removed unused source code gen. instance var'!
+!provides: 'CodeCoverage' 1 87!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -161,7 +161,7 @@ CodeCoverageTextStylerFactory class
 
 !classDefinition: #CodeCoverageSourceCodeGenerator category: #'CodeCoverage-Model'!
 ParseNodeVisitor subclass: #CodeCoverageSourceCodeGenerator
-	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode parseNodesBySourceRanges receiverTempCount'
+	instanceVariableNames: 'methodNode rawSourceRanges numberOfSourceRangeTraced tracedSourceRanges declarationSourceRangeByParseNode tracedSourceCode coverageTrackerLiteralName decompilerConstructor encoder coverageTrackerNode receiverTempCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -2460,11 +2460,6 @@ parseNodeForStoringMessageReceiver
 		key: receiverTempName
 		code: 16)
 		scope: 0.! !
-
-!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 5/Nov/2022 15:19:05'!
-parseNodesBySourceRanges
-
-	^ parseNodesBySourceRanges! !
 
 !CodeCoverageSourceCodeGenerator class methodsFor: 'source code tracing' stamp: 'NPM 9/Jan/2021 17:10:23'!
 valueFor: aCompiledMethod 
