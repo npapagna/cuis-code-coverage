@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7102] on 29 April 2025 at 8:27:52 am'!
-'Description Menu unloading'!
-!provides: 'CodeCoverage' 1 78!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:35:43 am'!
+'Description Fix abstract method test'!
+!provides: 'CodeCoverage' 1 79!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -319,34 +319,34 @@ If the color was solid, the user would not have feedback about which par of the 
 !ProgressiveCodeCoverageTestRunner commentStamp: 'NPM 1/18/2021 01:56:29' prior: 0!
 I am a specialized progressive test runner that runs a test suite collecting code coverage information.!
 
-!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:10'!
+!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 6/Nov/2022 03:27:10'!
 item
 
 	^ item! !
 
-!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 11/6/2022 03:27:01'!
+!CodeCoverageResultItem methodsFor: 'accessing' stamp: 'NPM 6/Nov/2022 03:27:01'!
 string
 	
 	^ item string! !
 
-!CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 11/2/2022 00:08:49'!
+!CodeCoverageResultItem methodsFor: 'initialization' stamp: 'NPM 2/Nov/2022 00:08:49'!
 initializeFor: anItem with: aCodeCoverageReport skippingAllButFirst: numberOfCharacters 
 
 	item := anItem.
 	report := aCodeCoverageReport.
 	numberOfCharactersToSkip := numberOfCharacters.! !
 
-!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:46:33'!
+!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 18/Jan/2021 16:46:33'!
 displayStringOrText
 	
 	^ label ifNil: [ self initializeLabel ]! !
 
-!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 1/18/2021 16:47:30'!
+!CodeCoverageResultItem methodsFor: 'printing' stamp: 'NPM 18/Jan/2021 16:47:30'!
 initializeLabel
 
 	^ label := ('{1} ({2}%)' format: { item. report percentCovered asFloat printStringFractionDigits: 2 })! !
 
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:11:22'!
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 2/Nov/2022 00:11:22'!
 allButFirst: numberOfCharacters
 
 	^ self class
@@ -354,28 +354,28 @@ allButFirst: numberOfCharacters
 		report: report
 		skippingAllButFirst: numberOfCharacters ! !
 
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:08:49'!
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 2/Nov/2022 00:08:49'!
 asString
 
 	^ self displayStringOrText
 		allButFirst: numberOfCharactersToSkip! !
 
-!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 11/2/2022 00:03:19'!
+!CodeCoverageResultItem methodsFor: 'system primitives' stamp: 'NPM 2/Nov/2022 00:03:19'!
 doesNotUnderstand: aMessage
 
 	^ aMessage sendTo: item! !
 
-!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 11/2/2022 00:08:49'!
+!CodeCoverageResultItem methodsFor: 'copying' stamp: 'NPM 2/Nov/2022 00:08:49'!
 appendToString: aString
 
 	^ aString, (item allButFirst: numberOfCharactersToSkip)! !
 
-!CodeCoverageResultItem methodsFor: 'as yet unclassified' stamp: 'NPM 11/2/2022 00:22:10'!
+!CodeCoverageResultItem methodsFor: 'as yet unclassified' stamp: 'NPM 2/Nov/2022 00:22:10'!
 percentCovered
 
 	^ report percentCovered! !
 
-!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:10:12'!
+!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 2/Nov/2022 00:10:12'!
 for: anItem report: aCodeCoverageReport 
 	
 	^ self
@@ -383,7 +383,7 @@ for: anItem report: aCodeCoverageReport
 		report: aCodeCoverageReport
 		skippingAllButFirst: 0 ! !
 
-!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 00:09:47'!
+!CodeCoverageResultItem class methodsFor: 'instance creation' stamp: 'NPM 2/Nov/2022 00:09:47'!
 for: anItem report: aCodeCoverageReport  skippingAllButFirst: numberOfCharacters 
 	
 	^ self
@@ -392,7 +392,7 @@ for: anItem report: aCodeCoverageReport  skippingAllButFirst: numberOfCharacters
 		with: aCodeCoverageReport
 		skippingAllButFirst: numberOfCharacters! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:31:48'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/Nov/2022 08:31:48'!
 installCompiledMethodAnalizers
 	
 	self triggerInstallStartedEvent.
@@ -407,37 +407,37 @@ installCompiledMethodAnalizers
 	self triggerIntallFinishedEvent.
 	! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 9/10/2022 15:09:23'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 10/Sep/2022 15:09:23'!
 resetInstalledCompiledMethodAnalyzers
 
 	installedCompiledMethodAnalyzers := Set new.
 	coverageReportBuilders := Set new.! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 07:54:47'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/Nov/2022 07:54:47'!
 triggerInstallStartedEvent
 
 	^ self triggerEvent: #startInstallingCompiledMethodAnalyzers with: compiledMethodsToAnalyze size! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/11/2022 08:29:52'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/Nov/2022 08:29:52'!
 triggerIntallFinishedEvent
 
 	^ self triggerEvent: #endInstallingCompiledMethodAnalyzers! !
 
-!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 1/11/2021 21:15:02'!
+!CodeCoverageAnalyzer methodsFor: 'analyzing compiled methods' stamp: 'NPM 11/Jan/2021 21:15:02'!
 uninstallCompiledMethodAnalyzers
 	
 	compiledMethodCoverageAnalyzer uninstallAll: installedCompiledMethodAnalyzers.
 	
 	self resetInstalledCompiledMethodAnalyzers.! !
 
-!CodeCoverageAnalyzer methodsFor: 'assertions' stamp: 'NPM 1/16/2021 17:44:47'!
+!CodeCoverageAnalyzer methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 17:44:47'!
 assertReportsAreAvailable
 	
 	self
 		assert: running not
 		description: self class reportsAreNotAvailableWhileRunningErrorMessage! !
 
-!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 9/10/2022 15:09:30'!
+!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 10/Sep/2022 15:09:30'!
 generateReport
 	
 	| compiledMethodReports |
@@ -446,14 +446,14 @@ generateReport
 	report := CodeCoverageAnalyzerReport withAll: compiledMethodReports.
 	! !
 
-!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 1/20/2021 02:43:01'!
+!CodeCoverageAnalyzer methodsFor: 'code coverage report' stamp: 'NPM 20/Jan/2021 02:43:01'!
 report
 	
 	self assertReportsAreAvailable.
 	
 	^ report! !
 
-!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 1/16/2021 20:28:26'!
+!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 16/Jan/2021 20:28:26'!
 startTrackingCodeCoverage
 	
 	self ifRunning: [ ^ self ].
@@ -462,7 +462,7 @@ startTrackingCodeCoverage
 	
 	running := true.! !
 
-!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 9/12/2022 02:31:04'!
+!CodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 12/Sep/2022 02:31:04'!
 stopTrackingCodeCoverage
 	
 	self ifRunning: [
@@ -476,7 +476,7 @@ stopTrackingCodeCoverage
 	
 	! !
 
-!CodeCoverageAnalyzer methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 20:00:08'!
+!CodeCoverageAnalyzer methodsFor: 'evaluating' stamp: 'NPM 18/Jan/2021 20:00:08'!
 value: aBlock
 	
 	"Convenience method for collecting code coverage for compiledMethodsToAnalyze
@@ -490,7 +490,7 @@ value: aBlock
 	]
 	! !
 
-!CodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/7/2022 02:04:41'!
+!CodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022 02:04:41'!
 initializeToAnalyze: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory   
 	
 	compiledMethodsToAnalyze := compiledMethods.
@@ -501,29 +501,29 @@ initializeToAnalyze: compiledMethods with: aCompiledMethodCoverageAnalyzer creat
 	
 	self resetInstalledCompiledMethodAnalyzers.! !
 
-!CodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 16:22:58'!
+!CodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 10/Jan/2021 16:22:58'!
 ifRunning: aBlock
 	
 	running ifTrue: aBlock! !
 
-!CodeCoverageAnalyzer methodsFor: 'events - triggering' stamp: 'NPM 9/12/2022 02:30:20'!
+!CodeCoverageAnalyzer methodsFor: 'events - triggering' stamp: 'NPM 12/Sep/2022 02:30:20'!
 triggerStopEvent
 
 	self triggerEvent: #stop.! !
 
-!CodeCoverageAnalyzer methodsFor: 'events - registering' stamp: 'NPM 9/12/2022 02:29:38'!
+!CodeCoverageAnalyzer methodsFor: 'events - registering' stamp: 'NPM 12/Sep/2022 02:29:38'!
 onStopSend: aSelector to: anObject
 
 	self when: #stop send: aSelector to: anObject.! !
 
-!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 08:31:30'!
+!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022 08:31:30'!
 installCompiledMethodAnalyzer: compiledMethodToAnalyze 
 
 	self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
 	
 	^ compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self! !
 
-!CodeCoverageAnalyzer class methodsFor: 'code coverage tracking' stamp: 'NPM 1/11/2021 22:08:50'!
+!CodeCoverageAnalyzer class methodsFor: 'code coverage tracking' stamp: 'NPM 11/Jan/2021 22:08:50'!
 stopTrackingCoverageInAllInstances
 
 	"Stops tracking coverage in all of my instances.
@@ -534,27 +534,27 @@ stopTrackingCoverageInAllInstances
 	
 	self allInstancesDo: [ :codeCoverageAnalyzer | codeCoverageAnalyzer stopTrackingCodeCoverage ]! !
 
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:30:24'!
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 16/Jan/2021 17:30:24'!
 classWasNotAnalyzedErrorMessage
 	
 	^ 'Class was not analyzed'! !
 
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/9/2021 17:11:16'!
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 9/Jan/2021 17:11:16'!
 compiledMethodWasNotAnalyzedErrorMessage
 	
 	^ 'The compiled method was not requested to be analyzed'! !
 
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:42:41'!
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 16/Jan/2021 17:42:41'!
 reportsAreNotAvailableWhileRunningErrorMessage
 	
 	^ 'Code coverage reports are not available while code coverage analyzer is running'! !
 
-!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/16/2021 17:36:10'!
+!CodeCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 16/Jan/2021 17:36:10'!
 systemCategoryWasNotAnalyzedErrorMessage
 	
 	^ 'The requested system category was not analyzed'! !
 
-!CodeCoverageAnalyzer class methodsFor: 'evaluating' stamp: 'NPM 1/20/2021 03:38:07'!
+!CodeCoverageAnalyzer class methodsFor: 'evaluating' stamp: 'NPM 20/Jan/2021 03:38:07'!
 value: aBlock analyzingAll: compiledMethods 
 	
 	"Convenience method for analyzing code coverage of compiledMethods
@@ -569,14 +569,14 @@ value: aBlock analyzingAll: compiledMethods
 	to retrieve coverage reports from it."
 	^ analzer report! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 03:44:16'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 03:44:16'!
 toAnalyzeAll: compiledMethods 
 	
 	^ self
 		toAnalyzeAll: compiledMethods
 		creatingReportBuildersWith: DecisionConditionCoverageReportBuilder! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:10:17'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 02:10:17'!
 toAnalyzeAll: compiledMethods creatingReportBuildersWith: aReportBuilderFactory
 	
 	^ self
@@ -584,7 +584,7 @@ toAnalyzeAll: compiledMethods creatingReportBuildersWith: aReportBuilderFactory
 		with: CompiledMethodCoverageAnalyzer
 		creatingReportBuildersWith: aReportBuilderFactory! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:07:32'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 02:07:32'!
 toAnalyzeAll: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
 	
 	(self anyBelongToMySystemCategory: compiledMethods)
@@ -599,7 +599,7 @@ toAnalyzeAll: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingRepo
 		with: aCompiledMethodCoverageAnalyzer
 		creatingReportBuildersWith: aReportBuilderFactory! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:08:10'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 02:08:10'!
 toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
 
 	"To analyze methods in my own package (aka analyze instances of myself) I create a temporary copy of my whole package
@@ -636,7 +636,7 @@ toAnalyzeAllInMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer c
 		
 	! !
 
-!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 02:05:31'!
+!CodeCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 02:05:31'!
 toAnalyzeAllOutsideMyPackage: compiledMethods with: aCompiledMethodCoverageAnalyzer creatingReportBuildersWith: aReportBuilderFactory 
 
 	^ self
@@ -645,18 +645,18 @@ toAnalyzeAllOutsideMyPackage: compiledMethods with: aCompiledMethodCoverageAnaly
 		with: aCompiledMethodCoverageAnalyzer
 		creatingReportBuildersWith: aReportBuilderFactory! !
 
-!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 10/26/2022 02:33:31'!
+!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 26/Oct/2022 02:33:31'!
 anyBelongToMySystemCategory: compiledMethods
 
 	^ compiledMethods
 		anySatisfy: [ :compiledMethod | self belongsToMySystemCategory: compiledMethod ]! !
 
-!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 9/12/2022 02:22:35'!
+!CodeCoverageAnalyzer class methodsFor: 'testing' stamp: 'NPM 12/Sep/2022 02:22:35'!
 belongsToMySystemCategory: compiledMethod
 
 	^ compiledMethod methodClass category = self category! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 11/7/2022 01:24:19'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 7/Nov/2022 01:24:19'!
 for: aCompiledMethod codeCoverageInfoAt: aSourcePosition
 
 	^ reportsByCompiledMethod 
@@ -664,26 +664,26 @@ for: aCompiledMethod codeCoverageInfoAt: aSourcePosition
 			ifPresent:[ :report | report messageAt: aSourcePosition ]
 			ifAbsent:[ '' ].! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:16:45'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 19/Jan/2021 21:16:45'!
 mostCoveredCompiledMethodReport
 	
 	^ summaryReport mostCoveredReport! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:04:26'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 18/Jan/2021 21:04:26'!
 reportForClass: aClass
 
 	^ reportsByClass
 		at: aClass
 		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer classWasNotAnalyzedErrorMessage ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:17:39'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 18/Jan/2021 21:17:39'!
 reportForCompiledMethod: aCompiledMethod 
 	
 	^ reportsByCompiledMethod
 		at: aCompiledMethod 
 		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer compiledMethodWasNotAnalyzedErrorMessage ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:17:40'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 19/Jan/2021 21:17:40'!
 reportForCompiledMethod: aCompiledMethod ifAnalyzed: foundBlock ifNotAnalyzed: noneBlock
 
 	^ reportsByCompiledMethod
@@ -691,20 +691,20 @@ reportForCompiledMethod: aCompiledMethod ifAnalyzed: foundBlock ifNotAnalyzed: n
 		ifPresent: foundBlock
 		ifAbsent: noneBlock! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/19/2021 21:03:30'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 19/Jan/2021 21:03:30'!
 reportForMessageCategory: aMessageCategory inClass: aClass
 	
 	^ (reportsByClassAndMessageCategory at: aClass)
 		at: aMessageCategory! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 1/18/2021 21:03:34'!
+!CodeCoverageAnalyzerReport methodsFor: 'accesing' stamp: 'NPM 18/Jan/2021 21:03:34'!
 reportForSystemCategory: aSystemCategory
 	
 	^ reportsBySystemCategory
 		at: aSystemCategory
 		ifAbsent: [ AssertionFailure signal: CodeCoverageAnalyzer systemCategoryWasNotAnalyzedErrorMessage ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 21:21:28'!
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 18/Jan/2021 21:21:28'!
 indexReportsByClassAndMessageCategory: compiledMethodReports
 
 	reportsByClass := Dictionary new.
@@ -719,27 +719,27 @@ indexReportsByClassAndMessageCategory: compiledMethodReports
 			at: class
 			put: (self indexReportsByMessageCategory: compiledMethodReportss) ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 20:40:59'!
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 18/Jan/2021 20:40:59'!
 indexReportsByCompiledMethod: compiledMethodReports
 
 	reportsByCompiledMethod := compiledMethodReports
 		inject: IdentityDictionary new
 		into: [ :reportIndex :report | reportIndex at: report compiledMethod put: report; yourself ].! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/19/2021 21:21:43'!
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 19/Jan/2021 21:21:43'!
 indexReportsByMessageCategory: compiledMethodReports
 
 	^ (compiledMethodReports groupBy: [ :report | report messageCategory ])
 		collect: [ :reports | CodeCoverageReport toSummarize: reports ]
 		! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 1/18/2021 21:21:48'!
+!CodeCoverageAnalyzerReport methodsFor: 'indexing' stamp: 'NPM 18/Jan/2021 21:21:48'!
 indexReportsBySystemCategory: compiledMethodReports
 	
 	reportsBySystemCategory := (compiledMethodReports groupBy: [ :report | report systemCategory ])
 		collect: [ :reports | CodeCoverageReport toSummarize: reports ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'initialization' stamp: 'NPM 1/19/2021 21:16:16'!
+!CodeCoverageAnalyzerReport methodsFor: 'initialization' stamp: 'NPM 19/Jan/2021 21:16:16'!
 initializeWithAll: compiledMethodReports
 
 	summaryReport := CodeCoverageReport toSummarize: compiledMethodReports.
@@ -749,28 +749,28 @@ initializeWithAll: compiledMethodReports
 		indexReportsByClassAndMessageCategory: compiledMethodReports;
 		indexReportsBySystemCategory: compiledMethodReports! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'statistics' stamp: 'NPM 1/19/2021 21:16:15'!
+!CodeCoverageAnalyzerReport methodsFor: 'statistics' stamp: 'NPM 19/Jan/2021 21:16:15'!
 percentCovered
 	
 	^ summaryReport percentCovered ! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:46:52'!
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 20:46:52'!
 wasClassAnalyzed: aClass 
 	
 	^ reportsByClass includesKey: aClass! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 21:47:02'!
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 21:47:02'!
 wasClassOrMetaclassAnalyzed: aClassOrMetaclass
 
 	^ (self wasClassAnalyzed: aClassOrMetaclass theNonMetaClass) or: [
 		self wasClassAnalyzed: aClassOrMetaclass theMetaClass ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:50:47'!
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 20:50:47'!
 wasCompiledMethodAnalyzed: aCompiledMethod 
 	
 	^ reportsByCompiledMethod includesKey: aCompiledMethod! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:49:48'!
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 20:49:48'!
 wasMessageCategoryAnalyzed: aMessageCategory in: aClass 
 	
 	^ reportsByClassAndMessageCategory
@@ -778,30 +778,30 @@ wasMessageCategoryAnalyzed: aMessageCategory in: aClass
 		ifPresent: [ :classReports | classReports includesKey: aMessageCategory ]
 		ifAbsent: [ false ]! !
 
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 1/18/2021 20:44:59'!
+!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 20:44:59'!
 wasSystemCategoryAnalyzed: aSystemCategory
 
 	^ reportsBySystemCategory includesKey: aSystemCategory! !
 
-!CodeCoverageAnalyzerReport class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 20:31:24'!
+!CodeCoverageAnalyzerReport class methodsFor: 'instance creation' stamp: 'NPM 18/Jan/2021 20:31:24'!
 withAll: compiledMethodReports 
 	
 	^ self
 		new
 		initializeWithAll: compiledMethodReports! !
 
-!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 1/11/2021 18:48:17'!
+!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 11/Jan/2021 18:48:17'!
 coverageRatio
 
 	self subclassResponsibility! !
 
-!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 12:35:04'!
+!CodeCoverageReport methodsFor: 'statistics' stamp: 'NPM 14/Feb/2021 12:35:04'!
 percentCovered
 
 	^ (self coverageRatio * 100)
 		roundTo: 0.01! !
 
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/6/2022 12:21:54'!
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 6/Nov/2022 12:21:54'!
 for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
 	
 	^ CompiledMethodCoverageReport
@@ -810,46 +810,46 @@ for: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
 		with: coverageResults
 		messages: messagesBySourceRanges! !
 
-!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:51:58'!
+!CodeCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/Jan/2021 18:51:58'!
 toSummarize: codeCoverageReports 
 	
 	^ CodeCoverageReportSummary withAll: codeCoverageReports! !
 
-!CodeCoverageReportSummary methodsFor: 'initialization' stamp: 'NPM 1/11/2021 18:47:03'!
+!CodeCoverageReportSummary methodsFor: 'initialization' stamp: 'NPM 11/Jan/2021 18:47:03'!
 initializeWithAll: codeCoverageReports 
 
 	childReports := codeCoverageReports.! !
 
-!CodeCoverageReportSummary methodsFor: 'querying' stamp: 'NPM 1/19/2021 21:17:08'!
+!CodeCoverageReportSummary methodsFor: 'querying' stamp: 'NPM 19/Jan/2021 21:17:08'!
 mostCoveredReport
 	
 	^ childReports detectMax: [ :report | report percentCovered ]! !
 
-!CodeCoverageReportSummary methodsFor: 'statistics' stamp: 'NPM 1/11/2021 18:47:03'!
+!CodeCoverageReportSummary methodsFor: 'statistics' stamp: 'NPM 11/Jan/2021 18:47:03'!
 coverageRatio
 	
 	childReports ifEmpty: [ ^ 0 ].
 	
 	^ (childReports sum: [ :coverageReport | coverageReport coverageRatio ]) / childReports size! !
 
-!CodeCoverageReportSummary class methodsFor: 'instance creation' stamp: 'NPM 1/11/2021 18:12:26'!
+!CodeCoverageReportSummary class methodsFor: 'instance creation' stamp: 'NPM 11/Jan/2021 18:12:26'!
 withAll: anArray 
 	
 	^ self
 		new
 		initializeWithAll: anArray ! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 20:52:31'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 17/Jan/2021 20:52:31'!
 compiledMethod
 
 	^ compiledMethod! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:53'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 14/Feb/2021 13:09:53'!
 fullyCoveredSourceRanges
 
 	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio = 1 ]! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 11/7/2022 01:26:55'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022 01:26:55'!
 messageAt: aSourcePosition
 
 	^ messagesBySourceRanges associations
@@ -857,47 +857,47 @@ messageAt: aSourcePosition
 		ifFound: [ :association | association value ]
 		ifNone: [ ^ '' ]! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:21:43'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 19/Jan/2021 21:21:43'!
 messageCategory
 	
 	^ compiledMethod category! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:36'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 17/Jan/2021 18:10:36'!
 methodClass
 	
 	^ compiledMethod methodClass! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:08:38'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 14/Feb/2021 13:08:38'!
 partiallyCoveredSourceRanges
 	
 	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio |
 		0 < coverageRatio and: [ coverageRatio < 1 ]]! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:07:40'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 14/Feb/2021 13:07:40'!
 selectSourceRangesByCoverageRatio: aBlock
 	
 	^ coverageRatioBySourceRange associations
 		select: [ :sourceRangeAndCoverageRatio | aBlock value: sourceRangeAndCoverageRatio value ]
 		thenCollect: [ :sourceRangeAndCoverageRatio | sourceRangeAndCoverageRatio key ]! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/17/2021 18:10:51'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 17/Jan/2021 18:10:51'!
 selector
 	
 	^ compiledMethod selector! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 1/19/2021 21:31:23'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 19/Jan/2021 21:31:23'!
 systemCategory
 	
 	^ compiledMethod
 		methodClass
 		category ! !
 
-!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 2/14/2021 13:09:46'!
+!CompiledMethodCoverageReport methodsFor: 'accessing' stamp: 'NPM 14/Feb/2021 13:09:46'!
 uncoveredSourceRanges
 	
 	^ self selectSourceRangesByCoverageRatio: [ :coverageRatio | coverageRatio isZero ]! !
 
-!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 11/7/2022 01:20:28'!
+!CompiledMethodCoverageReport methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022 01:20:28'!
 initializeFor: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
 
 	compiledMethod := aCompiledMethod.
@@ -905,7 +905,7 @@ initializeFor: aCompiledMethod executed: aBoolean with: coverageResults messages
 	coverageRatioBySourceRange := coverageResults.
 	messagesBySourceRanges := messages.! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:14:00'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 14/Feb/2021 13:14:00'!
 coverageRatio
 	
 	compiledMethodWasExecuted ifFalse: [ ^ 0 ].
@@ -914,27 +914,27 @@ coverageRatio
 
 	^ (coverageRatioBySourceRange values sum) / coverageRatioBySourceRange size! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:13:23'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 14/Feb/2021 13:13:23'!
 coverageRatioOf: aSourceRange
 
 	^ coverageRatioBySourceRange at: aSourceRange! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:10:50'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 14/Feb/2021 13:10:50'!
 numberOfSourceRanges
 	
 	^ coverageRatioBySourceRange size! !
 
-!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 2/14/2021 13:05:11'!
+!CompiledMethodCoverageReport methodsFor: 'statistics' stamp: 'NPM 14/Feb/2021 13:05:11'!
 totalCoveredSourceRanges
 	
 	^ coverageRatioBySourceRange size - self uncoveredSourceRanges size! !
 
-!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 1/16/2021 20:09:07'!
+!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 16/Jan/2021 20:09:07'!
 isFor: aCompiledMethod 
 	
 	^ compiledMethod == aCompiledMethod ! !
 
-!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 01:22:40'!
+!CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 01:22:40'!
 for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
 
 	^ self
@@ -945,7 +945,7 @@ for: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
 		messages: messagesBySourceRanges
 		! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 11/4/2022 02:44:55'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 4/Nov/2022 02:44:55'!
 initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 
 	originalCompiledMethod := aCompiledMethod.
@@ -956,7 +956,7 @@ initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCode
 	methodClass := originalCompiledMethod methodClass.
 ! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:43:51'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:43:51'!
 compileTracedMethod
 
 	"Compilation of the traced version of originalCompiledMethod can fail if the new source code
@@ -984,24 +984,24 @@ compileTracedMethod
 	^ tracedCompiledMethod
 ! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:29:45'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:29:45'!
 decrementInstallCount
 
 	self isInstalled
 		ifTrue: [ installCount := installCount - 1 ]! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:23:12'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:23:12'!
 ifShouldBeUninstalled: aBlock
 
 	installCount = 0
 		ifTrue: aBlock ! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:30:03'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:30:03'!
 incrementInstallCount
 
 	installCount _ installCount + 1! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:39:54'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:39:54'!
 install
 	
 	"Replace the original compiled method with myself to intercept its execution".
@@ -1011,30 +1011,30 @@ install
 		
 	self incrementInstallCount.! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:44:37'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:44:37'!
 installCompiledMethod: aCompiledMethod
 	
 	methodClass
 		addSelectorSilently: aCompiledMethod selector
 		withMethod: aCompiledMethod! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:40:27'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:40:27'!
 installOriginalMethod
 
 	self installCompiledMethod: originalCompiledMethod! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:41:33'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:41:33'!
 installTracedCompiledMethod
 	
 	self installCompiledMethod: self compileTracedMethod
 ! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:14:26'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:14:26'!
 isInstalled
 	
 	^ installCount > 0! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 11/4/2022 02:39:29'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'installing & uninstalling' stamp: 'NPM 4/Nov/2022 02:39:29'!
 uninstall
 	
 	"Restore the original compiled method"
@@ -1047,7 +1047,7 @@ uninstall
 	
 	! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 11/7/2022 02:03:51'!
+!CompiledMethodCoverageAnalyzer methodsFor: 'reporting code coverage' stamp: 'NPM 7/Nov/2022 02:03:51'!
 registerNewCoverageReportBuilderUsing: aReportBuilderFactory
 
 	| newReportBuilder |
@@ -1059,7 +1059,7 @@ registerNewCoverageReportBuilderUsing: aReportBuilderFactory
 		
 	^ newReportBuilder! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/4/2022 01:59:45'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 4/Nov/2022 01:59:45'!
 for: aCompiledMethod using: aCodeCoverageAnalyzer
 	
 	"Create an instance of myself to analyze code coverage of aCompiledMethod.
@@ -1086,7 +1086,7 @@ for: aCompiledMethod using: aCodeCoverageAnalyzer
 		using: aCodeCoverageAnalyzer
 		generatingSourceCodeWith: (CodeCoverageSourceCodeGenerator valueFor: aCompiledMethod)! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 11/4/2022 02:37:04'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 4/Nov/2022 02:37:04'!
 withCompiledMethodAnayzerFor: aCompiledMethod do: aBlockClosure 
 	
 	| currentCompiledMethod |
@@ -1095,14 +1095,14 @@ withCompiledMethodAnayzerFor: aCompiledMethod do: aBlockClosure
 
 	currentCompiledMethod withCodeCoverageAnalyzerDo: aBlockClosure! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:46:35'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 10/Jan/2021 15:46:35'!
 installOn: aCompiledMethod using: aCodeCoverageAnalyzer
 
 	"Convenience method to create an instance of myself and install it in one-shot."
 	
 	^ (self for: aCompiledMethod using: aCodeCoverageAnalyzer) install! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:48:44'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 10/Jan/2021 15:48:44'!
 uninstallAll: compiledMethodAnalyzers
 
 	"Convenience method to uninstall all compiledMethodAnalyzers"
@@ -1110,7 +1110,7 @@ uninstallAll: compiledMethodAnalyzers
 	compiledMethodAnalyzers do: [ :compiledMethodAnalyzer | compiledMethodAnalyzer uninstall ]
 ! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 1/10/2021 15:48:21'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 10/Jan/2021 15:48:21'!
 uninstallAllInstances
 	
 	"Uninstall all existing instances of myself.
@@ -1121,19 +1121,19 @@ uninstallAllInstances
 	
 	self uninstallAll: self allInstances! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:48:57'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'assertions' stamp: 'NPM 10/Jan/2021 15:48:57'!
 assertIsCompiledMethod: aCompiledMethod 
 	
 	self
 		assert: aCompiledMethod class isCompiledMethodClass
 		description: [ self shouldOnlyBeCreatedForCompiledMethodsErrorMessage ].! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 1/9/2021 21:29:18'!
+!CompiledMethodCoverageAnalyzer class methodsFor: 'error messages' stamp: 'NPM 9/Jan/2021 21:29:18'!
 shouldOnlyBeCreatedForCompiledMethodsErrorMessage
 	
 	^ self name, ' should only be created for compiled methods'.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:28:47'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:28:47'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 
 	"Register that anObject covered aSourceRange and its declaration at declarationSourceRange.
@@ -1141,14 +1141,14 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 	
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:24:56'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:24:56'!
 coverAll: sourceRanges
 
 	"Register that sourceRanges were covered."
 
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/4/2022 00:05:13'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 4/Nov/2022 00:05:13'!
 coverAll: sourceRanges by: anObject 
 
 	"Register that anObject covered sourceRanges.
@@ -1156,7 +1156,7 @@ coverAll: sourceRanges by: anObject
 	
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:29:01'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:29:01'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 
 	"Register that anObject covered sourceRanges.
@@ -1164,7 +1164,7 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:25'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 6/Nov/2022 03:07:25'!
 coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver   
 	
 	"Register that the evaluation of aBlock covered sourceRanges.
@@ -1188,17 +1188,17 @@ coverAll: sourceRanges evaluating: aBlock thatSends: aSelector to: aReceiver
 			to: aReceiver
 		] ! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:07:43'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 6/Nov/2022 03:07:43'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	self subclassResponsibility ! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 5/Nov/2022 20:33:47'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
 
 	self subclassResponsibility ! !
 
-!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:27:19'!
+!CompiledMethodCoverageTracker methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:27:19'!
 markAsExecuted
 
 	"Register that the compiled method was executed.
@@ -1207,49 +1207,49 @@ markAsExecuted
 	
 	self subclassResponsibility.! !
 
-!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 9/10/2022 15:36:57'!
+!CompiledMethodCoverageTracker class methodsFor: 'instance creation' stamp: 'NPM 10/Sep/2022 15:36:57'!
 notifier 
 
 	^ CompiledMethodCoverageNotifier new! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 9/10/2022 15:36:07'!
+!CompiledMethodCoverageNotifier methodsFor: 'as yet unclassified' stamp: 'NPM 10/Sep/2022 15:36:07'!
 sendCoverageNotificationsTo: aCoverageTrackerToBeNotified
 
 	coverageTrackers add: aCoverageTrackerToBeNotified ! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 9/10/2022 15:36:20'!
+!CompiledMethodCoverageNotifier methodsFor: 'initialization' stamp: 'NPM 10/Sep/2022 15:36:20'!
 initialize
 	
 	coverageTrackers := OrderedCollection new.! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:15:06'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:15:06'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 
 	coverageTrackers do: [ :coverageTracker | coverageTracker cover: aSourceRange declaredAt: declarationSourceRange by: anObject ].
 	
 	^ anObject! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:21:23'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:21:23'!
 coverAll: sourceRanges
 
 	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges ].
 	! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:23:31'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:23:31'!
 coverAll: anArray by: anObject 
 
 	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: anArray by: anObject ].
 	
 	^ anObject! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:13:06'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:13:06'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 
 	coverageTrackers do: [ :coverageTracker | coverageTracker coverAll: sourceRanges byLiteralOrPseudoVariable: anObject ].
 	
 	^ anObject! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:31'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 6/Nov/2022 03:08:31'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	coverageTrackers do: [ :coverageTracker |
@@ -1258,7 +1258,7 @@ coverAll: sourceRanges fromSending: aSelector to: aReceiver
 			fromSending: aSelector
 			to: aReceiver ] ! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:33:47'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 5/Nov/2022 20:33:47'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
 	
 	coverageTrackers do: [ :coverageTracker | 
@@ -1268,12 +1268,12 @@ coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result
 			to: anObject
 			withResult: result  ]! !
 
-!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:08:40'!
+!CompiledMethodCoverageNotifier methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:08:40'!
 markAsExecuted
 	
 	coverageTrackers do: [ :coverageTracker | coverageTracker markAsExecuted ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:11'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 17:26:11'!
 collectWithUsages: sourceRanges
 	
 	^ sourceRanges
@@ -1284,36 +1284,36 @@ collectWithUsages: sourceRanges
 				addAll: (self usagesOf: sourceRange);
 				yourself ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:37'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 17:24:37'!
 coveredSourceRanges
 	
 	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:26:27'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 17:26:27'!
 fulllyCoveredNonBooleanSourceRanges
 	
 	^ self collectWithUsages: coveredNonBooleanSourceRanges! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 12:32:12'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 12:32:12'!
 fullyCoveredBooleanSourceRanges
 	
 	"A fully-covered boolean source range is one that referenced both true and false."
 	
 	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 2 ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 13:13:10'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 13:13:10'!
 fullyCoveredSourceRanges
 
 	^ self fulllyCoveredNonBooleanSourceRanges, self fullyCoveredBooleanSourceRanges! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:23:30'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 17:23:30'!
 partiallyCoveredBooleanRanges
 	
 	"A partially-covered boolean source range is one that referenced either true or false."
 	
 	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 1 ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:27:43'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 17:27:43'!
 selectBooleanSourceRanges: aCondition
 	
 	"Select the boolean source range declarations passing the covered boolean values referenced by them to aCondition.
@@ -1326,19 +1326,19 @@ selectBooleanSourceRanges: aCondition
 	
 	^ self collectWithUsages: selectedDeclarations! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/15/2021 17:24:12'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 15/Feb/2021 17:24:12'!
 uncoveredSourceRanges
 
 	^ analyzedSourceRanges difference: self coveredSourceRanges! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 2/14/2021 20:25:52'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 14/Feb/2021 20:25:52'!
 usagesOf: aDeclaration
 
 	^ usagesByDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:22:04'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 6/Nov/2022 12:22:04'!
 value
 
 	^ CodeCoverageReport
@@ -1347,7 +1347,7 @@ value
 		with: self consolidateCoverageResults
 		messages: self messages.! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/6/2022 02:54:29'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 6/Nov/2022 02:54:29'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
@@ -1358,7 +1358,7 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	compiledMethodWasExecuted := false.
 	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:20:00'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:20:00'!
 consolidateCoverageResults
 	
 	| coverageRatioBySourceRange |
@@ -1375,7 +1375,7 @@ consolidateCoverageResults
 	
 	^ coverageRatioBySourceRange! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/30/2022 02:10:01'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 30/Aug/2022 02:10:01'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 
 	"Register thatanObject covered aSourceRange and its declaration at declarationSourceRange."
@@ -1393,12 +1393,12 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 			
 	^ anObject! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:22:17'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:22:17'!
 coverAll: sourceRanges
 
 	self coverAsNonBooleanAll: sourceRanges! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/10/2022 00:30:50'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 10/Sep/2022 00:30:50'!
 coverAll: sourceRanges by: anObject 
 	
 	(anObject isKindOf: Boolean)
@@ -1407,7 +1407,7 @@ coverAll: sourceRanges by: anObject
 		
 	^ anObject! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/5/2022 02:38:10'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 5/Sep/2022 02:38:10'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 
 	"Register that anObject covered sourceRanges"
@@ -1418,7 +1418,7 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 	
 	^ anObject! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 03:08:49'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 6/Nov/2022 03:08:49'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	(self isDecisionSelector: aSelector )
@@ -1429,7 +1429,7 @@ coverAll: sourceRanges fromSending: aSelector to: aReceiver
 		ifFalse: [
 			self coverAll: sourceRanges  ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/6/2022 02:53:47'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 6/Nov/2022 02:53:47'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
 
 	(self isDecisionSelector: aSelector )
@@ -1440,7 +1440,7 @@ coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result
 		ifFalse: [
 			self coverAll: sourceRanges by: result ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:16:05'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:16:05'!
 coverAsNonBoolean: aSourceRange
 
 	"Consider aSourceRange as a covered non-boolean source range.
@@ -1452,12 +1452,12 @@ coverAsNonBoolean: aSourceRange
 		
 	coveredNonBooleanSourceRanges add: aSourceRange.! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:19:29'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 16:19:29'!
 coverAsNonBooleanAll: sourceRanges
 	
 	sourceRanges do: [ :sourceRange | self coverAsNonBoolean: sourceRange ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/5/2022 20:55:56'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 5/Nov/2022 20:55:56'!
 coverDecisionMessageSendTo: aReceiver atAll: sourceRanges 
 	
 	coveredNonBooleanSourceRanges
@@ -1467,7 +1467,7 @@ coverDecisionMessageSendTo: aReceiver atAll: sourceRanges
 		registerBoolean: aReceiver
 		declaredAtAll: sourceRanges ! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:00:53'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:00:53'!
 coverNonBooleanUsage: usageSourceRange of: declarationSourceRange 
 	
 	"Consider both usageSourceRange and declarationSourceRange as covered.
@@ -1480,12 +1480,12 @@ coverNonBooleanUsage: usageSourceRange of: declarationSourceRange
 		registerUsage: usageSourceRange of: declarationSourceRange;
 		coverAsNonBoolean: declarationSourceRange.! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/31/2022 01:45:45'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 31/Aug/2022 01:45:45'!
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 01:31:28'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022 01:31:28'!
 messages
 	
 	^ booleanValuesByDeclaration
@@ -1498,7 +1498,7 @@ messages
 			'Code Coverge: missing test case: ', missingTestCase asString, '. Only exercised with ',
 			exercisedTestCase asString, '.' ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:22:34'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:22:34'!
 registerBoolean: aValue declaredAt: declarationSourceRange
 
 	"Consider declarationSourceRange as a covered boolean source range."
@@ -1512,7 +1512,7 @@ registerBoolean: aValue declaredAt: declarationSourceRange
 	(booleanValuesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
 		add: aValue! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:08:31'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:08:31'!
 registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
 
 	"Consider declarationSourceRanges as covered boolean source ranges.
@@ -1526,7 +1526,7 @@ registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
 	declarationSourceRanges do: [ :declarationSourceRange |
 		self registerBoolean: aBoolean declaredAt: declarationSourceRange ]! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:12:48'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:12:48'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
 	
 	self
@@ -1536,13 +1536,13 @@ registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSource
 	
 	! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 16:10:42'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 16:10:42'!
 registerUsage: aSourceRange of: declarationSourceRange
 
 	(usagesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
 		add: aSourceRange! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 2/15/2021 17:17:06'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 15/Feb/2021 17:17:06'!
 transformToNonBoolean: declarationSourceRange 
 	
 	"Discard boolean values related to declarationSourceRange"
@@ -1559,12 +1559,12 @@ transformToNonBoolean: declarationSourceRange
 	self coverAsNonBooleanAll: (self usagesOf: declarationSourceRange)
 	! !
 
-!DecisionConditionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/6/2022 01:59:03'!
+!DecisionConditionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 6/Nov/2022 01:59:03'!
 isDecisionSelector: aSelector  
 	
 	^ decisionSelectors includes: aSelector! !
 
-!DecisionConditionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 2/6/2021 17:08:05'!
+!DecisionConditionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 6/Feb/2021 17:08:05'!
 for: aCompiledMethod withSourceRanges: sourceRanges
 	
 	^ self
@@ -1572,56 +1572,56 @@ for: aCompiledMethod withSourceRanges: sourceRanges
 		initializeFor: aCompiledMethod
 		with: sourceRanges! !
 
-!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/16/2021 21:01:44'!
+!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 16/Jan/2021 21:01:44'!
 m1
 
 	^ #foo! !
 
-!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:59:27'!
+!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 19:59:27'!
 raiseError
 	
 	self error: 'oops'! !
 
-!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:37:27'!
+!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 19:37:27'!
 m2! !
 
-!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 1/11/2021 19:42:59'!
+!CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 19:42:59'!
 m3! !
 
-!FakeCodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 1/10/2021 13:25:35'!
+!FakeCodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 10/Jan/2021 13:25:35'!
 enable
 	
 	enabled := true! !
 
-!FakeCodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 1/16/2021 21:26:08'!
+!FakeCodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 16/Jan/2021 21:26:08'!
 initialize
 
 	super initialize.
 	
 	enabled := false.! !
 
-!FakeCodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 1/10/2021 16:25:26'!
+!FakeCodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 10/Jan/2021 16:25:26'!
 ifRunning: aBlock 
 	
 	enabled ifTrue: aBlock! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 11/11/2022 15:36:34'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 11/Nov/2022 15:36:34'!
 value
 
 	^ CodeCoverageAnalyzer toAnalyzeAll: self compiledMethodsToAnalyze! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'initialization' stamp: 'NPM 1/18/2021 01:49:18'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'initialization' stamp: 'NPM 18/Jan/2021 01:49:18'!
 initializeFrom: aTestSuite querying: aSystemOrganizer  
 
 	testSuite := aTestSuite.
 	systemOrganizer := aSystemOrganizer. ! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:46:55'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 18/Jan/2021 01:46:55'!
 classesToAnalyze
 	
 	^ self targetClasses difference: self testCaseClasses! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:47:03'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 29/Jan/2021 17:47:03'!
 compiledMethodsToAnalyze
 	
 	"NPM: I use an IdentitySet to hold the compiled methods to analyze because the equality of compiled methods
@@ -1635,13 +1635,13 @@ compiledMethodsToAnalyze
 				addAll: classToAnalyze theMetaClass methodDict values;
 				yourself ]! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:32'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 18/Jan/2021 01:54:32'!
 rootSystemCategories
 
 	^ (self testSystemCategories collect: [ :systemCategory | self rootSystemCategoryOf: systemCategory ])
 		asSet! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:54:54'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 18/Jan/2021 01:54:54'!
 rootSystemCategoryOf: aSystemCategory
 
 	"I consider the root prefix of a system category as the first name before the token, if any.
@@ -1654,7 +1654,7 @@ rootSystemCategoryOf: aSystemCategory
 
 	^ (aSystemCategory findTokens: $-) first! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/29/2021 17:46:34'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 29/Jan/2021 17:46:34'!
 targetClasses
 	
 	^ self targetSystemCategories
@@ -1664,7 +1664,7 @@ targetClasses
 				addAll: (systemOrganizer classesAt: systemCategory);
 				yourself ]! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'HAW 8/20/2022 19:08:08'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'HAW 20/Aug/2022 19:08:08'!
 targetSystemCategories
 
 	^ self rootSystemCategories
@@ -1674,23 +1674,23 @@ targetSystemCategories
 				addAll: (systemOrganizer withSubCategoriesOf: systemCategory);
 				yourself ]! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/18/2021 01:28:23'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 18/Jan/2021 01:28:23'!
 testCaseClasses
 	
 	^ testSuite tests collect: [ :testCase | testCase class ]! !
 
-!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 1/19/2021 21:55:08'!
+!CodeCoverageAnalyzerBuilder methodsFor: 'querying system organization' stamp: 'NPM 19/Jan/2021 21:55:08'!
 testSystemCategories
 	
 	^ (self testCaseClasses collect: [ :testCaseClass | testCaseClass category ])
 		asSet! !
 
-!CodeCoverageAnalyzerBuilder class methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 01:44:17'!
+!CodeCoverageAnalyzerBuilder class methodsFor: 'evaluating' stamp: 'NPM 18/Jan/2021 01:44:17'!
 valueFrom: aTestSuite 
 	
 	^ (self from: aTestSuite) value! !
 
-!CodeCoverageAnalyzerBuilder class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 01:50:00'!
+!CodeCoverageAnalyzerBuilder class methodsFor: 'instance creation' stamp: 'NPM 18/Jan/2021 01:50:00'!
 from: aTestSuite 
 	
 	^ self
@@ -1698,19 +1698,19 @@ from: aTestSuite
 		initializeFrom: aTestSuite
 		querying: SystemOrganization ! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:31:12'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 31/Dec/2024 18:31:12'!
 classListMenuSpec
 	
 	^#(
 		#(123		'Run Tests with Coverage' 				nil 	model 			runClassTestsWithCodeCoverage 									weatherFewCloudsIcon)
 	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/28/2025 21:01:59'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 28/Apr/2025 21:01:59'!
 classListMenuSpecSend
 
 	^ MessageSend receiver: self selector: #classListMenuSpec! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/29/2025 08:10:35'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 29/Apr/2025 08:10:35'!
 menuAndShortcutsSpecs
 
 	^{	{ #systemCatListMenuSpec. self systemCategoriesListMenuSpecSend }.
@@ -1718,31 +1718,31 @@ menuAndShortcutsSpecs
 		{ #methodCategoriesListMenuSpec. self methodCategoriesListMenuSpecSend }.
 		{ #messageListMenuSpec. self messageListMenuSpecSend }}! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:36:07'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 31/Dec/2024 18:36:07'!
 messageListMenuSpec
 	
 	^#(
 		#(75		'Run Tests with Coverage' 				nil 	model 			runMethodTestWithCodeCoverage 									weatherFewCloudsIcon)
 	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/28/2025 21:02:27'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 28/Apr/2025 21:02:27'!
 messageListMenuSpecSend
 
 	^ MessageSend receiver: self selector: #messageListMenuSpec! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 12/31/2024 18:34:21'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 31/Dec/2024 18:34:21'!
 methodCategoriesListMenuSpec
 	
 	^#(
 		#(145		'Run Tests with Coverage' 				nil 	model 			runMessageCategoryTestsWithCodeCoverage 									weatherFewCloudsIcon)
 	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/28/2025 21:02:15'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 28/Apr/2025 21:02:15'!
 methodCategoriesListMenuSpecSend
 
 	^ MessageSend receiver: self selector: #methodCategoriesListMenuSpec! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/29/2025 08:17:48'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 29/Apr/2025 08:17:48'!
 systemCatListMenuSpec
 	
 	^#(
@@ -1750,38 +1750,38 @@ systemCatListMenuSpec
 		#(250		'Run Package Tests with Coverage' 									nil 	model 			runPackageTestsWithCodeCoverage 												weatherFewCloudsIcon)
 	)! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 4/29/2025 08:17:48'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 29/Apr/2025 08:17:48'!
 systemCategoriesListMenuSpecSend
 
 	^ MessageSend receiver: self selector: #systemCatListMenuSpec! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 4/28/2025 21:13:16'!
+!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 28/Apr/2025 21:13:16'!
 initialize
 
 	BrowserWindow registerAll: self menuAndShortcutsSpecs! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 4/28/2025 21:13:26'!
+!CodeCoverageBrowserMenues class methodsFor: 'initialization' stamp: 'HAW 28/Apr/2025 21:13:26'!
 unload
 
 	BrowserWindow unregisterAll: self menuAndShortcutsSpecs! !
 
-!CodeCoverageTextStylerFactory methodsFor: 'initialization' stamp: 'NPM 1/18/2021 17:46:25'!
+!CodeCoverageTextStylerFactory methodsFor: 'initialization' stamp: 'NPM 18/Jan/2021 17:46:25'!
 initializeWith: aCodeCoverageReport 
 
 	report := aCodeCoverageReport.! !
 
-!CodeCoverageTextStylerFactory methodsFor: 'factory methods' stamp: 'NPM 1/18/2021 18:34:38'!
+!CodeCoverageTextStylerFactory methodsFor: 'factory methods' stamp: 'NPM 18/Jan/2021 18:34:38'!
 new
 	
 	^ CodeCoverageTextStyler highlightingCoveredCodeFrom: report! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'assertions' stamp: 'NPM 12/22/2020 20:17:25'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'assertions' stamp: 'NPM 22/Dec/2020 20:17:25'!
 denyIsOptimized: aMessageNode
 
 	aMessageNode isOptimized
 		ifTrue: [ self shouldNotHappenBecause: 'message nodes are unoptimized when creating my instances' ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 11/16/2022 01:48:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'evaluating' stamp: 'NPM 16/Nov/2022 01:48:00'!
 value
 
 	"Add tracing to methodNode to generate its traced source code.
@@ -1796,7 +1796,7 @@ value
 	
 	tracedSourceCode := methodNode sourceText.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 9/10/2022 14:46:16'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 10/Sep/2022 14:46:16'!
 initializeCoverageTrackerLiteralName
 
 	"Generate a unique name for the literal that will hold a reference to the active CodeCoverageTracker instance when
@@ -1806,7 +1806,7 @@ initializeCoverageTrackerLiteralName
 	coverageTrackerLiteralName := ('_coverageTracker', Time millisecondClockValue asString, '_') asSymbol.
 	self assert: (methodNode sourceText includesSubString: coverageTrackerLiteralName) not.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 11/17/2022 00:46:51'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'initialization' stamp: 'NPM 17/Nov/2022 00:46:51'!
 initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges  
 
 	methodNode := aMethodNode.
@@ -1823,7 +1823,7 @@ initializeToTrace: aMethodNode with: aCollectionOfRawSourceRanges
 	"Used to uniquely assign temporary variable names for message receivers"
 	receiverTempCount := 0.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:27:14'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 28/Jan/2021 21:27:14'!
 addDeclarationSourceRangeOf: aParseNode to: sourceRanges
 
 	declarationSourceRangeByParseNode
@@ -1831,7 +1831,7 @@ addDeclarationSourceRangeOf: aParseNode to: sourceRanges
 		ifPresent: [ :declarationSourceRange | sourceRanges add: declarationSourceRange ]
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:31:05'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 31/Oct/2022 23:31:05'!
 addParseNodeToTrackExecutionOf: aMethodNode 
 	
 	"Add an extra parse node at the start of aMethodNode that, when compiled and executed, will register that aMethodNode was executed.
@@ -1842,12 +1842,12 @@ addParseNodeToTrackExecutionOf: aMethodNode
 		addFirst: self parseNodeToTrackMethodExecution.
 ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/3/2021 17:14:05'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 3/Jan/2021 17:14:05'!
 addTracingToAll: parseNodes 
 	
 	^ parseNodes collect: [ :parsenode | parsenode accept: self ]! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/11/2021 21:31:07'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/Jan/2021 21:31:07'!
 consumeNextSourceRangeFor: aParseNode
 
 	"Retrieve the next source code interval for aParseNode and remove it from rawSourceRanges.
@@ -1873,7 +1873,7 @@ consumeNextSourceRangeFor: aParseNode
 	
 ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/9/2021 16:13:35'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/Jan/2021 16:13:35'!
 parse: sourceCode
 
 	"Convenience method for parsing source code in the context of methodNode"
@@ -1882,7 +1882,7 @@ parse: sourceCode
 		parse: sourceCode
 		class: methodNode methodClass! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 9/5/2022 03:19:55'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 5/Sep/2022 03:19:55'!
 parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode whenExecuting: aParseNode
 
 	| declarationSourceRange usageSourceRange |
@@ -1906,7 +1906,7 @@ parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode whenExecuting: aPar
 	
 	! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:32:30'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 31/Oct/2022 23:32:30'!
 parseNodeForRange: aSourceRange
 
 	^ decompilerConstructor
@@ -1914,7 +1914,7 @@ parseNodeForRange: aSourceRange
 		selector: (encoder encodeSelector: #to:)
 		arguments: { encoder encodeLiteral: aSourceRange last }! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:33:20'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 31/Oct/2022 23:33:20'!
 parseNodeForRanges: sourceRanges
 
 	| parseNodesForRanges |
@@ -1922,7 +1922,7 @@ parseNodeForRanges: sourceRanges
 	
 	^ decompilerConstructor codeBrace: parseNodesForRanges! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:14:36'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/Nov/2022 00:14:36'!
 parseNodeToCover: aParseNode 
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
@@ -1940,7 +1940,7 @@ parseNodeToCover: aParseNode
 			aParseNode
 		}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:14:45'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/Nov/2022 00:14:45'!
 parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf: aParseNode
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered aSourceRange
@@ -1960,7 +1960,7 @@ parseNodeToCover: aSourceRange declaredAt: aDeclarationSourceRange withResultOf:
 		}
 		! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/17/2022 01:22:11'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 17/Nov/2022 01:22:11'!
 parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 
 	"Generate a parse node that, when compiled and executed, will register that aMessageNode covered sourceRanges
@@ -2077,7 +2077,7 @@ parseNodeToCoverAll: sourceRanges whenExecutingMessageNode: aMessageNode
 		selector: (encoder encodeSelector: #value)
 		arguments: {}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/31/2022 23:42:04'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 31/Oct/2022 23:42:04'!
 parseNodeToCoverLiteralOrPseudoVariable: aParseNode 
 
 	"Generate a parse node that, when compiled and executed, will register that aParseNode covered sourceRanges."
@@ -2095,7 +2095,7 @@ parseNodeToCoverLiteralOrPseudoVariable: aParseNode
 			aParseNode
 		}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 10/30/2021 17:38:25'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 30/Oct/2021 17:38:25'!
 parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver 
 
 	"Add tracing to message nodes.
@@ -2116,14 +2116,14 @@ parseNodeToCoverMessageSend: aMessageNode includingReceiver: includeReceiver
 		parseNodeToCoverAll: aMessageNode keywordRanges 
 		whenExecutingMessageNode: aMessageNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:15:39'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/Nov/2022 00:15:39'!
 parseNodeToSendToCodeCoverageTracker: aSelector
 
 	^ self
 		parseNodeToSendToCodeCoverageTracker: aSelector
 		withAll: {}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:15:21'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/Nov/2022 00:15:21'!
 parseNodeToSendToCodeCoverageTracker: aSelector withAll: arguments
 
 	^ decompilerConstructor
@@ -2131,12 +2131,12 @@ parseNodeToSendToCodeCoverageTracker: aSelector withAll: arguments
 			selector: (encoder encodeSelector: aSelector)
 			arguments: arguments! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 11/1/2022 00:15:39'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/Nov/2022 00:15:39'!
 parseNodeToTrackMethodExecution
 
 	^ self parseNodeToSendToCodeCoverageTracker: #markAsExecuted! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 2/16/2021 20:37:07'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 16/Feb/2021 20:37:07'!
 register: aSourceRange asDeclarationOf: aParseNode
 
 	"Register the source range where aParseNode is declared"
@@ -2147,14 +2147,14 @@ register: aSourceRange asDeclarationOf: aParseNode
 		
 	tracedSourceRanges add: aSourceRange.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/29/2021 02:12:06'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 29/Jan/2021 02:12:06'!
 registerDeclarationSourceRangeOf: aParseNode
 
 	self
 		register: (self consumeNextSourceRangeFor: aParseNode)
 		asDeclarationOf: aParseNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 1/28/2021 21:22:34'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'parse nodes generation' stamp: 'NPM 28/Jan/2021 21:22:34'!
 sourceRangesToCover: aParseNode
 
 	| sourceRangesToCover |
@@ -2167,22 +2167,22 @@ sourceRangesToCover: aParseNode
 
 	^ sourceRangesToCover! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 9/10/2022 14:44:31'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 10/Sep/2022 14:44:31'!
 coverageTrackerLiteralName
 	
 	^ coverageTrackerLiteralName ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 2/1/2021 22:39:50'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 1/Feb/2021 22:39:50'!
 tracedSourceCode
 	
 	^ tracedSourceCode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 1/19/2021 18:13:17'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'public - accessing' stamp: 'NPM 19/Jan/2021 18:13:17'!
 tracedSourceRanges
 
 	^ tracedSourceRanges! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:48:21'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:48:21'!
 visitAssignmentNode: anAssignmentNode
 
 	"Add tracing to assignment nodes.
@@ -2206,7 +2206,7 @@ visitAssignmentNode: anAssignmentNode
 		parseNodeCoveringNodeWithDeclaration: anAssignmentNode variable
 		whenExecuting: anAssignmentNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:29:55'!
 visitBacktickNode: aBacktickNode
  
 	"Add tracing to backtick nodes.
@@ -2220,7 +2220,7 @@ visitBacktickNode: aBacktickNode
 
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aBacktickNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 2/16/2021 20:35:42'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 16/Feb/2021 20:35:42'!
 visitBlockNode: aBlockNode
 
 	"Add tracing to block nodes.
@@ -2237,7 +2237,7 @@ visitBlockNode: aBlockNode
 	
 	^ aBlockNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:29:55'!
 visitBraceNode: aBraceNode
  
 	"Add tracing to brace nodes.
@@ -2245,7 +2245,7 @@ visitBraceNode: aBraceNode
 	
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aBraceNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 11/1/2022 00:16:13'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/Nov/2022 00:16:13'!
 visitCascadeNode: aCascadeNode
 
 	"Add tracing to cascade nodes.
@@ -2320,7 +2320,7 @@ visitCascadeNode: aCascadeNode
 		selector: (encoder encodeSelector: #value)
 		arguments: {}! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:39:07'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:39:07'!
 visitInstanceVariableNode: anInstanceVariableNode
  	
 	"Add tracing to instance variable nodes.
@@ -2330,7 +2330,7 @@ visitInstanceVariableNode: anInstanceVariableNode
 		parseNodeCoveringNodeWithDeclaration: anInstanceVariableNode
 		whenExecuting: anInstanceVariableNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:29:55'!
 visitLiteralNode: aLiteralNode
  	
 	"Add tracing to literal nodes.
@@ -2338,7 +2338,7 @@ visitLiteralNode: aLiteralNode
 	
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aLiteralNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:44:12'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:44:12'!
 visitLiteralVariableNode: aLiteralVariableNode
  	
 	"Add tracing to literal variable nodes.
@@ -2346,14 +2346,14 @@ visitLiteralVariableNode: aLiteralVariableNode
 	
 	^ self parseNodeToCover: aLiteralVariableNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:39:09'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 30/Oct/2021 17:39:09'!
 visitMessageNode: aMessageNode
 
 	^ self
 		parseNodeToCoverMessageSend: aMessageNode
 		includingReceiver: true! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 10/30/2021 17:40:01'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 30/Oct/2021 17:40:01'!
 visitMessageNodeInCascade: aMessageNode
 	
 	"Add tracing to cascade message nodes.
@@ -2364,7 +2364,7 @@ visitMessageNodeInCascade: aMessageNode
 		parseNodeToCoverMessageSend: aMessageNode
 		includingReceiver: false! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 8/31/2022 01:47:29'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 31/Aug/2022 01:47:29'!
 visitMethodNode: aMethodNode
 
 	aMethodNode arguments do: [ :argument |
@@ -2374,17 +2374,17 @@ visitMethodNode: aMethodNode
 	
 	self addParseNodeToTrackExecutionOf: aMethodNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 12/13/2020 18:41:19'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 13/Dec/2020 18:41:19'!
 visitNewArrayNode: aNewArrayNode
 
 	self notYetImplemented! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 12/13/2020 16:40:34'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 13/Dec/2020 16:40:34'!
 visitRemoteTempVectorNode: aRemoteTempVectorNode
 
 	self notYetImplemented! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 12/22/2020 19:44:49'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 22/Dec/2020 19:44:49'!
 visitReturnNode: aReturnNode
 
 	"Add tracing to return nodes.
@@ -2399,12 +2399,12 @@ visitReturnNode: aReturnNode
 
 	^ aReturnNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 12/22/2020 19:42:00'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 22/Dec/2020 19:42:00'!
 visitSelectorNode: aSelectorNode
  
 	self shouldNotHappenBecause: 'visiting selector nodes is not needed for code coverage. NPM'. ! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/4/2022 15:22:05'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 4/Sep/2022 15:22:05'!
 visitTempVariableNode: aTempVariableNode
  
 	"Add tracing to temporary variable nodes.
@@ -2415,7 +2415,7 @@ visitTempVariableNode: aTempVariableNode
 		declaredAt: (declarationSourceRangeByParseNode at: aTempVariableNode)
 		withResultOf: aTempVariableNode.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 1/29/2021 02:05:35'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 29/Jan/2021 02:05:35'!
 visitTemporaryDeclarationNode: aTemporaryDeclarationNode
  
 	"Do not add tracing to temporary declarations because they are not executed.
@@ -2436,12 +2436,12 @@ visitTemporaryDeclarationNode: aTemporaryDeclarationNode
 	
 	^ aTemporaryDeclarationNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 12/22/2020 19:42:07'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 22/Dec/2020 19:42:07'!
 visitUndeclaredVariableNode: aVariableNode
 
 	self shouldNotHappenBecause: 'undeclared variable nodes cannot be compiled, and so they cannot be present in the method node of compiled methods. NPM'.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 9/5/2022 02:29:55'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'visiting' stamp: 'NPM 5/Sep/2022 02:29:55'!
 visitVariableNode: aVariableNode
 	
 	"Add tracing to variable nodes.
@@ -2485,7 +2485,7 @@ visitVariableNode: aVariableNode
 	
 	^ self parseNodeToCoverLiteralOrPseudoVariable: aVariableNode! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 11/17/2022 00:53:23'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 17/Nov/2022 00:53:23'!
 parseNodeForStoringMessageReceiver
 	
 	| receiverTempName |
@@ -2498,19 +2498,19 @@ parseNodeForStoringMessageReceiver
 		code: 16)
 		scope: 0.! !
 
-!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 11/5/2022 15:19:05'!
+!CodeCoverageSourceCodeGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 5/Nov/2022 15:19:05'!
 parseNodesBySourceRanges
 
 	^ parseNodesBySourceRanges! !
 
-!CodeCoverageSourceCodeGenerator class methodsFor: 'source code tracing' stamp: 'NPM 1/9/2021 17:10:23'!
+!CodeCoverageSourceCodeGenerator class methodsFor: 'source code tracing' stamp: 'NPM 9/Jan/2021 17:10:23'!
 valueFor: aCompiledMethod 
 
 	"Convenience method for generating traced source code for a compiled method"
 	
 	^ (self for: aCompiledMethod) value.! !
 
-!CodeCoverageSourceCodeGenerator class methodsFor: 'instance creation' stamp: 'HAW 7/26/2023 18:26:54'!
+!CodeCoverageSourceCodeGenerator class methodsFor: 'instance creation' stamp: 'HAW 26/Jul/2023 18:26:54'!
 for: aCompiledMethod 
 	
 	"Return a new instance to generate a source code for aCompiledMethod with code coverage tracing.
@@ -2537,13 +2537,13 @@ for: aCompiledMethod
 
 	! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 11/27/2021 00:20:42'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 27/Nov/2021 00:20:42'!
 classList
 
 	^ super classList
 		collect: [ :className | self styleClassNamed: className ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 19:49:24'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 18/Jan/2021 19:49:24'!
 classOrMetaclassNamed: aClassName
 
 	| selectedClass |
@@ -2555,24 +2555,24 @@ classOrMetaclassNamed: aClassName
 		ifTrue: [ selectedClass theMetaClass ]
 		ifFalse: [ selectedClass theNonMetaClass ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 1/18/2021 02:31:59'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 18/Jan/2021 02:31:59'!
 selectedClassOrMetaclass
 
 	^ self classOrMetaclassNamed: selectedClassName! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 1/20/2021 02:47:06'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 20/Jan/2021 02:47:06'!
 defaultBrowserTitle
 	
 	^ (CodeCoverageResultItem
 		for: 'Code Coverage Browser'
 		report: codeCoverageReport) displayStringOrText ! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 1/17/2021 19:50:10'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'initialization' stamp: 'NPM 17/Jan/2021 19:50:10'!
 initializeDisplayingReportsFrom: aCodeCoverageReport 
 
 	codeCoverageReport := aCodeCoverageReport.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 1/18/2021 20:48:08'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 18/Jan/2021 20:48:08'!
 messageCategoryList
 		
 	^ super messageCategoryList
@@ -2585,7 +2585,7 @@ messageCategoryList
 	
 ! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 11/6/2022 03:26:39'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 6/Nov/2022 03:26:39'!
 messageCategoryListIndex: anInteger
 	"Set the selected message category to be the one indexed by anInteger."
 
@@ -2606,14 +2606,14 @@ messageCategoryListIndex: anInteger
 			ifFalse: [#newClass]]).
 	self acceptedContentsChanged.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 11/6/2022 03:27:29'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 6/Nov/2022 03:27:29'!
 messageList
 
 	^ super messageList
 		select: [ :message | codeCoverageReport wasCompiledMethodAnalyzed: self selectedClassOrMetaclass>>message ]
 		thenCollect: [ :message | self styleMessage: message ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'metaclass' stamp: 'NPM 1/18/2021 16:31:13'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'metaclass' stamp: 'NPM 18/Jan/2021 16:31:13'!
 metaClassIndicated: trueOrFalse
 
 	super metaClassIndicated: trueOrFalse.
@@ -2622,7 +2622,7 @@ metaClassIndicated: trueOrFalse
 	either the instance or the class side coverage percentage."
 	self changed: #classList.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/18/2021 21:48:51'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 18/Jan/2021 21:48:51'!
 styleClassNamed: aClassName
 
 	| classOrMetaclass |
@@ -2635,14 +2635,14 @@ styleClassNamed: aClassName
 		for: aClassName
 		report: (codeCoverageReport reportForClass: classOrMetaclass)! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/19/2021 21:11:35'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 19/Jan/2021 21:11:35'!
 styleMessage: aSelector
 
 	^ CodeCoverageResultItem
 		for: aSelector
 		report: (codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector)! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/19/2021 21:02:21'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 19/Jan/2021 21:02:21'!
 styleMessageCategory: messageCategory
 
 	^ CodeCoverageResultItem
@@ -2651,21 +2651,21 @@ styleMessageCategory: messageCategory
 				reportForMessageCategory: messageCategory
 				inClass: self selectedClassOrMetaclass)! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 1/18/2021 21:00:27'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 18/Jan/2021 21:00:27'!
 styleSystemCategory: aSystemCategory 
 	
 	^ CodeCoverageResultItem
 		for: aSystemCategory
 		report: (codeCoverageReport reportForSystemCategory: aSystemCategory)! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 1/18/2021 20:44:27'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 18/Jan/2021 20:44:27'!
 systemCategoryList
 
 	^ super systemCategoryList
 		select: [ :systemCategory | codeCoverageReport wasSystemCategoryAnalyzed: systemCategory ]
 		thenCollect: [ :systemCategory | self styleSystemCategory: systemCategory ]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 11/2/2022 00:29:31'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'system category list' stamp: 'NPM 2/Nov/2022 00:29:31'!
 systemCategoryRoots
 	"Answer the roots of the forest of system categories."
 	| categories subcategories roots name |
@@ -2687,7 +2687,7 @@ systemCategoryRoots
 		
 		SystemCategoryWrapper with: each name: (rootName)  model: self]! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 11/7/2022 01:12:27'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 7/Nov/2022 01:12:27'!
 codeCoverageInfoAt: aSourcePosition
 	
 	| selectedCompiledMethod |
@@ -2698,7 +2698,7 @@ codeCoverageInfoAt: aSourcePosition
 		for: selectedCompiledMethod
 		codeCoverageInfoAt: aSourcePosition ! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 1/18/2021 21:06:58'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'user interface support' stamp: 'NPM 18/Jan/2021 21:06:58'!
 textStylerClassFor: textGetter
 
 	"TODO(NPM): I had no choice but to re-implement my superclass's #textStylerClassFor: method as I
@@ -2715,7 +2715,7 @@ textStylerClassFor: textGetter
 	
 	^ SHTextStylerST80! !
 
-!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/19/2021 20:47:01'!
+!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 19/Jan/2021 20:47:01'!
 displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
 	
 	| browser |
@@ -2725,7 +2725,7 @@ displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport
 		open: browser
 		label: browser defaultBrowserTitle! !
 
-!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 1/20/2025 14:19:40'!
+!CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 20/Jan/2025 14:19:40'!
 displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
 	
 	| newBrowser report |
@@ -2743,19 +2743,19 @@ displayingCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport
 	
 	^ newBrowser ! !
 
-!CodeCoverageTextStyler methodsFor: 'initialization' stamp: 'NPM 1/18/2021 18:35:36'!
+!CodeCoverageTextStyler methodsFor: 'initialization' stamp: 'NPM 18/Jan/2021 18:35:36'!
 initializeHighlightingCoveredCodeFrom: aCodeCoverageReport 
 
 	codeCoverageReport := aCodeCoverageReport.! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:38:28'!
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 19/Jan/2021 20:38:28'!
 canBeConsolidated: sourceCode
 
 	^ sourceCode isEmpty or: [
 		(self isAssignmentSymbol: sourceCode) or: [
 			self includesOnlyParenthesis: sourceCode ]]! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:43:22'!
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 19/Jan/2021 20:43:22'!
 consolidate: currentSourceRange in: consolidatedSourceRanges using: sourceCode 
 	
 	| previousSourceRange sourceCodeBetweenRanges |
@@ -2785,7 +2785,7 @@ consolidate: currentSourceRange in: consolidatedSourceRanges using: sourceCode
 		removeLast;
 		add: (previousSourceRange first to: currentSourceRange last).! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:36:24'!
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 19/Jan/2021 20:36:24'!
 consolidate: sourceRanges using: sourceCode
 
 	"Try to close the gaps between source ranges in sourceRanges to highlight source code without
@@ -2800,27 +2800,27 @@ consolidate: sourceRanges using: sourceCode
 			self consolidate: sourceRage in: consolidatedSourceRanges using: sourceCode.
 			consolidatedSourceRanges ]! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:29:30'!
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 19/Jan/2021 20:29:30'!
 includesOnlyParenthesis: sourceCode
 
 	^ {$(. $)} includesAllOf: sourceCode! !
 
-!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 1/19/2021 20:29:20'!
+!CodeCoverageTextStyler methodsFor: 'source ranges consolidation' stamp: 'NPM 19/Jan/2021 20:29:20'!
 isAssignmentSymbol: sourceCode
 
 	^ sourceCode = ':='! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:37:32'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 19/Jan/2021 20:37:32'!
 coveredCodeColor
 
 	^ `Color lightGreen alpha: 0.4`! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/8/2021 09:47:10'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 8/Feb/2021 09:47:10'!
 halfCoveredCodeColor
 	
 	^ Color yellow alpha: 0.3! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:39:34'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 19/Jan/2021 20:39:34'!
 highlight: sourceRanges with: aColor 
 	
 	(self consolidate: sourceRanges using: formattedText asString)
@@ -2831,7 +2831,7 @@ highlight: sourceRanges with: aColor
 				to: sourceRange last ]
 	! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 2/14/2021 13:06:18'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 14/Feb/2021 13:06:18'!
 highlightCodeCoverageResults
 
 	self
@@ -2846,12 +2846,12 @@ highlightCodeCoverageResults
 		highlight: codeCoverageReport uncoveredSourceRanges
 		with: self uncoveredCodeColor.! !
 
-!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 1/19/2021 20:44:01'!
+!CodeCoverageTextStyler methodsFor: 'style - covered code highlighting' stamp: 'NPM 19/Jan/2021 20:44:01'!
 uncoveredCodeColor
 
 	^ `Color lightRed alpha: 0.2`! !
 
-!CodeCoverageTextStyler methodsFor: 'private' stamp: 'NPM 1/19/2021 19:56:40'!
+!CodeCoverageTextStyler methodsFor: 'private' stamp: 'NPM 19/Jan/2021 19:56:40'!
 privateStyle
 
 	super privateStyle.
@@ -2860,14 +2860,14 @@ privateStyle
 	
 	! !
 
-!CodeCoverageTextStyler class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 18:35:24'!
+!CodeCoverageTextStyler class methodsFor: 'instance creation' stamp: 'NPM 18/Jan/2021 18:35:24'!
 highlightingCoveredCodeFrom: aCodeCoverageReport
 	
 	^ self
 		new
 		initializeHighlightingCoveredCodeFrom: aCodeCoverageReport ! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/17/2021 12:18:01'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 17/Jan/2021 12:18:01'!
 registerCodeCoverageAnalyzerActions
 
 	codeCoverageAnalyzer
@@ -2881,7 +2881,7 @@ registerCodeCoverageAnalyzerActions
 			send: #closeCompiledMethodAnalyzersInstallationProgressBar
 			to: self! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/20/2025 14:14:12'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 20/Jan/2025 14:14:12'!
 runSuite
 
 	"I need to override this method as testSuite run should be run by the code coverage analyzer to collect coverage information.
@@ -2895,7 +2895,7 @@ runSuite
 	self showCodeCoverageResults
 	! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/17/2021 12:34:02'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 17/Jan/2021 12:34:02'!
 runSuiteShowingProgress
 
 	"I need to override this method to display the compiled method analyzeres installation progress prior to displaying
@@ -2908,23 +2908,23 @@ runSuiteShowingProgress
 		self unregisterCodeCoverageAnalyzerActions.
 	]! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 1/17/2021 12:16:53'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'evaluating - private' stamp: 'NPM 17/Jan/2021 12:16:53'!
 unregisterCodeCoverageAnalyzerActions
 
 	^ codeCoverageAnalyzer releaseActionMap! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'initialization' stamp: 'NPM 1/18/2021 01:56:50'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'initialization' stamp: 'NPM 18/Jan/2021 01:56:50'!
 initializeFor: aTestSuite analyzingCodeCoverageWith: aCodeCoverageAnalyzer 
 	
 	testSuite := aTestSuite.
 	codeCoverageAnalyzer := aCodeCoverageAnalyzer.! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private' stamp: 'NPM 1/18/2021 01:57:12'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private' stamp: 'NPM 18/Jan/2021 01:57:12'!
 createCompiledMethodAnalyzersInstallationProgressBar
 
 	compiledMethodAnalyzersInstallationProgressBar := ProgressMorph label: 'Installing compiled method analyzers'! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private' stamp: 'NPM 1/18/2021 01:57:12'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private' stamp: 'NPM 18/Jan/2021 01:57:12'!
 createProgressBar
 
 	super createProgressBar.
@@ -2933,17 +2933,17 @@ createProgressBar
 	self createCompiledMethodAnalyzersInstallationProgressBar.
 	! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private' stamp: 'NPM 11/30/2020 21:14:54'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private' stamp: 'NPM 30/Nov/2020 21:14:54'!
 updateProgressBarTitle
 
 	progressBar label: 'Collecting code coverage for ', testSuite name! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private - compiled method analyzers' stamp: 'NPM 1/17/2021 12:20:49'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private - compiled method analyzers' stamp: 'NPM 17/Jan/2021 12:20:49'!
 closeCompiledMethodAnalyzersInstallationProgressBar
 	
 	UISupervisor whenUIinSafeState: [ compiledMethodAnalyzersInstallationProgressBar dismissMorph ]! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private - compiled method analyzers' stamp: 'NPM 1/17/2021 12:20:49'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private - compiled method analyzers' stamp: 'NPM 17/Jan/2021 12:20:49'!
 displayCompiledMethodAnalyzersInstallationProgressFor: aCompiledMethod 
 
 	compiledMethodAnalyzersInstallationProgressBar subLabel: aCompiledMethod classAndSelector.
@@ -2951,27 +2951,27 @@ displayCompiledMethodAnalyzersInstallationProgressFor: aCompiledMethod
 	
 	! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private - compiled method analyzers' stamp: 'NPM 1/17/2021 12:20:49'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'progress bar - private - compiled method analyzers' stamp: 'NPM 17/Jan/2021 12:20:49'!
 openCompiledMethodAnalyzersInstallationProgressBar: numberOfAnalyzersToInstall
 
 	compiledMethodAnalyzersRunIncrement := numberOfAnalyzersToInstall / 100.
 	compiledMethodAnalyzersInstallationProgressBar openInWorld.
 	! !
 
-!ProgressiveCodeCoverageTestRunner methodsFor: 'show result - private' stamp: 'NPM 1/20/2021 02:43:01'!
+!ProgressiveCodeCoverageTestRunner methodsFor: 'show result - private' stamp: 'NPM 20/Jan/2021 02:43:01'!
 showCodeCoverageResults 
 
 	CodeCoverageAnalyzerBrowser displayCodeCoverageResultsFrom: codeCoverageAnalyzer report .
 
 	! !
 
-!ProgressiveCodeCoverageTestRunner class methodsFor: 'evaluating' stamp: 'NPM 1/18/2021 02:01:05'!
+!ProgressiveCodeCoverageTestRunner class methodsFor: 'evaluating' stamp: 'NPM 18/Jan/2021 02:01:05'!
 run: aTestSuite analyzingCodeCoverageWith: aCodeCoverageAnalyzer 
 	
 	(self for: aTestSuite analyzingCodeCoverageWith: aCodeCoverageAnalyzer)
 		value! !
 
-!ProgressiveCodeCoverageTestRunner class methodsFor: 'instance creation' stamp: 'NPM 1/18/2021 01:58:08'!
+!ProgressiveCodeCoverageTestRunner class methodsFor: 'instance creation' stamp: 'NPM 18/Jan/2021 01:58:08'!
 for: aTestSuite analyzingCodeCoverageWith: aCodeCoverageAnalyzer 
 	
 	^ self
@@ -2979,14 +2979,14 @@ for: aTestSuite analyzingCodeCoverageWith: aCodeCoverageAnalyzer
 		initializeFor: aTestSuite
 		analyzingCodeCoverageWith: aCodeCoverageAnalyzer! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 18:04:21'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 18:04:21'!
 assertCodeCoverageAnalyzerIsRunning
 
 	codeCoverageAnalyzer ifRunning: [ ^ self ].
 	
 	self fail.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 11/4/2022 01:55:33'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 4/Nov/2022 01:55:33'!
 assertM1IsBeingAnalyzed
 
 	CompiledMethodCoverageAnalyzer
@@ -2995,7 +2995,7 @@ assertM1IsBeingAnalyzed
 	
 	self fail.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 17:28:45'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 17:28:45'!
 assertRaisesClassWasNotAnalizedError: aBlock
 
 	self
@@ -3003,7 +3003,7 @@ assertRaisesClassWasNotAnalizedError: aBlock
 		raise: AssertionFailure
 		withMessageText: CodeCoverageAnalyzer classWasNotAnalyzedErrorMessage! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 18:09:04'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 18:09:04'!
 assertRaisesCompiledMethodWasNotAnalizedError: aBlock
 
 	self
@@ -3011,7 +3011,7 @@ assertRaisesCompiledMethodWasNotAnalizedError: aBlock
 		raise: AssertionFailure
 		withMessageText: CodeCoverageAnalyzer compiledMethodWasNotAnalyzedErrorMessage! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 17:42:15'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 17:42:15'!
 assertRaisesReportsAreNotAvailableWhileRunningError: aBlock
 	
 	self
@@ -3019,7 +3019,7 @@ assertRaisesReportsAreNotAvailableWhileRunningError: aBlock
 		raise: AssertionFailure
 		withMessageText: CodeCoverageAnalyzer reportsAreNotAvailableWhileRunningErrorMessage! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 17:35:55'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 17:35:55'!
 assertRaisesSystemCategoryWasNotAnalizedError: aBlock
 
 	self
@@ -3027,19 +3027,19 @@ assertRaisesSystemCategoryWasNotAnalizedError: aBlock
 		raise: AssertionFailure
 		withMessageText: CodeCoverageAnalyzer systemCategoryWasNotAnalyzedErrorMessage! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 18:05:03'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 18:05:03'!
 denyCodeCoverageAnalyzerIsRunning
 
 	codeCoverageAnalyzer ifRunning: [ self fail ]! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/16/2021 18:09:29'!
+!CodeCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 16/Jan/2021 18:09:29'!
 denyM1IsBeingAnalyzed
 	
 	self
 		assert: originalM1Method
 		equals: self compiledMethodAtM1Selector! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 1/16/2021 18:12:35'!
+!CodeCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 16/Jan/2021 18:12:35'!
 setupCodeCoverageAnalyzerForM1Method
 
 	| compiledMethodToAnalyze |
@@ -3052,17 +3052,17 @@ setupCodeCoverageAnalyzerForM1Method
 	
 	codeCoverageAnalyzer := CodeCoverageAnalyzer toAnalyzeAll: {compiledMethodToAnalyze}.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 1/16/2021 18:12:41'!
+!CodeCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 16/Jan/2021 18:12:41'!
 startTrackingCodeCoverage
 
 	codeCoverageAnalyzer startTrackingCodeCoverage! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 1/16/2021 16:42:36'!
+!CodeCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 16/Jan/2021 16:42:36'!
 stopTrackingCodeCoverage
 	
 	codeCoverageAnalyzer stopTrackingCodeCoverage.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/16/2021 16:47:30'!
+!CodeCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 16/Jan/2021 16:47:30'!
 setUp
 
 	super setUp.
@@ -3070,7 +3070,7 @@ setUp
 	originalM1Method := self compiledMethodAtM1Selector.
 	! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/16/2021 17:47:25'!
+!CodeCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 16/Jan/2021 17:47:25'!
 tearDown
 
 	super tearDown.
@@ -3078,24 +3078,24 @@ tearDown
 	self tearDownCodeCoverageAnalyzer
 	! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/16/2021 17:47:25'!
+!CodeCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 16/Jan/2021 17:47:25'!
 tearDownCodeCoverageAnalyzer
 
 	^ codeCoverageAnalyzer ifNotNil: [ 
 		codeCoverageAnalyzer ifRunning: [
 			codeCoverageAnalyzer stopTrackingCodeCoverage ] ]! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 1/10/2021 16:50:03'!
+!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/Jan/2021 16:50:03'!
 compiledMethodAtM1Selector
 
 	^ self class compiledMethodAt: #m1! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/29/2022 09:49:08'!
+!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 29/Oct/2022 09:49:08'!
 compiledMethodAtM2Selector
 
 	^ self class compiledMethodAt: #m2:! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 1/16/2021 18:15:10'!
+!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 16/Jan/2021 18:15:10'!
 m1
 
 	"This method is intentionally not empty to test whether it was covered or not.
@@ -3103,21 +3103,21 @@ m1
 
 	Object new! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/29/2022 09:46:40'!
+!CodeCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 29/Oct/2022 09:46:40'!
 m2: aBoolean
 
 	aBoolean
 		ifTrue: [ Array ]
 		ifFalse: [ Dictionary ]! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 17:21:33'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 17:21:33'!
 test001_IsNotRunningWhenCreated
 
 	self setupCodeCoverageAnalyzerForM1Method.
 	
 	self denyCodeCoverageAnalyzerIsRunning.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 2/15/2021 18:27:15'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 15/Feb/2021 18:27:15'!
 test002_IsRunningWhenStarted
 
 	self setupCodeCoverageAnalyzerForM1Method.
@@ -3126,7 +3126,7 @@ test002_IsRunningWhenStarted
 	
 	self assertCodeCoverageAnalyzerIsRunning! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 18:12:53'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 18:12:53'!
 test003_IsNotRunningWhenStopped
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3136,14 +3136,14 @@ test003_IsNotRunningWhenStopped
 	
 	self denyCodeCoverageAnalyzerIsRunning! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 18:01:53'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 18:01:53'!
 test004_DoesNotAnalyzeCompiledMethodsWhenItIsCreated
 
 	self setupCodeCoverageAnalyzerForM1Method.
 	
 	self denyM1IsBeingAnalyzed.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 18:01:58'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 18:01:58'!
 test005_AnalyzesCompiledMethodsWhenItIsStarted
 
 	self setupCodeCoverageAnalyzerForM1Method.
@@ -3152,7 +3152,7 @@ test005_AnalyzesCompiledMethodsWhenItIsStarted
 	
 	self assertM1IsBeingAnalyzed.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 18:13:00'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 18:13:00'!
 test006_StopsAnalyzingCompiledMethodsWhenItIsStopped
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3162,7 +3162,7 @@ test006_StopsAnalyzingCompiledMethodsWhenItIsStopped
 	
 	self denyM1IsBeingAnalyzed.! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 18:45:08'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 18:45:08'!
 test007_DoesNothingWhenStartedMoreThanOnce
 
 	| analyzedM1Method |
@@ -3175,7 +3175,7 @@ test007_DoesNothingWhenStartedMoreThanOnce
 	self assertCodeCoverageAnalyzerIsRunning.
 	self assert: analyzedM1Method equals: self compiledMethodAtM1Selector! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/16/2021 18:46:32'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 16/Jan/2021 18:46:32'!
 test008_DoesNothingWhenStoppedMoreThanOnce
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3187,7 +3187,7 @@ test008_DoesNothingWhenStoppedMoreThanOnce
 	self denyCodeCoverageAnalyzerIsRunning.
 	self denyM1IsBeingAnalyzed! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/20/2021 02:43:01'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 20/Jan/2021 02:43:01'!
 test009_DoesNotAllowRequestingCodeCoverageReportsWhileItIsRunning
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3196,7 +3196,7 @@ test009_DoesNotAllowRequestingCodeCoverageReportsWhileItIsRunning
 	self assertRaisesReportsAreNotAvailableWhileRunningError: [ codeCoverageAnalyzer report ].
 	! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/20/2021 02:43:01'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 20/Jan/2021 02:43:01'!
 test010_DoesNotAllowRequestingTheCodeCoverageReportForASystemCategoryThatWasNotAnalyzed
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3205,7 +3205,7 @@ test010_DoesNotAllowRequestingTheCodeCoverageReportForASystemCategoryThatWasNotA
 	
 	self assertRaisesSystemCategoryWasNotAnalizedError: [ codeCoverageAnalyzer report reportForSystemCategory: #foo ].! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/20/2021 02:43:01'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 20/Jan/2021 02:43:01'!
 test011_DoesNotAllowRequestingTheCodeCoverageReportForAClassThatWasNotAnalyzed
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3214,7 +3214,7 @@ test011_DoesNotAllowRequestingTheCodeCoverageReportForAClassThatWasNotAnalyzed
 	
 	self assertRaisesClassWasNotAnalizedError: [ codeCoverageAnalyzer report reportForClass: Object ].! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/20/2021 02:43:01'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 20/Jan/2021 02:43:01'!
 test012_DoesNotAllowRequestingTheCodeCoverageReportForACompiledMethodThatWasNotAnalyzed
 
 	self setupCodeCoverageAnalyzerForM1Method;
@@ -3223,7 +3223,7 @@ test012_DoesNotAllowRequestingTheCodeCoverageReportForACompiledMethodThatWasNotA
 	
 	self assertRaisesCompiledMethodWasNotAnalizedError:  [ codeCoverageAnalyzer report reportForCompiledMethod: Object>>#value ]! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:43:45'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 29/Oct/2022 09:43:45'!
 test013_AllowsMultipleInstancesToAnalyzeTheSameCompiledMethods
 
 	| analyzer1 analyzer2 compiledMethodToAnalyze |
@@ -3237,7 +3237,7 @@ test013_AllowsMultipleInstancesToAnalyzeTheSameCompiledMethods
 	self assert: 100 equals: analyzer1 report percentCovered.	
 	self assert: 100 equals: analyzer2 report percentCovered ! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/29/2022 09:44:51'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 29/Oct/2022 09:44:51'!
 test014_AllowsNestedInstancesToAnalyzeTheSameCompiledMethods
 
 	| parentReport childReport |
@@ -3251,7 +3251,7 @@ test014_AllowsNestedInstancesToAnalyzeTheSameCompiledMethods
 	self assert: 100 equals: parentReport percentCovered.	
 	self assert: 100 equals: childReport percentCovered ! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 11/6/2022 01:52:41'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 6/Nov/2022 01:52:41'!
 test015_CollectsCoverageInformationFromTheTimeItIsUsed
 
 	| compiledMethodToAnalyze analyzer1 analyzer2 |
@@ -3267,7 +3267,7 @@ test015_CollectsCoverageInformationFromTheTimeItIsUsed
 	self assert: 100 equals: analyzer1 report percentCovered.	
 	self assert: 50 equals: analyzer2 report percentCovered ! !
 
-!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 11/6/2022 01:52:53'!
+!CodeCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 6/Nov/2022 01:52:53'!
 test016_CollectsCoverageInformationWhileThereIsAtLeastOneActiveInstance
 
 	| compiledMethodToAnalyze analyzer1 analyzer2 |
@@ -3283,7 +3283,7 @@ test016_CollectsCoverageInformationWhileThereIsAtLeastOneActiveInstance
 	self assert: 100 equals: analyzer1 report percentCovered.	
 	self assert: 50 equals: analyzer2 report percentCovered ! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:54:21'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 14/Feb/2021 12:54:21'!
 assert: aSelector at: aSourceRange hasSourceCode: expectedSourceCode coverageRatio: aRatio 
 	
 	| compiledMethod report |
@@ -3297,7 +3297,7 @@ assert: aSelector at: aSourceRange hasSourceCode: expectedSourceCode coverageRat
 		assert: aRatio
 		equals: (report coverageRatioOf: aSourceRange).! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:50:07'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 14/Feb/2021 12:50:07'!
 assert: aSelector hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
 	
 	self
@@ -3306,7 +3306,7 @@ assert: aSelector hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: ex
 		hasSourceCode: expectedSourceCode
 		coverageRatio: 1! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/14/2021 12:50:07'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 14/Feb/2021 12:50:07'!
 assert: aSelector hasBeenHalfCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
 	
 	self
@@ -3315,7 +3315,7 @@ assert: aSelector hasBeenHalfCoveredFrom: sourceRangeStart to: sourceRangeEnd as
 		hasSourceCode: expectedSourceCode
 		coverageRatio: 0.5! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/16/2021 20:50:30'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 16/Feb/2021 20:50:30'!
 assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumberOfSourceRanges: numberOfSourceRanges  
 	
 	| report |
@@ -3331,28 +3331,28 @@ assert: aSelector hasNumberOfCoveredRanges: numberOfCoveredSourceRanges andNumbe
 		assert: numberOfCoveredSourceRanges
 		equals: report totalCoveredSourceRanges! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:19:41'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 20/Jan/2021 02:19:41'!
 assertCoveragePercentOfClass: aClass is: aPercentage
 
 	self
 		assert: aPercentage
 		equals: (coverageReport reportForClass: aClass) percentCovered! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:19:41'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 20/Jan/2021 02:19:41'!
 assertCoveragePercentOfSystemCategory: aSystemCategory is: aPercentage
 
 	self
 		assert: aPercentage
 		equals: (coverageReport reportForSystemCategory: aSystemCategory) percentCovered! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 11/17/2022 01:19:16'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 17/Nov/2022 01:19:16'!
 assertMessageReceiverUsageCountIs: aQuanity 
 	
 	self
 		assert: aQuanity
 		equals: messageReceiverUsageCount ! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:15:32'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 20/Jan/2021 02:15:32'!
 assertNumberOfCoveredRangesFor: aSelector is: aQuantity 
 
 	self
@@ -3360,14 +3360,14 @@ assertNumberOfCoveredRangesFor: aSelector is: aQuantity
 		hasNumberOfCoveredRanges: aQuantity
 		andNumberOfSourceRanges: aQuantity! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:21:22'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 20/Jan/2021 02:21:22'!
 assertPercentCoverageForExampleNamed: aSelector is: aPercentage 
 	
 	self
 		assert: aPercentage
 		equals: (self reportForExampleNamed: aSelector) percentCovered.! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 1/20/2021 02:20:00'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 20/Jan/2021 02:20:00'!
 deny: aSymbol hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expectedSourceCode 
 	
 	| compiledMethod report |
@@ -3377,12 +3377,12 @@ deny: aSymbol hasBeenCoveredFrom: sourceRangeStart to: sourceRangeEnd as: expect
 	self assert: (report uncoveredSourceRanges includes: (sourceRangeStart to: sourceRangeEnd)).
 	self assert: expectedSourceCode equals: (compiledMethod sourceCode copyFrom: sourceRangeStart to: sourceRangeEnd).! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 3/10/2021 08:42:40'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 10/Mar/2021 08:42:40'!
 denyHasBeenAnalyzed: aSelector
 
 	self deny: (coverageReport wasCompiledMethodAnalyzed: self class>>aSelector)! !
 
-!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 2/15/2021 17:50:43'!
+!CodeCoverageTest methodsFor: 'assertions' stamp: 'NPM 15/Feb/2021 17:50:43'!
 generateAssertionsFor: report 
 	
 	"NPM: for use during development only.
@@ -3420,7 +3420,7 @@ generateAssertionsFor: report
 	
 	Clipboard storeObject: assertionsSourceCode.! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/20/2021 02:43:01'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 20/Jan/2021 02:43:01'!
 collectCodeCoverageDuring:  aBlock
 	
 	[
@@ -3429,28 +3429,28 @@ collectCodeCoverageDuring:  aBlock
 		coverageReport := codeCoverageAnalyzer report
 	]! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/18/2021 19:28:52'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 18/Jan/2021 19:28:52'!
 collectCoverageForExampleNamed: aSelector
 
 	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
 	
 	self collectCodeCoverageDuring: [ self perform: aSelector ].! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 2/7/2021 23:21:35'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 7/Feb/2021 23:21:35'!
 collectCoverageForExampleNamed: aSelector with: argument
 
 	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
 	
 	self collectCodeCoverageDuring: [ self perform: aSelector with: argument ].! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 11/6/2022 01:38:18'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 6/Nov/2022 01:38:18'!
 collectCoverageForExampleNamed: aSelector withArguments: arguments
 
 	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
 	
 	self collectCodeCoverageDuring: [ self perform: aSelector withArguments: arguments ].! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 11/6/2022 01:41:46'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 6/Nov/2022 01:41:46'!
 collectCoverageForExampleNamed: aSelector withTestCaseArguments: testCaseArguments
 
 	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
@@ -3459,7 +3459,7 @@ collectCoverageForExampleNamed: aSelector withTestCaseArguments: testCaseArgumen
 		testCaseArguments do: [ :arguments |
 			self perform: aSelector withArguments: arguments ] ].! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 11/5/2022 20:40:48'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 5/Nov/2022 20:40:48'!
 collectCoverageForExampleNamed: aSelector withTestCases: singleTestCaseArguments
 
 	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
@@ -3468,12 +3468,12 @@ collectCoverageForExampleNamed: aSelector withTestCases: singleTestCaseArguments
 		singleTestCaseArguments do: [ :argument |
 			self perform: aSelector with: argument ] ].! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/20/2021 02:20:00'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 20/Jan/2021 02:20:00'!
 reportForExampleNamed: aSelector
 
 	^ coverageReport reportForCompiledMethod: self class>>aSelector! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/20/2021 02:37:23'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 20/Jan/2021 02:37:23'!
 setupCodeCoverageAnalyzerForAll: compiledMethodsToAnalyze
 
 	"NPM: Make sure to tear down the existing code coverage analyzer before creating a new one.
@@ -3482,29 +3482,29 @@ setupCodeCoverageAnalyzerForAll: compiledMethodsToAnalyze
 	
 	codeCoverageAnalyzer := CodeCoverageAnalyzer toAnalyzeAll: compiledMethodsToAnalyze! !
 
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 1/20/2021 02:12:15'!
+!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 20/Jan/2021 02:12:15'!
 setupCodeCoverageAnalyzerForExampleNamed: aSelector
 
 	self setupCodeCoverageAnalyzerForAll: {self class>>aSelector}! !
 
-!CodeCoverageTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/16/2021 20:03:58'!
+!CodeCoverageTest methodsFor: 'setUp/tearDown' stamp: 'NPM 16/Jan/2021 20:03:58'!
 tearDown
 
 	super tearDown.
 	
 	self tearDownCodeCoverageAnalyzer! !
 
-!CodeCoverageTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/20/2021 02:12:45'!
+!CodeCoverageTest methodsFor: 'setUp/tearDown' stamp: 'NPM 20/Jan/2021 02:12:45'!
 tearDownCodeCoverageAnalyzer
 
 	codeCoverageAnalyzer ifNotNil: [ codeCoverageAnalyzer stopTrackingCodeCoverage ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/10/2021 08:35:42'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 10/Mar/2021 08:35:42'!
 abstractMethod
 
 	self subclassResponsibility! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 09:09:22'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 09:09:22'!
 assignBlockTemporary: aValue
 	
 	"This example returns 1 when evaluating the block to avoid excersicing the boolean selector feature as well"
@@ -3513,293 +3513,293 @@ assignBlockTemporary: aValue
 		a _ aValue.
 		1 ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:57:15'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 17:57:15'!
 assignVariableToItself
 	
 	instanceVariable := instanceVariable ! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:43:02'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:43:02'!
 assignment
 	
 	instanceVariable := 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:11:58'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:11:58'!
 backtick
 	
 	`Object new`! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/11/2022 14:38:44'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/Nov/2022 14:38:44'!
 binaryMessageSend
 	
 	1 + 2! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:27:39'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:27:39'!
 block
 	
 	[ 1 ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:16:11'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 00:16:11'!
 blockWithArgument: anArgument
 
 	[ :arg | arg printString ] value: anArgument! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:13:38'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 00:13:38'!
 blockWithArgumentAssignedToFalse
 
 	[ :arg | arg printString ] value: false! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 00:12:29'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 00:12:29'!
 blockWithArgumentAssignedToTrue
 
 	[ :arg | arg printString ] value: true! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:33:18'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 29/Jan/2021 02:33:18'!
 blockWithArgumentUsedManyTimes
 
 	[ :argument | argument + argument ] value: 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/19/2021 18:52:22'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Jan/2021 18:52:22'!
 blockWithArguments
 	
 	[ :a :b | a + b ] value: 1 value: 2! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:43:56'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 29/Jan/2021 02:43:56'!
 blockWithReadAndWrittenTemporaryVariable
 
 	[ |a| a := 1. a ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:38:08'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 29/Jan/2021 02:38:08'!
 blockWithReadTemporaryVariable
 
 	[ |a| a ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:32:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:32:45'!
 blockWithTemporariesDeclaration
 	
 	[ | a | ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:34:01'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:34:01'!
 blockWithTemporaryVariables
 	
 	[ | a b |
 		a := 1.
 		b := 2 ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:31:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 16/Feb/2021 20:31:45'!
 blockWithUnusedArgument
 
 	[ :a | ] value: 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:40:14'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 29/Jan/2021 02:40:14'!
 blockWithWrittenTemporaryVariable
 
 	[ |a| a :=1 ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:35:30'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:35:30'!
 braceNode
 	
 	{ 1 }! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/14/2020 01:25:18'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 14/Dec/2020 01:25:18'!
 cascade
 	
 	Object
 		new;
 		value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:28:37'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 12:28:37'!
 cascadeNodeWithBlockReceiverThatIsEvaluated
 
 	[ self value ]
 		class;
 		value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:29:28'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 12:29:28'!
 cascadeNodeWithBlockReceiverThatIsNotEvaluated
 
 	[ self value ]
 		class;
 		hash! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 10/30/2021 17:14:38'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 30/Oct/2021 17:14:38'!
 cascadeNodeWithMessageSendReceiver
 
 	OrderedCollection new
 		copy;
 		yourself! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 10/30/2021 16:59:29'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 30/Oct/2021 16:59:29'!
 cascadeWithArgument: arg
 	
 	Set new
 		add: arg;
 		copy! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:43'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Feb/2021 01:25:43'!
 classVariableAssignedToABooleanAndThenToANonBoolean
 
 	ClassVariable _ true.
 	ClassVariable _ 1.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:43:13'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Feb/2021 01:43:13'!
 classVariableAssignedToABooleanMoreThanOnce
 
 	ClassVariable _ true.
 	ClassVariable _ true.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:54'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Feb/2021 01:25:54'!
 classVariableAssignedToANonBooleanAndThenToABoolean
 
 	ClassVariable _ 1.
 	ClassVariable _ true.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:18'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Feb/2021 01:25:18'!
 classVariableAssignedToFalse
 
 	ClassVariable _ false! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:25:07'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Feb/2021 01:25:07'!
 classVariableAssignedToTrue
 
 	ClassVariable _ true! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/19/2021 01:41:35'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Feb/2021 01:41:35'!
 classVariableAssignedToTrueAndFalse
 
 	ClassVariable _ true.
 	ClassVariable _ false.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:24:46'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:24:46'!
 emptyBlock
 	
 	[] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'HAW 7/27/2023 14:55:13'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'HAW 27/Jul/2023 14:55:13'!
 emptyMethod! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:43:30'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 16/Feb/2021 20:43:30'!
 emptyMethodWithUnusedArgument: arg! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/11/2021 20:05:08'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 20:05:08'!
 errorMessageForTesting
 	
 	^ 'This is an error message used for code coverage tests'! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/11/2021 17:12:32'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 17:12:32'!
 foo: aBoolean
 
 	aBoolean
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ] ! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/5/2022 21:03:39'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 5/Nov/2022 21:03:39'!
 ifFalse: aReceiver
 
 	aReceiver ifFalse: [ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 01:26:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 6/Nov/2022 01:26:45'!
 ifFalseIfTrue: aReceiver
 
 	aReceiver
 		ifFalse: []
 		ifTrue: []! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 02:30:01'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 6/Nov/2022 02:30:01'!
 ifTrue: aBoolean
 
 	aBoolean ifTrue: [ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/6/2022 02:31:36'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 6/Nov/2022 02:31:36'!
 ifTrueIfFalse: aReceiver
 
 	aReceiver
 		ifTrue: []
 		ifFalse: []! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/5/2022 20:42:23'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 5/Nov/2022 20:42:23'!
 ifTrueToNonBooleanReceiver
 
 	CodeCoverageTestClass1 new
 		ifTrue: [ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 21:18:13'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 21:18:13'!
 implicitSelfReturn
 	
 	"This method has an implicit self return"! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/19/2020 13:47:11'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Dec/2020 13:47:11'!
 implicitSelfReturnWhenSelfIsReferenced
 	
 	self value.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:44:04'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:44:04'!
 instanceVariable
 	
 	instanceVariable.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:59:25'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 15/Feb/2021 17:59:25'!
 instanceVariableAssignedToABooleanAndThenToANonBoolean
 
 	instanceVariable _ true.
 	instanceVariable _ 1.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:57:37'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 15/Feb/2021 17:57:37'!
 instanceVariableAssignedToANonBooleanAndThenToABoolean
 
 	instanceVariable _ 1.
 	instanceVariable _ true.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:33:58'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 15/Feb/2021 17:33:58'!
 instanceVariableAssignedToFalse
 
 	instanceVariable _ false! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:33:53'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 15/Feb/2021 17:33:53'!
 instanceVariableAssignedToTrue
 
 	instanceVariable _ true! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:51:47'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 15/Feb/2021 17:51:47'!
 instanceVariableAssignedToTrueAndFalse
 
 	instanceVariable _ true.
 	instanceVariable _ false.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/15/2021 17:54:11'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 15/Feb/2021 17:54:11'!
 instanceVariableAssignedToTrueMoreThanOnce
 	
 	instanceVariable _ true.
 	instanceVariable _ true.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:30:09'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:30:09'!
 keywordMessageSend
 	
 	Array with: Object with: ProtoObject! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/17/2021 20:05:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 17/Jan/2021 20:05:45'!
 literal
 	
 	1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/16/2021 20:00:46'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 16/Jan/2021 20:00:46'!
 literalVariable
 	
 	Object! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:11:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:11:45'!
 manyLiteralVariables
 	
 	Object.
 	ProtoObject.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:38:07'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:38:07'!
 manyLiterals
 	
 	1.
 	2.
 	! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:02:07'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:02:07'!
 manyTemporaryVariables
 	
 	| a b |
@@ -3808,152 +3808,152 @@ manyTemporaryVariables
 	b.
 	! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:18:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 29/Jan/2021 02:18:45'!
 messageArgumentUsedManyTimes: anArgument
 
 	anArgument.
 	anArgument.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/17/2022 01:16:19'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 17/Nov/2022 01:16:19'!
 messageReceiverTracker
 
 	(self trackMessageReceiverUsage) printString! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 08:17:16'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 08:17:16'!
 messageSendReturningMessageResultInstanceVariable
 
 	self returnMessageResultInstanceVariable! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:44:34'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 12:44:34'!
 messageSendWithBlockReceiverThatIsEvaluated
 
 	[ Object new ]
 		value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:45:26'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 12:45:26'!
 messageSendWithBlockReceiverThatIsNotEvaluated
 
 	[ Object new ]
 		class! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/3/2021 12:43:14'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 12:43:14'!
 messageSendWithMessageSendReceiver
 
 	(OrderedCollection new)
 		value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/17/2021 21:25:53'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 17/Jan/2021 21:25:53'!
 messageWithArgument: anArgument
 	
 	anArgument value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/29/2021 02:07:53'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 29/Jan/2021 02:07:53'!
 messageWithUnusedArgument: anArgument
 
 	[ anArgument ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 09:06:29'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 09:06:29'!
 methodWithOneArgument: arg
 
 	arg! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:53:42'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 17:53:42'!
 multipleAssignments
 	
 	instanceVariable := 1.
 	otherInstanceVariable := 2.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:13:39'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:13:39'!
 multipleBacktickNodes
 	
 	`Object new`.
 	`Array new`.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:36:54'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:36:54'!
 multipleBraceNodes
 	
 	{ 1 }.
 	{ 2 }.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:26:25'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:26:25'!
 multipleEmptyBlocks
 	
 	[ 1 ] value.
 	[ 2 ] value.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:45:07'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:45:07'!
 multipleInstanceVariables
 	
 	instanceVariable.
 	otherInstanceVariable.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:32:28'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:32:28'!
 multipleOcurrencesOfAnArgumentInAMessageSend
 	
 	Array with: Object with: Object! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:30:39'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:30:39'!
 multipleOcurrencesOfTheReceiverInAMessageSend
 	
 	Array with: Array with: Array! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:54:35'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 17:54:35'!
 multipleOcurrencesOfTheSameAssignment
 	
 	instanceVariable := 1.
 	instanceVariable := 2.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:14:33'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:14:33'!
 multipleOcurrencesOfTheSameBacktickNode
 	
 	`Object new`.
 	`Object new`! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:28:39'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:28:39'!
 multipleOcurrencesOfTheSameBlockNode
 	
 	[ 1 ] value.
 	[ 1 ] value.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:37:36'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:37:36'!
 multipleOcurrencesOfTheSameBraceNode
 	
 	{ 1 }.
 	{ 1 }.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:46:01'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:46:01'!
 multipleOcurrencesOfTheSameInstanceVariable
 	
 	instanceVariable.
 	instanceVariable.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:40:10'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:40:10'!
 multipleOcurrencesOfTheSameLiteral
 	
 	1.
 	1.
 	! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:15:16'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:15:16'!
 multipleOcurrencesOfTheSameLiteralVariables
 	
 	Object.
 	Object.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:22:38'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:22:38'!
 multipleOcurrencesOfTheSameMessageSend
 	
 	Object new.
 	Object new.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:38:50'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:38:50'!
 multipleOcurrencesOfTheSameReturnNodes
 	
 	[ ^ 1 ].
 	
 	^ 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:03:08'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:03:08'!
 multipleOcurrencesOfTheSameTemporaryVariable
 	
 	| a |
@@ -3962,122 +3962,122 @@ multipleOcurrencesOfTheSameTemporaryVariable
 	a.
 	! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:25:53'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:25:53'!
 multipleOcurrencesOftheSameVariable
 	
 	true.
 	true.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:36:51'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:36:51'!
 multipleReturnNodes
 	
 	[ ^ 1 ].
 	
 	^ 2! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:24:19'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:24:19'!
 mutipleVariableNodes
 	
 	true.
 	false.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:29:40'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:29:40'!
 notEvaluatedBlockNode
 	
 	[ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 17:55:35'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 17:55:35'!
 notExecutedAssignment
 	
 	[ instanceVariable := 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:15:33'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:15:33'!
 notExecutedBacktickNode
 	
 	[ `Object new` ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 18:38:25'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:38:25'!
 notExecutedBraceNode
 	
 	[ { 1 } ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:47:09'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:47:09'!
 notExecutedInstanceVariable
 	
 	[ instanceVariable ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:41:22'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:41:22'!
 notExecutedLiteral
 	
 	[ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:24:27'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:24:27'!
 notExecutedLiteralVariable
 	
 	[ Object ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/20/2020 02:16:15'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 20/Dec/2020 02:16:15'!
 notExecutedMessageArgument
 	
 	Array
 		with: [ self value ]
 		with: [ self printString ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:19:10'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:19:10'!
 notExecutedMessageSend
 	
 	[ Object new ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:37:54'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:37:54'!
 notExecutedReturnNode
 	
 	[ ^ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:04:23'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:04:23'!
 notExecutedTemporaryVariable
 	
 	| a |
 	
 	[ a ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:27:06'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:27:06'!
 notExecutedVariable
 	
 	[ true ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/19/2020 14:11:45'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 19/Dec/2020 14:11:45'!
 optimizedMessage
 	
 	1 to: 10 do: [ :number | number value ]! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/11/2021 20:18:09'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 20:18:09'!
 raiseError
 
 	Error signal: self errorMessageForTesting ! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 17:08:52'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 28/Jan/2021 17:08:52'!
 raiseErrorFromBlock
 
 	[ self error: self errorMessageForTesting ] value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:32:26'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:32:26'!
 return
 	
 	^ 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/8/2021 08:17:34'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 8/Feb/2021 08:17:34'!
 returnMessageResultInstanceVariable
 	
 	^ messageResult ! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:50:47'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:50:47'!
 temporaryVariable
 	
 	| a |
 	
 	a.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/6/2021 21:13:38'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 6/Feb/2021 21:13:38'!
 temporaryVariableAssignedToBooleanAndThenNonBoolean
 
 	| a |
@@ -4085,14 +4085,14 @@ temporaryVariableAssignedToBooleanAndThenNonBoolean
 	a _ true.
 	a _ 1.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 21:57:24'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/Feb/2021 21:57:24'!
 temporaryVariableAssignedToFalse
 
 	| a |
 	
 	a _ false! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/6/2021 21:09:46'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 6/Feb/2021 21:09:46'!
 temporaryVariableAssignedToNonBooleanAndThenBoolean
 
 	| a |
@@ -4101,14 +4101,14 @@ temporaryVariableAssignedToNonBooleanAndThenBoolean
 	a _ true.
 ! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 21:47:01'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/Feb/2021 21:47:01'!
 temporaryVariableAssignedToTrue
 
 	| a |
 	
 	a _ true! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 21:58:12'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/Feb/2021 21:58:12'!
 temporaryVariableAssignedToTrueAndFalse
 
 	| a |
@@ -4116,7 +4116,7 @@ temporaryVariableAssignedToTrueAndFalse
 	a _ true.
 	a _ false.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/2/2021 22:06:07'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/Feb/2021 22:06:07'!
 temporaryVariableAssignedToTrueMoreThanOnce
 
 	| a |
@@ -4124,14 +4124,14 @@ temporaryVariableAssignedToTrueMoreThanOnce
 	a _ true.
 	a _ true.! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 19:07:20'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 28/Jan/2021 19:07:20'!
 temporaryVariableAssignment
 
 	| a |
 
 	a := 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/28/2021 20:59:08'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 28/Jan/2021 20:59:08'!
 temporaryVariableReadAndAssignment
 
 	| a |
@@ -4139,7 +4139,7 @@ temporaryVariableReadAndAssignment
 
 	a! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 11/17/2022 01:18:31'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 17/Nov/2022 01:18:31'!
 trackMessageReceiverUsage
 
 	messageReceiverUsageCount ifNil: [
@@ -4148,17 +4148,17 @@ trackMessageReceiverUsage
 	
 	messageReceiverUsageCount := 	messageReceiverUsageCount + 1! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 15:13:06'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 15:13:06'!
 unaryMessageSend
 	
 	Object new! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 2/16/2021 20:51:38'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 16/Feb/2021 20:51:38'!
 unusedTemporaryVariableDeclaration
 	
 	| a |! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 1/10/2021 16:57:28'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 10/Jan/2021 16:57:28'!
 value
 
 	"This example overrides uses super to send the same message that was received.
@@ -4169,12 +4169,12 @@ value
 
 	super value! !
 
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 12/13/2020 16:23:17'!
+!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 16:23:17'!
 variableNode
 	
 	true.! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/20/2021 02:13:25'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 20/Jan/2021 02:13:25'!
 test036_Informs0PercentCoverageWhenNoneOfTheAnalyzedCompiledMethodsOfAClassHaveBeenCovered
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4183,7 +4183,7 @@ test036_Informs0PercentCoverageWhenNoneOfTheAnalyzedCompiledMethodsOfAClassHaveB
 		
 	self assertCoveragePercentOfClass: self class is: 0! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 1/20/2021 02:13:25'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 20/Jan/2021 02:13:25'!
 test039_Informs100PercentCoverageWhenAllOfTheAnalyzedCompiledMethodsOfAClassHaveBeenCovered
 
 	self collectCoverageForExampleNamed: #emptyMethod.
@@ -4192,7 +4192,7 @@ test039_Informs100PercentCoverageWhenAllOfTheAnalyzedCompiledMethodsOfAClassHave
 		assertCoveragePercentOfClass: self class
 		is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 11/6/2022 01:53:37'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 6/Nov/2022 01:53:37'!
 test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyzedCompiledMethods
 	
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -4204,7 +4204,7 @@ test040_CalculatesThePercentCoverageOfAClassBasedOnThePercentCoverageOfItsAnalyz
 		
 	self assertCoveragePercentOfClass: self class is: 75! !
 
-!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 11/6/2022 01:53:58'!
+!CodeCoverageTest methodsFor: 'tests - class coverage report' stamp: 'NPM 6/Nov/2022 01:53:58'!
 test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForAll: {self class>>#emptyMethod. self class>>#foo:}.
@@ -4214,7 +4214,7 @@ test041_OverwritesCodeCoverageReportsForClassesGeneratedFromPreviouslyAnalizedBl
 		
 	self assertCoveragePercentOfClass: self class is: 25! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:21:22'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 20/Jan/2021 02:21:22'!
 test029_Informs0PercentCoverageWhenNoneOfTheCompiledMethodCollaborationsAreCovered
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4223,7 +4223,7 @@ test029_Informs0PercentCoverageWhenNoneOfTheCompiledMethodCollaborationsAreCover
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 0! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:39:04'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 20/Jan/2021 02:39:04'!
 test030_Informs100PercentCoverageWhenAllOfTheCompiledMethodCollaborationsAreCovered
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4232,7 +4232,7 @@ test030_Informs100PercentCoverageWhenAllOfTheCompiledMethodCollaborationsAreCove
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 11/6/2022 01:53:07'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 6/Nov/2022 01:53:07'!
 test030_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4241,7 +4241,7 @@ test030_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 50! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 11/6/2022 01:53:14'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 6/Nov/2022 01:53:14'!
 test031_DoesNotCountCoveredCollaborationsMoreThanOnce
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4250,7 +4250,7 @@ test031_DoesNotCountCoveredCollaborationsMoreThanOnce
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 50! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:05'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 20/Jan/2021 02:40:05'!
 test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4259,7 +4259,7 @@ test032_AppendsCoveredCollaborationsMadeFromDifferentCallsToACompiledMethod
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 11/6/2022 01:53:20'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 6/Nov/2022 01:53:20'!
 test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #foo:.
@@ -4269,7 +4269,7 @@ test034_OverwritesCodeCoverageReportsGeneratedFromPreviouslyAnalizedBlocks
 	
 	self assertPercentCoverageForExampleNamed: #foo: is: 50! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 1/20/2021 02:40:36'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 20/Jan/2021 02:40:36'!
 test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
 
 	
@@ -4277,18 +4277,18 @@ test035_Informs100PercentCoverageWhenCoveringAnEmptyCompiledMethod
 	
 	self assertPercentCoverageForExampleNamed: #emptyMethod is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 3/10/2021 08:40:51'!
+!CodeCoverageTest methodsFor: 'tests - compiled method coverage report' stamp: 'NPM 21/Apr/2026 08:34:57'!
 test104_IgnoresAbstractMethods
 
 	self
 		should: [ self collectCoverageForExampleNamed: #abstractMethod ]
 		raise: Error
 		withExceptionDo: [ :error |
-			self assert: (error messageText includesSubString: 'My subclass should have overridden') ].
+			self assert: (error messageText includesSubString: 'My subclass (CodeCoverageTest) should have redefined or inherited #abstractMethod') ].
 
 	self denyHasBeenAnalyzed: #abstractMethod! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:32'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:33:32'!
 test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrue.
@@ -4299,7 +4299,7 @@ test059_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssign
 	self assert: #temporaryVariableAssignedToTrue hasBeenCoveredFrom: 48 to: 51 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrue is: 66.67.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:33:43'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:33:43'!
 test060_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignedToFalse.
@@ -4310,7 +4310,7 @@ test060_PartiallyCoversABooleanTemporaryVariableDeclarationThatHasOnlyBeenAssign
 	self assert: #temporaryVariableAssignedToFalse hasBeenCoveredFrom: 49 to: 53 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToFalse is: 66.67.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 20:58:27'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 6/Feb/2021 20:58:27'!
 test061_FullyCoversABooleanTemporaryVariableDeclarationThatHasBeenAssignedToTrueAndFalse
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse.
@@ -4323,7 +4323,7 @@ test061_FullyCoversABooleanTemporaryVariableDeclarationThatHasBeenAssignedToTrue
 	self assert: #temporaryVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 67 to: 71 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueAndFalse is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:34:14'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:34:14'!
 test062_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanTemporaryVariables
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce.
@@ -4336,7 +4336,7 @@ test062_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanTemporaryVariabl
 	self assert: #temporaryVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 71 to: 74 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToTrueMoreThanOnce is: 70.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:15:41'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 6/Feb/2021 21:15:41'!
 test063_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean.
@@ -4349,7 +4349,7 @@ test063_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanA
 	self assert: #temporaryVariableAssignedToBooleanAndThenNonBoolean hasBeenCoveredFrom: 79 to: 79 as: '1'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToBooleanAndThenNonBoolean is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/6/2021 21:16:03'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 6/Feb/2021 21:16:03'!
 test064_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean.
@@ -4362,7 +4362,7 @@ test064_DoesNotConsiderATemporaryDeclarationAsBooleanWhenItIsAssignedToANonBoole
 	self assert: #temporaryVariableAssignedToNonBooleanAndThenBoolean hasBeenCoveredFrom: 76 to: 79 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #temporaryVariableAssignedToNonBooleanAndThenBoolean is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:34:42'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:34:42'!
 test065_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToTrue
 
 	self collectCoverageForExampleNamed: #methodWithOneArgument: with: true.
@@ -4372,7 +4372,7 @@ test065_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToTrue
 	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:35:04'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:35:04'!
 test066_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToFalse
 
 	self collectCoverageForExampleNamed: #methodWithOneArgument: with: false.
@@ -4382,7 +4382,7 @@ test066_PartiallyCoversABooleanArgumentThatHasOnlyBeenAssignedToFalse
 	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:06:48'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:06:48'!
 test067_FullyCoversABooleanArgumentThatHasBeenAssignedToTrueAndFalse
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
@@ -4397,7 +4397,7 @@ test067_FullyCoversABooleanArgumentThatHasBeenAssignedToTrueAndFalse
 	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:40:08'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:40:08'!
 test068_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanArguments
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
@@ -4412,7 +4412,7 @@ test068_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanArguments
 	self assert: #methodWithOneArgument: hasBeenHalfCoveredFrom: 30 to: 32 as: 'arg'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 50.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:06:56'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:06:56'!
 test069_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
@@ -4427,7 +4427,7 @@ test069_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANo
 	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:07:02'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:07:02'!
 test070_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #methodWithOneArgument:.
@@ -4442,7 +4442,7 @@ test070_DoesNotConsiderAnArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenTo
 	self assert: #methodWithOneArgument: hasBeenCoveredFrom: 30 to: 32 as: 'arg'.
 	self assertPercentCoverageForExampleNamed: #methodWithOneArgument: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:35:27'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:35:27'!
 test071_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToTrue
 
 	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToTrue.
@@ -4455,7 +4455,7 @@ test071_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToTrue
 	self assert: #blockWithArgumentAssignedToTrue hasBeenCoveredFrom: 69 to: 72 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToTrue is: 80.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:36:42'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:36:42'!
 test072_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToFalse
 
 	self collectCoverageForExampleNamed: #blockWithArgumentAssignedToFalse.
@@ -4468,7 +4468,7 @@ test072_PartiallyCoversABooleanBlockArgumentThatHasOnlyBeenAssignedToFalse
 	self assert: #blockWithArgumentAssignedToFalse hasBeenCoveredFrom: 70 to: 74 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgumentAssignedToFalse is: 80.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:17:30'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 00:17:30'!
 test073_FullyCoversABooleanBlockArgumentThatHasBeenAssignedToTrueAndFalse
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
@@ -4487,7 +4487,7 @@ test073_FullyCoversABooleanBlockArgumentThatHasBeenAssignedToTrueAndFalse
 	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:37:14'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:37:14'!
 test074_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanArguments
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
@@ -4506,7 +4506,7 @@ test074_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanArguments
 	self assert: #blockWithArgument: hasBeenHalfCoveredFrom: 67 to: 76 as: 'anArgument'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 66.67.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:02'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 00:21:02'!
 test075_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
@@ -4525,7 +4525,7 @@ test075_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToABooleanAndThenT
 	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 00:21:18'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 00:21:18'!
 test076_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #blockWithArgument:.
@@ -4544,7 +4544,7 @@ test076_DoesNotConsiderABlockArgumentAsBooleanWhenItIsAssignedToANonBooleanAndTh
 	self assert: #blockWithArgument: hasBeenCoveredFrom: 67 to: 76 as: 'anArgument'.
 	self assertPercentCoverageForExampleNamed: #blockWithArgument: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:37:48'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:37:48'!
 test077_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
 
 	self collectCoverageForExampleNamed: #assignBlockTemporary: with: true.
@@ -4558,7 +4558,7 @@ test077_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenA
 	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:41:57'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:41:57'!
 test078_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
 
 	self collectCoverageForExampleNamed: #assignBlockTemporary: with: false.
@@ -4572,7 +4572,7 @@ test078_PartiallyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenA
 	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:05'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:10:05'!
 test079_FullyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrueAndFalse
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
@@ -4591,7 +4591,7 @@ test079_FullyCoversABlockBooleanTemporaryVariableDeclarationThatHasOnlyBeenAssig
 	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 19:42:14'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 19:42:14'!
 test080_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanTemporaryVariables
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
@@ -4610,7 +4610,7 @@ test080_DoesNotCountMultipleAssignmentsWithTheSameValueToBlockBooleanTemporaryVa
 	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 66.67.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:29'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:10:29'!
 test081_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
@@ -4629,7 +4629,7 @@ test081_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToABoo
 	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:10:47'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:10:47'!
 test082_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #assignBlockTemporary:.
@@ -4648,7 +4648,7 @@ test082_DoesNotConsiderABlockTemporaryDeclarationAsBooleanWhenItIsAssignedToANon
 	self assert: #assignBlockTemporary: hasBeenCoveredFrom: 171 to: 175 as: 'value'.
 	self assertPercentCoverageForExampleNamed: #assignBlockTemporary: is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:33'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 12:30:33'!
 test083_PartiallyCoversABooleanSelectorThatOnlyReturnsTrue
 	
 	messageResult _ true.
@@ -4659,7 +4659,7 @@ test083_PartiallyCoversABooleanSelectorThatOnlyReturnsTrue
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:43'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 12:30:43'!
 test084_PartiallyCoversABooleanSelectorThatOnlyReturnsFalse
 	
 	messageResult _ true.
@@ -4670,7 +4670,7 @@ test084_PartiallyCoversABooleanSelectorThatOnlyReturnsFalse
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenHalfCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 08:33:39'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 08:33:39'!
 test085_FullyCoversABooleanSelectorThatReturnsTrueAndFalse
 	
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
@@ -4686,7 +4686,7 @@ test085_FullyCoversABooleanSelectorThatReturnsTrueAndFalse
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/14/2021 12:30:55'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 14/Feb/2021 12:30:55'!
 test086_DoesNotCountMultipleReturnsOfSameValueFromBooleanSelectors
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
@@ -4703,7 +4703,7 @@ test086_DoesNotCountMultipleReturnsOfSameValueFromBooleanSelectors
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 75.
 ! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/8/2021 09:26:22'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 8/Feb/2021 09:26:22'!
 test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsABooleanAndThenANonBoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
@@ -4719,7 +4719,7 @@ test087_DoesNotConsiderASelectorAsBooleanWhenItReturnsABooleanAndThenANonBoolean
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:33:02'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:33:02'!
 test088_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageSendReturningMessageResultInstanceVariable.
@@ -4735,7 +4735,7 @@ test088_DoesNotConsiderASelectorAsBooleanWhenItReturnsANonBooleanAndThenABoolean
 	self assert: #messageSendReturningMessageResultInstanceVariable hasBeenCoveredFrom: 58 to: 92 as: 'returnMessageResultInstanceVariable'.
 	self assertPercentCoverageForExampleNamed: #messageSendReturningMessageResultInstanceVariable is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:44:13'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:44:13'!
 test090_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToTrue
 
 	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrue.
@@ -4745,7 +4745,7 @@ test090_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssi
 	self assert: #instanceVariableAssignedToTrue hasBeenCoveredFrom: 53 to: 56 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrue is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:51:00'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:51:00'!
 test091_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssignedToFalse
 
 	self collectCoverageForExampleNamed: #instanceVariableAssignedToFalse.
@@ -4755,7 +4755,7 @@ test091_PartiallyCoversAnInstanceTemporaryVariableDeclarationThatHasOnlyBeenAssi
 	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:52:23'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:52:23'!
 test092_FullyCoversABooleanInstanceVariableDeclarationThatHasBeenAssignedToTrueAndFalse
 
 	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse.
@@ -4767,7 +4767,7 @@ test092_FullyCoversABooleanInstanceVariableDeclarationThatHasBeenAssignedToTrueA
 	self assert: #instanceVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 87 to: 91 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueAndFalse is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:55:19'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:55:19'!
 test093_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanInstanceVariables
 
 	self collectCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce.
@@ -4779,7 +4779,7 @@ test093_DoesNotCountMultipleAssignmentsWithTheSameValueToBooleanInstanceVariable
 	self assert: #instanceVariableAssignedToTrueMoreThanOnce hasBeenCoveredFrom: 92 to: 95 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToTrueMoreThanOnce is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:59:54'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:59:54'!
 test094_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
 
 	self collectCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean.
@@ -4791,7 +4791,7 @@ test094_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToABooleanAndT
 	self assert: #instanceVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 103 to: 103 as: '1'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToABooleanAndThenToANonBoolean is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 17:58:21'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 17:58:21'!
 test095_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
 
 	self collectCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean.
@@ -4803,7 +4803,7 @@ test095_DoesNotConsiderAnInstanceVariableAsBooleanWhenItIsAssignedToANonBooleanA
 	self assert: #instanceVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 100 to: 103 as: 'true'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToANonBooleanAndThenToABoolean is: 100.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/15/2021 18:33:48'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 15/Feb/2021 18:33:48'!
 test096_DoesNotCoverABooleanInstanceVariableAssignedInDifferentMethods
 
 	self setupCodeCoverageAnalyzerForAll: { self class>>#instanceVariableAssignedToTrue. self class>>#instanceVariableAssignedToFalse }.
@@ -4822,7 +4822,7 @@ test096_DoesNotCoverABooleanInstanceVariableAssignedInDifferentMethods
 	self assert: #instanceVariableAssignedToFalse hasBeenCoveredFrom: 54 to: 58 as: 'false'.
 	self assertPercentCoverageForExampleNamed: #instanceVariableAssignedToFalse is: 75.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/16/2021 20:53:55'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 16/Feb/2021 20:53:55'!
 test097_DoesNotCoverUnusedMethodArguments
 
 	self collectCoverageForExampleNamed: #emptyMethodWithUnusedArgument: with: 1.
@@ -4830,7 +4830,7 @@ test097_DoesNotCoverUnusedMethodArguments
 	self assert: #emptyMethodWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #emptyMethodWithUnusedArgument: hasBeenCoveredFrom: 32 to: 34 as: 'arg'.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:42:09'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 19/Feb/2021 01:42:09'!
 test098_PartiallyCoversABooleanClassVariableThatHasOnlyBeenAssignedToTrue
 
 	self collectCoverageForExampleNamed: #classVariableAssignedToTrue.
@@ -4839,7 +4839,7 @@ test098_PartiallyCoversABooleanClassVariableThatHasOnlyBeenAssignedToTrue
 	self assert: #classVariableAssignedToTrue hasBeenHalfCoveredFrom: 31 to: 43 as: 'ClassVariable'.
 	self assert: #classVariableAssignedToTrue hasBeenCoveredFrom: 47 to: 50 as: 'true'.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:42:20'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 19/Feb/2021 01:42:20'!
 test099_PartiallyCoversABooleanClassVariableThatHasOnlyBeenAssignedToFalse
 
 	self collectCoverageForExampleNamed: #classVariableAssignedToFalse.
@@ -4848,7 +4848,7 @@ test099_PartiallyCoversABooleanClassVariableThatHasOnlyBeenAssignedToFalse
 	self assert: #classVariableAssignedToFalse hasBeenHalfCoveredFrom: 32 to: 44 as: 'ClassVariable'.
 	self assert: #classVariableAssignedToFalse hasBeenCoveredFrom: 48 to: 52 as: 'false'.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:42:25'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 19/Feb/2021 01:42:25'!
 test100_FullyCoversABooleanClassVariableThatHasBeenAssignedToTrueAndFalse
 
 	self collectCoverageForExampleNamed: #classVariableAssignedToTrueAndFalse.
@@ -4859,7 +4859,7 @@ test100_FullyCoversABooleanClassVariableThatHasBeenAssignedToTrueAndFalse
 	self assert: #classVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 62 to: 74 as: 'ClassVariable'.
 	self assert: #classVariableAssignedToTrueAndFalse hasBeenCoveredFrom: 78 to: 82 as: 'false'.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:43:58'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 19/Feb/2021 01:43:58'!
 test101_DoesNotCountMultipleAssignmentsWithTheSameValueToClassTemporaryVariables
 
 	self collectCoverageForExampleNamed: #classVariableAssignedToABooleanMoreThanOnce.
@@ -4870,7 +4870,7 @@ test101_DoesNotCountMultipleAssignmentsWithTheSameValueToClassTemporaryVariables
 	self assert: #classVariableAssignedToABooleanMoreThanOnce hasBeenHalfCoveredFrom: 70 to: 82 as: 'ClassVariable'.
 	self assert: #classVariableAssignedToABooleanMoreThanOnce hasBeenCoveredFrom: 86 to: 89 as: 'true'.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:45:28'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 19/Feb/2021 01:45:28'!
 test102_DoesNotConsiderAClassVariableAsBooleanWhenItIsAssignedToABooleanAndThenToANonBoolean
 
 	self collectCoverageForExampleNamed: #classVariableAssignedToABooleanAndThenToANonBoolean.
@@ -4881,7 +4881,7 @@ test102_DoesNotConsiderAClassVariableAsBooleanWhenItIsAssignedToABooleanAndThenT
 	self assert: #classVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 78 to: 90 as: 'ClassVariable'.
 	self assert: #classVariableAssignedToABooleanAndThenToANonBoolean hasBeenCoveredFrom: 94 to: 94 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 2/19/2021 01:46:17'!
+!CodeCoverageTest methodsFor: 'tests - boolean coverage' stamp: 'NPM 19/Feb/2021 01:46:17'!
 test103_DoesNotConsiderAClassVariableAsBooleanWhenItIsAssignedToANonBooleanAndThenToABoolean
 
 	self collectCoverageForExampleNamed: #classVariableAssignedToANonBooleanAndThenToABoolean.
@@ -4892,7 +4892,7 @@ test103_DoesNotConsiderAClassVariableAsBooleanWhenItIsAssignedToANonBooleanAndTh
 	self assert: #classVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 75 to: 87 as: 'ClassVariable'.
 	self assert: #classVariableAssignedToANonBooleanAndThenToABoolean hasBeenCoveredFrom: 91 to: 94 as: 'true'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test001_1_CoversALiteralVariable
 
 	self collectCoverageForExampleNamed: #literalVariable.
@@ -4900,7 +4900,7 @@ test001_1_CoversALiteralVariable
 	self assertNumberOfCoveredRangesFor: #literalVariable is: 1 .
 	self assert: #literalVariable hasBeenCoveredFrom: 20 to: 25 as: 'Object'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test001_2_CoversManyLiteralVariables
 
 	self collectCoverageForExampleNamed: #manyLiteralVariables.
@@ -4909,7 +4909,7 @@ test001_2_CoversManyLiteralVariables
 	self assert: #manyLiteralVariables hasBeenCoveredFrom: 25 to: 30 as: 'Object'.
 	self assert: #manyLiteralVariables hasBeenCoveredFrom: 34 to: 44 as: 'ProtoObject'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test001_3_CoversMultipleOcurrencesOfTheSameLiteralVariable
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameLiteralVariables.
@@ -4918,7 +4918,7 @@ test001_3_CoversMultipleOcurrencesOfTheSameLiteralVariable
 	self assert: #multipleOcurrencesOfTheSameLiteralVariables hasBeenCoveredFrom: 48 to: 53 as: 'Object'.
 	self assert: #multipleOcurrencesOfTheSameLiteralVariables hasBeenCoveredFrom: 57 to: 62 as: 'Object'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:22:40'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:22:40'!
 test001_4_DoesNotCoverLiteralVariablesThatWereNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedLiteralVariable.
@@ -4926,7 +4926,7 @@ test001_4_DoesNotCoverLiteralVariablesThatWereNotExecuted
 	self assert: #notExecutedLiteralVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedLiteralVariable hasBeenCoveredFrom: 33 to: 38 as: 'Object'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test002_CoversAnUnaryMessageSend
 
 	self collectCoverageForExampleNamed: #unaryMessageSend.
@@ -4936,7 +4936,7 @@ test002_CoversAnUnaryMessageSend
 	self assert: #unaryMessageSend hasBeenCoveredFrom: 28 to: 30 as: 'new'.
 	! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:51'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:57:51'!
 test003_DoesNotCoverMessageSendsThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedMessageSend.
@@ -4945,7 +4945,7 @@ test003_DoesNotCoverMessageSendsThatAreNotExecuted
 	self deny: #notExecutedMessageSend hasBeenCoveredFrom: 29 to: 34 as: 'Object'.
 	self deny: #notExecutedMessageSend hasBeenCoveredFrom: 36 to: 38 as: 'new'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test004_CoversMultipleOcurrencesOfTheSameMessageSend
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameMessageSend.
@@ -4956,7 +4956,7 @@ test004_CoversMultipleOcurrencesOfTheSameMessageSend
 	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 56 to: 61 as: 'Object'.
 	self assert: #multipleOcurrencesOfTheSameMessageSend hasBeenCoveredFrom: 63 to: 65 as: 'new'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 11/4/2022 00:01:27'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 4/Nov/2022 00:01:27'!
 test005_CoversABinaryMessageSend
 
 	self collectCoverageForExampleNamed: #binaryMessageSend.
@@ -4967,7 +4967,7 @@ test005_CoversABinaryMessageSend
 	self assert: #binaryMessageSend hasBeenCoveredFrom: 25 to: 26 as: ' 2'.
 	! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test006_CoversAKeywordMessageSend
 
 	self collectCoverageForExampleNamed: #keywordMessageSend.
@@ -4980,7 +4980,7 @@ test006_CoversAKeywordMessageSend
 	self assert: #keywordMessageSend hasBeenCoveredFrom: 48 to: 58 as: 'ProtoObject'.
 	! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test007_CoversMultipleOcurrencesOfTheReceiverInAMessageSend
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheReceiverInAMessageSend.
@@ -4993,7 +4993,7 @@ test007_CoversMultipleOcurrencesOfTheReceiverInAMessageSend
 	self assert: #multipleOcurrencesOfTheReceiverInAMessageSend hasBeenCoveredFrom: 74 to: 78 as: 'Array'.
 	! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test008_CoversMultipleOcurrencesOfAnArgumentInAMessageSend
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfAnArgumentInAMessageSend.
@@ -5005,7 +5005,7 @@ test008_CoversMultipleOcurrencesOfAnArgumentInAMessageSend
 	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 68 to: 72 as: 'with:'.
 	self assert: #multipleOcurrencesOfAnArgumentInAMessageSend hasBeenCoveredFrom: 74 to: 79 as: 'Object'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test009_1_CoversALiteral
 
 	self collectCoverageForExampleNamed: #literal.
@@ -5013,7 +5013,7 @@ test009_1_CoversALiteral
 	self assertNumberOfCoveredRangesFor: #literal is: 1 .
 	self assert: #literal hasBeenCoveredFrom: 11 to: 12 as: '	1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test009_2_CoversManyLiterals
 
 	self collectCoverageForExampleNamed: #manyLiterals.
@@ -5022,7 +5022,7 @@ test009_2_CoversManyLiterals
 	self assert: #manyLiterals hasBeenCoveredFrom: 17 to: 17 as: '1'.
 	self assert: #manyLiterals hasBeenCoveredFrom: 21 to: 21 as: '2'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test009_3_CoversMultipleOcurrencesOfTheSameLiteral
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameLiteral.
@@ -5031,7 +5031,7 @@ test009_3_CoversMultipleOcurrencesOfTheSameLiteral
 	self assert: #multipleOcurrencesOfTheSameLiteral hasBeenCoveredFrom: 39 to: 39 as: '1'.
 	self assert: #multipleOcurrencesOfTheSameLiteral hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:33'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:57:33'!
 test009_4_DoesNotCoverLiteralsThatWereNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedLiteral.
@@ -5039,7 +5039,7 @@ test009_4_DoesNotCoverLiteralsThatWereNotExecuted
 	self assert: #notExecutedLiteral hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedLiteral hasBeenCoveredFrom: 25 to: 25 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test010_1_CoversAnInstanceVariable
 
 	self collectCoverageForExampleNamed: #instanceVariable.
@@ -5047,7 +5047,7 @@ test010_1_CoversAnInstanceVariable
 	self assertNumberOfCoveredRangesFor: #instanceVariable is: 1 .
 	self assert: #instanceVariable hasBeenCoveredFrom: 21 to: 36 as: 'instanceVariable'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test010_2_CoversMultipleInstanceVariables
 
 	self collectCoverageForExampleNamed: #multipleInstanceVariables.
@@ -5056,7 +5056,7 @@ test010_2_CoversMultipleInstanceVariables
 	self assert: #multipleInstanceVariables hasBeenCoveredFrom: 30 to: 45 as: 'instanceVariable'.
 	self assert: #multipleInstanceVariables hasBeenCoveredFrom: 49 to: 69 as: 'otherInstanceVariable'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test010_3_CoversMultipleOcurrencesOfTheSameInstanceVariable
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameInstanceVariable.
@@ -5065,7 +5065,7 @@ test010_3_CoversMultipleOcurrencesOfTheSameInstanceVariable
 	self assert: #multipleOcurrencesOfTheSameInstanceVariable hasBeenCoveredFrom: 48 to: 63 as: 'instanceVariable'.
 	self assert: #multipleOcurrencesOfTheSameInstanceVariable hasBeenCoveredFrom: 67 to: 82 as: 'instanceVariable'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:25'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:57:25'!
 test010_4_DoesNotCoverInstanceVariablesThatWereNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedInstanceVariable.
@@ -5073,7 +5073,7 @@ test010_4_DoesNotCoverInstanceVariablesThatWereNotExecuted
 	self assert: #notExecutedInstanceVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedInstanceVariable hasBeenCoveredFrom: 34 to: 49 as: 'instanceVariable'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/16/2021 20:52:27'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 16/Feb/2021 20:52:27'!
 test011_1_DoesNotCoverTemporariesDeclarations
 
 	self collectCoverageForExampleNamed: #unusedTemporaryVariableDeclaration.
@@ -5081,7 +5081,7 @@ test011_1_DoesNotCoverTemporariesDeclarations
 	self assert: #unusedTemporaryVariableDeclaration hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #unusedTemporaryVariableDeclaration hasBeenCoveredFrom: 41 to: 41 as: 'a'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:51:56'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 28/Jan/2021 20:51:56'!
 test011_2_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsRead
 
 	self collectCoverageForExampleNamed: #temporaryVariable.
@@ -5090,7 +5090,7 @@ test011_2_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIs
 	self assert: #temporaryVariable hasBeenCoveredFrom: 24 to: 24 as: 'a'.
 	self assert: #temporaryVariable hasBeenCoveredFrom: 31 to: 31 as: 'a'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:57:29'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 28/Jan/2021 18:57:29'!
 test011_3_CoversAManyTemporaryVariables
 
 	self collectCoverageForExampleNamed: #manyTemporaryVariables.
@@ -5101,7 +5101,7 @@ test011_3_CoversAManyTemporaryVariables
 	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 38 to: 38 as: 'a'.
 	self assert: #manyTemporaryVariables hasBeenCoveredFrom: 42 to: 42 as: 'b'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 18:56:26'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 28/Jan/2021 18:56:26'!
 test011_4_CoversMultipleOccurrencesOfTheSameTemporaryVariable
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameTemporaryVariable.
@@ -5111,14 +5111,14 @@ test011_4_CoversMultipleOccurrencesOfTheSameTemporaryVariable
 	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
 	self assert: #multipleOcurrencesOfTheSameTemporaryVariable hasBeenCoveredFrom: 62 to: 62 as: 'a'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 20:54:11'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 28/Jan/2021 20:54:11'!
 test011_5_DoesNotCoverATemporaryVariableOrItsDeclarationWhenTheTemporaryVariableIsNotReadNorWritten
 
 	self collectCoverageForExampleNamed: #notExecutedTemporaryVariable.
 	
 	self assert: #notExecutedTemporaryVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test012_1_CoversAVariable
 
 	self collectCoverageForExampleNamed: #variableNode.
@@ -5126,7 +5126,7 @@ test012_1_CoversAVariable
 	self assertNumberOfCoveredRangesFor: #variableNode is: 1 .
 	self assert: #variableNode hasBeenCoveredFrom: 17 to: 20 as: 'true'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test012_2_CoversMutipleVariables
 
 	self collectCoverageForExampleNamed: #mutipleVariableNodes.
@@ -5135,7 +5135,7 @@ test012_2_CoversMutipleVariables
 	self assert: #mutipleVariableNodes hasBeenCoveredFrom: 25 to: 28 as: 'true'.
 	self assert: #mutipleVariableNodes hasBeenCoveredFrom: 32 to: 36 as: 'false'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test012_3_CoversMultipleOcurrencesOftheSameVariable
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOftheSameVariable.
@@ -5144,7 +5144,7 @@ test012_3_CoversMultipleOcurrencesOftheSameVariable
 	self assert: #multipleOcurrencesOftheSameVariable hasBeenCoveredFrom: 40 to: 43 as: 'true'.
 	self assert: #multipleOcurrencesOftheSameVariable hasBeenCoveredFrom: 47 to: 50 as: 'true'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:10'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:57:10'!
 test012_4_DoesNotCoverVariablesThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedVariable.
@@ -5152,14 +5152,14 @@ test012_4_DoesNotCoverVariablesThatAreNotExecuted
 	self assert: #notExecutedVariable hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedVariable hasBeenCoveredFrom: 26 to: 29 as: 'true'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test013_1_DoesNotCoverImplicitSelfReturns
 
 	self collectCoverageForExampleNamed: #implicitSelfReturn.
 	
 	self assertNumberOfCoveredRangesFor: #implicitSelfReturn is: 0 .! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test013_2_CoversReturnNodes
 
 	self collectCoverageForExampleNamed: #return.
@@ -5167,7 +5167,7 @@ test013_2_CoversReturnNodes
 	self assertNumberOfCoveredRangesFor: #return is: 1 .
 	self assert: #return hasBeenCoveredFrom: 12 to: 13 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:57:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:57:03'!
 test013_3_DoesNotCoversReturnNodesThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedReturnNode.
@@ -5175,7 +5175,7 @@ test013_3_DoesNotCoversReturnNodesThatAreNotExecuted
 	self assert: #notExecutedReturnNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedReturnNode hasBeenCoveredFrom: 30 to: 30 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:51'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:56:51'!
 test013_4_CoversTheExecutedOcurrenceOfMultipleReturnNodes
 
 	self collectCoverageForExampleNamed: #multipleReturnNodes.
@@ -5184,7 +5184,7 @@ test013_4_CoversTheExecutedOcurrenceOfMultipleReturnNodes
 	self deny: #multipleReturnNodes hasBeenCoveredFrom: 28 to: 28 as: '1'.
 	self assert: #multipleReturnNodes hasBeenCoveredFrom: 37 to: 38 as: ' 2'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:37'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:56:37'!
 test013_5_CoversTheExecutedOcurrenceOfTheSameReturnNode
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameReturnNodes.
@@ -5193,7 +5193,7 @@ test013_5_CoversTheExecutedOcurrenceOfTheSameReturnNode
 	self deny: #multipleOcurrencesOfTheSameReturnNodes hasBeenCoveredFrom: 47 to: 47 as: '1'.
 	self assert: #multipleOcurrencesOfTheSameReturnNodes hasBeenCoveredFrom: 56 to: 57 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test014_1_CoversAnAssignment
 
 	self collectCoverageForExampleNamed: #assignment.
@@ -5202,7 +5202,7 @@ test014_1_CoversAnAssignment
 	self assert: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
 	self assert: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test014_2_CoversMultipleAssignments
 
 	self collectCoverageForExampleNamed: #multipleAssignments.
@@ -5213,7 +5213,7 @@ test014_2_CoversMultipleAssignments
 	self assert: #multipleAssignments hasBeenCoveredFrom: 48 to: 68 as: 'otherInstanceVariable'.
 	self assert: #multipleAssignments hasBeenCoveredFrom: 73 to: 73 as: '2'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test014_3_CoversMultipleOcurrencesOfTheSameAssignment
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameAssignment.
@@ -5224,7 +5224,7 @@ test014_3_CoversMultipleOcurrencesOfTheSameAssignment
 	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 66 to: 81 as: 'instanceVariable'.
 	self assert: #multipleOcurrencesOfTheSameAssignment hasBeenCoveredFrom: 86 to: 86 as: '2'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:28'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:56:28'!
 test014_4_DoesNotCoverAssignmentsThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedAssignment.
@@ -5233,7 +5233,7 @@ test014_4_DoesNotCoverAssignmentsThatAreNotExecuted
 	self deny: #notExecutedAssignment hasBeenCoveredFrom: 28 to: 43 as: 'instanceVariable'.
 	self deny: #notExecutedAssignment hasBeenCoveredFrom: 48 to: 48 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test014_5_CoversTheUsageOfTheVariableThatIsBeingAssigned
 
 	self collectCoverageForExampleNamed: #assignVariableToItself.
@@ -5242,7 +5242,7 @@ test014_5_CoversTheUsageOfTheVariableThatIsBeingAssigned
 	self assert: #assignVariableToItself hasBeenCoveredFrom: 27 to: 42 as: 'instanceVariable'.
 	self assert: #assignVariableToItself hasBeenCoveredFrom: 47 to: 62 as: 'instanceVariable'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test015_1_CoversABacktickNode
 
 	self collectCoverageForExampleNamed: #backtick.
@@ -5250,7 +5250,7 @@ test015_1_CoversABacktickNode
 	self assertNumberOfCoveredRangesFor: #backtick is: 1 .
 	self assert: #backtick hasBeenCoveredFrom: 13 to: 24 as: '`Object new`'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test015_2_CoversMultipleBacktickNodes
 
 	self collectCoverageForExampleNamed: #multipleBacktickNodes.
@@ -5259,7 +5259,7 @@ test015_2_CoversMultipleBacktickNodes
 	self assert: #multipleBacktickNodes hasBeenCoveredFrom: 26 to: 37 as: '`Object new`'.
 	self assert: #multipleBacktickNodes hasBeenCoveredFrom: 41 to: 51 as: '`Array new`'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test015_3_CoversMultipleOcurrencesOftheSameBacktickNode
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBacktickNode.
@@ -5268,7 +5268,7 @@ test015_3_CoversMultipleOcurrencesOftheSameBacktickNode
 	self assert: #multipleOcurrencesOfTheSameBacktickNode hasBeenCoveredFrom: 44 to: 55 as: '`Object new`'.
 	self assert: #multipleOcurrencesOfTheSameBacktickNode hasBeenCoveredFrom: 59 to: 70 as: '`Object new`'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:22'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:56:22'!
 test015_5_DoesNotCoverBackticksNodesThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedBacktickNode.
@@ -5276,7 +5276,7 @@ test015_5_DoesNotCoverBackticksNodesThatAreNotExecuted
 	self assert: #notExecutedBacktickNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedBacktickNode hasBeenCoveredFrom: 30 to: 41 as: '`Object new`'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test016_1_CoversTheEvaluationOfAnEmptyBlock
 
 	self collectCoverageForExampleNamed: #emptyBlock.
@@ -5284,7 +5284,7 @@ test016_1_CoversTheEvaluationOfAnEmptyBlock
 	self assertNumberOfCoveredRangesFor: #emptyBlock is: 1 .
 	self assert: #emptyBlock hasBeenCoveredFrom: 18 to: 22 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test016_2_CoversTheEvaluationOfABlock
 
 	self collectCoverageForExampleNamed: #block.
@@ -5293,7 +5293,7 @@ test016_2_CoversTheEvaluationOfABlock
 	self assert: #block hasBeenCoveredFrom: 12 to: 12 as: '1'.
 	self assert: #block hasBeenCoveredFrom: 16 to: 20 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test016_3_CoversTheEvaluationOfMultipleBlocks
 
 	self collectCoverageForExampleNamed: #multipleEmptyBlocks.
@@ -5304,7 +5304,7 @@ test016_3_CoversTheEvaluationOfMultipleBlocks
 	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 40 to: 40 as: '2'.
 	self assert: #multipleEmptyBlocks hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test016_4_CoversMultipleOcurrencesOfTheSameBlockNode
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBlockNode.
@@ -5315,7 +5315,7 @@ test016_4_CoversMultipleOcurrencesOfTheSameBlockNode
 	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 57 to: 57 as: '1'.
 	self assert: #multipleOcurrencesOfTheSameBlockNode hasBeenCoveredFrom: 61 to: 65 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:56:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:56:03'!
 test016_5_DoesNotCoverBlockNodesThatAreNotEvaluated
 
 	self collectCoverageForExampleNamed: #notEvaluatedBlockNode.
@@ -5323,7 +5323,7 @@ test016_5_DoesNotCoverBlockNodesThatAreNotEvaluated
 	self assert: #notEvaluatedBlockNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notEvaluatedBlockNode hasBeenCoveredFrom: 28 to: 28 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:42:01'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:42:01'!
 test016_7_CoversMultipleTemporaryVariablesInABlock
 
 	self collectCoverageForExampleNamed: #blockWithTemporaryVariables.
@@ -5337,7 +5337,7 @@ test016_7_CoversMultipleTemporaryVariablesInABlock
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 59 to: 59 as: '2'.
 	self assert: #blockWithTemporaryVariables hasBeenCoveredFrom: 63 to: 67 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:30:25'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:30:25'!
 test016_8_CoversBlockArgumentsWhenTheyAreReferenced
 
 	self collectCoverageForExampleNamed: #blockWithArguments.
@@ -5353,7 +5353,7 @@ test016_8_CoversBlockArgumentsWhenTheyAreReferenced
 	self assert: #blockWithArguments hasBeenCoveredFrom: 50 to: 55 as: 'value:'.
 	self assert: #blockWithArguments hasBeenCoveredFrom: 56 to: 57 as: ' 2'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test017_1_CoversABraceNode
 
 	self collectCoverageForExampleNamed: #braceNode.
@@ -5362,7 +5362,7 @@ test017_1_CoversABraceNode
 	self assert: #braceNode hasBeenCoveredFrom: 14 to: 18 as: '{ 1 }'.
 	! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test017_2_CoversMultipleBraceNodes
 
 	self collectCoverageForExampleNamed: #multipleBraceNodes.
@@ -5372,7 +5372,7 @@ test017_2_CoversMultipleBraceNodes
 	self assert: #multipleBraceNodes hasBeenCoveredFrom: 31 to: 35 as: '{ 2 }'.
 	! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test017_3_CoversMultipleOcurrencesOfTheSameBraceNode
 
 	self collectCoverageForExampleNamed: #multipleOcurrencesOfTheSameBraceNode.
@@ -5381,7 +5381,7 @@ test017_3_CoversMultipleOcurrencesOfTheSameBraceNode
 	self assert: #multipleOcurrencesOfTheSameBraceNode hasBeenCoveredFrom: 41 to: 45 as: '{ 1 }'.
 	self assert: #multipleOcurrencesOfTheSameBraceNode hasBeenCoveredFrom: 49 to: 53 as: '{ 1 }'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:55:49'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:55:49'!
 test017_4_DoesNotCoverBraceNodesThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedBraceNode.
@@ -5389,7 +5389,7 @@ test017_4_DoesNotCoverBraceNodesThatAreNotExecuted
 	self assert: #notExecutedBraceNode hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 1.
 	self deny: #notExecutedBraceNode hasBeenCoveredFrom: 27 to: 31 as: '{ 1 }'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test018_1_CoversACascadeMessageSend
 
 	self collectCoverageForExampleNamed: #cascade.
@@ -5399,7 +5399,7 @@ test018_1_CoversACascadeMessageSend
 	self assert: #cascade hasBeenCoveredFrom: 21 to: 23 as: 'new'.
 	self assert: #cascade hasBeenCoveredFrom: 28 to: 32 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 10/30/2021 17:23:23'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 30/Oct/2021 17:23:23'!
 test018_2_CoversACascadeMessageSendWithArgument
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #cascadeWithArgument:.
@@ -5414,7 +5414,7 @@ test018_2_CoversACascadeMessageSendWithArgument
 	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 44 to: 46 as: 'arg'.
 	self assert: #cascadeWithArgument: hasBeenCoveredFrom: 51 to: 54 as: 'copy'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test019_CoversCollaborationsWithImplicitSelfReturnsWhenSelfIsReferenced
 
 	self collectCoverageForExampleNamed: #implicitSelfReturnWhenSelfIsReferenced.
@@ -5423,7 +5423,7 @@ test019_CoversCollaborationsWithImplicitSelfReturnsWhenSelfIsReferenced
 	self assert: #implicitSelfReturnWhenSelfIsReferenced hasBeenCoveredFrom: 43 to: 46 as: 'self'.
 	self assert: #implicitSelfReturnWhenSelfIsReferenced hasBeenCoveredFrom: 48 to: 52 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:55:27'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:55:27'!
 test020_DoesNotCoverMessageArgumentsThatAreNotExecuted
 
 	self collectCoverageForExampleNamed: #notExecutedMessageArgument.
@@ -5437,7 +5437,7 @@ test020_DoesNotCoverMessageArgumentsThatAreNotExecuted
 	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 70 to: 73 as: 'self'.
 	self deny: #notExecutedMessageArgument hasBeenCoveredFrom: 75 to: 85 as: 'printString'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:28:52'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:28:52'!
 test021_CoversOptimizedMessages
 
 	self collectCoverageForExampleNamed: #optimizedMessage.
@@ -5451,7 +5451,7 @@ test021_CoversOptimizedMessages
 	self assert: #optimizedMessage hasBeenCoveredFrom: 46 to: 51 as: 'number'.
 	self assert: #optimizedMessage hasBeenCoveredFrom: 53 to: 57 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 10/30/2021 17:15:23'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 30/Oct/2021 17:15:23'!
 test022_CoversTheReceiverOfACascadeNodeWhenItIsAMessageSend
 
 	self collectCoverageForExampleNamed: #cascadeNodeWithMessageSendReceiver.
@@ -5462,7 +5462,7 @@ test022_CoversTheReceiverOfACascadeNodeWhenItIsAMessageSend
 	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 62 to: 65 as: 'copy'.
 	self assert: #cascadeNodeWithMessageSendReceiver hasBeenCoveredFrom: 70 to: 77 as: 'yourself'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test023_CoversTheReceiverOfACascadeNodeWhenItIsABlockThatIsEvaluated
 
 	self collectCoverageForExampleNamed: #cascadeNodeWithBlockReceiverThatIsEvaluated.
@@ -5473,7 +5473,7 @@ test023_CoversTheReceiverOfACascadeNodeWhenItIsABlockThatIsEvaluated
 	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 64 to: 68 as: 'class'.
 	self assert: #cascadeNodeWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 73 to: 77 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:50:13'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:50:13'!
 test024_DoesNotCoverTheReceiverOfACascadeNodeWhenItIsABlockThatIsNotExecuted
 
 	self collectCoverageForExampleNamed: #cascadeNodeWithBlockReceiverThatIsNotEvaluated.
@@ -5484,7 +5484,7 @@ test024_DoesNotCoverTheReceiverOfACascadeNodeWhenItIsABlockThatIsNotExecuted
 	self deny: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 52 to: 55 as: 'self'.
 	self deny: #cascadeNodeWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 57 to: 61 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test025_CoversTheReceiverOfAMessageSendWhenItIsAMessageSend
 
 	self collectCoverageForExampleNamed: #messageSendWithMessageSendReceiver.
@@ -5494,7 +5494,7 @@ test025_CoversTheReceiverOfAMessageSendWhenItIsAMessageSend
 	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 57 to: 59 as: 'new'.
 	self assert: #messageSendWithMessageSendReceiver hasBeenCoveredFrom: 64 to: 68 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test026_CoversTheReceiverOfAMessageSendWhenItIsABlockThatIsEvaluated
 
 	self collectCoverageForExampleNamed: #messageSendWithBlockReceiverThatIsEvaluated.
@@ -5504,7 +5504,7 @@ test026_CoversTheReceiverOfAMessageSendWhenItIsABlockThatIsEvaluated
 	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 56 to: 58 as: 'new'.
 	self assert: #messageSendWithBlockReceiverThatIsEvaluated hasBeenCoveredFrom: 64 to: 68 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 01:48:12'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 01:48:12'!
 test027_DoesNotCoverTheReceiverOfAMessageSendWhenItIsABlockThatIsNotEvaluated
 
 	self collectCoverageForExampleNamed: #messageSendWithBlockReceiverThatIsNotEvaluated.
@@ -5514,7 +5514,7 @@ test027_DoesNotCoverTheReceiverOfAMessageSendWhenItIsABlockThatIsNotEvaluated
 	self deny: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 52 to: 57 as: 'Object'.
 	self deny: #messageSendWithBlockReceiverThatIsNotEvaluated hasBeenCoveredFrom: 59 to: 61 as: 'new'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test028_DoesNotCoverSuper
 
 	"TODO: Don't cover the super receiver in message sends for now, as it has to be handled separately. NPM"
@@ -5524,7 +5524,7 @@ test028_DoesNotCoverSuper
 	self assertNumberOfCoveredRangesFor: #value is: 1 .
 	self assert: #value hasBeenCoveredFrom: 381 to: 385 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/20/2021 02:14:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 20/Jan/2021 02:14:03'!
 test037_DoesNotCoverEmptyMethods
 
 	"TODO: do this for now. This case will probably have to be handled separately. NPM"
@@ -5533,7 +5533,7 @@ test037_DoesNotCoverEmptyMethods
 		
 	self assertNumberOfCoveredRangesFor: #emptyMethod is: 0 . ! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:00:37'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 28/Jan/2021 17:00:37'!
 test046_CoversMessagesThatSignalAnError
 
 	self
@@ -5547,7 +5547,7 @@ test046_CoversMessagesThatSignalAnError
 	self assert: #raiseError hasBeenCoveredFrom: 28 to: 31 as: 'self'.
 	self assert: #raiseError hasBeenCoveredFrom: 33 to: 54 as: 'errorMessageForTesting'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:07:03'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:07:03'!
 test047_CoversSelectorArgumentsWhenTheyAreReferenced
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithArgument:.
@@ -5559,7 +5559,7 @@ test047_CoversSelectorArgumentsWhenTheyAreReferenced
 	self assert: #messageWithArgument: hasBeenCoveredFrom: 36 to: 45 as: 'anArgument'.
 	self assert: #messageWithArgument: hasBeenCoveredFrom: 47 to: 51 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/28/2021 17:10:13'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 28/Jan/2021 17:10:13'!
 test048_CoversBlocksThatSignalAnError
 
 	self
@@ -5574,7 +5574,7 @@ test048_CoversBlocksThatSignalAnError
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 42 to: 63 as: 'errorMessageForTesting'.
 	self assert: #raiseErrorFromBlock hasBeenCoveredFrom: 67 to: 71 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:14'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 31/Jan/2021 21:17:14'!
 test049_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsWritten
 
 	self collectCoverageForExampleNamed: #temporaryVariableAssignment.
@@ -5584,7 +5584,7 @@ test049_CoversTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariableIsWr
 	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 39 to: 39 as: 'a'.
 	self assert: #temporaryVariableAssignment hasBeenCoveredFrom: 43 to: 44 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/31/2021 21:17:24'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 31/Jan/2021 21:17:24'!
 test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariableIsReadOrWrittenMoreThanOnce
 
 	self collectCoverageForExampleNamed: #temporaryVariableReadAndAssignment.
@@ -5595,7 +5595,7 @@ test050_CoversTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVari
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 50 to: 50 as: '1'.
 	self assert: #temporaryVariableReadAndAssignment hasBeenCoveredFrom: 55 to: 55 as: 'a'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:17:15'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:17:15'!
 test051_DoesNotCoversSelectorArgumentsWhenTheyAreNotReferenced
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageWithUnusedArgument:.
@@ -5604,7 +5604,7 @@ test051_DoesNotCoversSelectorArgumentsWhenTheyAreNotReferenced
 
 	self assert: #messageWithUnusedArgument: hasNumberOfCoveredRanges: 0 andNumberOfSourceRanges: 2.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:19:48'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:19:48'!
 test052_CoversSelectorArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #messageArgumentUsedManyTimes:.
@@ -5616,7 +5616,7 @@ test052_CoversSelectorArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
 	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 44 to: 53 as: 'anArgument'.
 	self assert: #messageArgumentUsedManyTimes: hasBeenCoveredFrom: 57 to: 66 as: 'anArgument'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/16/2021 20:39:38'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 16/Feb/2021 20:39:38'!
 test053_DoesNotCoverBlockArgumentsWhenTheyAreNotReferenced
 
 	self collectCoverageForExampleNamed: #blockWithUnusedArgument.
@@ -5626,7 +5626,7 @@ test053_DoesNotCoverBlockArgumentsWhenTheyAreNotReferenced
 	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 36 to: 41 as: 'value:'.
 	self assert: #blockWithUnusedArgument hasBeenCoveredFrom: 42 to: 43 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:33:52'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:33:52'!
 test054_CoversBlockArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
 
 	self collectCoverageForExampleNamed: #blockWithArgumentUsedManyTimes.
@@ -5639,7 +5639,7 @@ test054_CoversBlockArgumentsOnlyOnceWhenTheyAreReferencedMultipleTimes
 	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 70 to: 75 as: 'value:'.
 	self assert: #blockWithArgumentUsedManyTimes hasBeenCoveredFrom: 76 to: 77 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:39:35'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:39:35'!
 test055_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreRead
 
 	self collectCoverageForExampleNamed: #blockWithReadTemporaryVariable.
@@ -5649,7 +5649,7 @@ test055_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariabl
 	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 40 to: 40 as: 'a'.
 	self assert: #blockWithReadTemporaryVariable hasBeenCoveredFrom: 44 to: 48 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:40:28'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:40:28'!
 test056_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariablesAreWritten
 
 	self collectCoverageForExampleNamed: #blockWithWrittenTemporaryVariable.
@@ -5660,7 +5660,7 @@ test056_CoversBlockTemporaryVariablesAndTheirDeclarationsWhenTheTemporaryVariabl
 	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 47 to: 47 as: '1'.
 	self assert: #blockWithWrittenTemporaryVariable hasBeenCoveredFrom: 51 to: 55 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/29/2021 02:44:07'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 29/Jan/2021 02:44:07'!
 test057_CoversBlockTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporaryVariablesAreReferencedMultipleTimes
 
 	self collectCoverageForExampleNamed: #blockWithReadAndWrittenTemporaryVariable.
@@ -5672,7 +5672,7 @@ test057_CoversBlockTemporaryVariablesAndTheirDeclarationsOnlyOnceWhenTheTemporar
 	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 58 to: 58 as: 'a'.
 	self assert: #blockWithReadAndWrittenTemporaryVariable hasBeenCoveredFrom: 62 to: 66 as: 'value'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 2/1/2021 22:31:32'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 1/Feb/2021 22:31:32'!
 test058_DoesNotCoverMethodsThatWereNotExecuted
 
 	self setupCodeCoverageAnalyzerForExampleNamed: #assignment.
@@ -5683,14 +5683,14 @@ test058_DoesNotCoverMethodsThatWereNotExecuted
 	self deny: #assignment hasBeenCoveredFrom: 15 to: 30 as: 'instanceVariable'.
 	self deny: #assignment hasBeenCoveredFrom: 34 to: 35 as: ' 1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 11/17/2022 01:18:56'!
+!CodeCoverageTest methodsFor: 'tests - parse nodes coverage' stamp: 'NPM 17/Nov/2022 01:18:56'!
 test114_EvaluatesReceiversOnlyOnceWhenCoveringMessageSends
 	
 	self collectCoverageForExampleNamed: #messageReceiverTracker.
 
 	self assertMessageReceiverUsageCountIs: 1! !
 
-!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:36:10'!
+!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 20/Jan/2021 02:36:10'!
 test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHave100PercentCoverage
 
 	self setupCodeCoverageAnalyzerForAll: {CodeCoverageTestClass1>>#m1}.
@@ -5700,7 +5700,7 @@ test043_Informs100PercentCoverageWhenAllOfTheAnalizedClassesInASystemCategoryHav
 	self assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1
 	       category is: 100! !
 
-!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:16:09'!
+!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 20/Jan/2021 02:16:09'!
 test044_Informs0PercentCoverageWhenNoneOfTheAnalizedClassesInASystemCategoryHaveBeenCovered
 
 	self setupCodeCoverageAnalyzerForAll: {CodeCoverageTestClass1>>#m1}.
@@ -5711,7 +5711,7 @@ test044_Informs0PercentCoverageWhenNoneOfTheAnalizedClassesInASystemCategoryHave
 		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
 		is: 0! !
 
-!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 1/20/2021 02:16:16'!
+!CodeCoverageTest methodsFor: 'tests - system category coverage report' stamp: 'NPM 20/Jan/2021 02:16:16'!
 test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 
 	self setupCodeCoverageAnalyzerForAll: {
@@ -5727,12 +5727,12 @@ test045_InformsThePercentageOfCollaborationsThatWereCoveredInACompiledMethod
 		assertCoveragePercentOfSystemCategory: CodeCoverageTestClass1 category
 		is: 66.67! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 03:02:32'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 03:02:32'!
 blockReturningFromMethodWith: anObject
 
 	anObject ifTrue: [ ^ 1 ]! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:30:28'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:30:28'!
 test105_PartiallyCoversIfTrueMessageSendsWhenBothBranchesAreNotExercised
 	
 	self collectCoverageForExampleNamed: #ifTrue: with: true.
@@ -5743,7 +5743,7 @@ test105_PartiallyCoversIfTrueMessageSendsWhenBothBranchesAreNotExercised
 	self assert: #ifTrue: hasBeenHalfCoveredFrom: 29 to: 35 as: 'ifTrue:'.
 	self assert: #ifTrue: hasBeenCoveredFrom: 39 to: 39 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:30:52'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:30:52'!
 test106_FullyCoversIfTrueMessageSendsWhenBothBranchesAreExercised
 	
 	self collectCoverageForExampleNamed: #ifTrue: withTestCases: {true. false.}.
@@ -5754,7 +5754,7 @@ test106_FullyCoversIfTrueMessageSendsWhenBothBranchesAreExercised
 	self assert: #ifTrue: hasBeenCoveredFrom: 29 to: 35 as: 'ifTrue:'.
 	self assert: #ifTrue: hasBeenCoveredFrom: 39 to: 39 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:04:04'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:04:04'!
 test107_PartiallyCoversIfTrueIfFalseMessageSendsWhenBothBranchesAreNotExercised
 	
 	self collectCoverageForExampleNamed: #ifTrueIfFalse: with: true.
@@ -5765,7 +5765,7 @@ test107_PartiallyCoversIfTrueIfFalseMessageSendsWhenBothBranchesAreNotExercised
 	self assert: #ifTrueIfFalse: hasBeenHalfCoveredFrom: 40 to: 46 as: 'ifTrue:'.
 	self assert: #ifTrueIfFalse: hasBeenHalfCoveredFrom: 53 to: 60 as: 'ifFalse:'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:04:59'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:04:59'!
 test108_FullyCoversIfTrueIfFalseMessageSendsWhenBothBranchesAreExercised
 	
 	self collectCoverageForExampleNamed: #ifTrueIfFalse: withTestCases: {true. false}.
@@ -5776,7 +5776,7 @@ test108_FullyCoversIfTrueIfFalseMessageSendsWhenBothBranchesAreExercised
 	self assert: #ifTrueIfFalse: hasBeenCoveredFrom: 40 to: 46 as: 'ifTrue:'.
 	self assert: #ifTrueIfFalse: hasBeenCoveredFrom: 53 to: 60 as: 'ifFalse:'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:05:18'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:05:18'!
 test109_PartiallyCoversIfFalseMessageSendsWhenBothBranchesAreNotExercised
 	
 	self collectCoverageForExampleNamed: #ifFalse: with: false.
@@ -5787,7 +5787,7 @@ test109_PartiallyCoversIfFalseMessageSendsWhenBothBranchesAreNotExercised
 	self assert: #ifFalse: hasBeenHalfCoveredFrom: 32 to: 39 as: 'ifFalse:'.
 	self assert: #ifFalse: hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:05:55'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:05:55'!
 test110_FullyCoversIfFalseMessageSendsWhenBothBranchesAreExercised
 	
 	self collectCoverageForExampleNamed: #ifFalse: withTestCases: {true. false}.
@@ -5798,7 +5798,7 @@ test110_FullyCoversIfFalseMessageSendsWhenBothBranchesAreExercised
 	self assert: #ifFalse: hasBeenCoveredFrom: 32 to: 39 as: 'ifFalse:'.
 	self assert: #ifFalse: hasBeenCoveredFrom: 43 to: 43 as: '1'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:06:31'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:06:31'!
 test111_PartiallyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreNotExercised
 	
 	self collectCoverageForExampleNamed: #ifFalseIfTrue: with: true.
@@ -5809,7 +5809,7 @@ test111_PartiallyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreNotExercised
 	self assert: #ifFalseIfTrue: hasBeenHalfCoveredFrom: 40 to: 47 as: 'ifFalse:'.
 	self assert: #ifFalseIfTrue: hasBeenHalfCoveredFrom: 54 to: 60 as: 'ifTrue:'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 02:06:51'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 02:06:51'!
 test112_FullyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreExercised
 	
 	self collectCoverageForExampleNamed: #ifFalseIfTrue: withTestCases: {true. false}.
@@ -5820,7 +5820,7 @@ test112_FullyCoversIfFalseIfTrueMessageSendsWhenBothBranchesAreExercised
 	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 40 to: 47 as: 'ifFalse:'.
 	self assert: #ifFalseIfTrue: hasBeenCoveredFrom: 54 to: 60 as: 'ifTrue:'.! !
 
-!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 11/6/2022 03:10:02'!
+!CodeCoverageTest methodsFor: 'tests - decision coverage' stamp: 'NPM 6/Nov/2022 03:10:02'!
 test113_FullyCoversDecisionSelectorsWhenTheyReturnFromTheMethodTheyWereCreatedFrom
 	
 	self collectCoverageForExampleNamed: #blockReturningFromMethodWith: withTestCaseArguments: {{true}. {false}}.
@@ -5831,7 +5831,7 @@ test113_FullyCoversDecisionSelectorsWhenTheyReturnFromTheMethodTheyWereCreatedFr
 	self assert: #blockReturningFromMethodWith: hasBeenCoveredFrom: 51 to: 57 as: 'ifTrue:'.
 	self assert: #blockReturningFromMethodWith: hasBeenCoveredFrom: 63 to: 63 as: '1'.! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 1/10/2021 15:50:57'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'assertions' stamp: 'NPM 10/Jan/2021 15:50:57'!
 assertRaisesCannotBeCreatedError: aBlock
 	
 	self
@@ -5840,7 +5840,7 @@ assertRaisesCannotBeCreatedError: aBlock
 		withMessageText: CompiledMethodCoverageAnalyzer shouldOnlyBeCreatedForCompiledMethodsErrorMessage
 	! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 9/10/2022 16:17:22'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 10/Sep/2022 16:17:22'!
 createAnalyzerFor: aCompiledMethod
 
 	compiledMethodAnalyzer := CompiledMethodCoverageAnalyzer
@@ -5849,36 +5849,36 @@ createAnalyzerFor: aCompiledMethod
 		
 	^ compiledMethodAnalyzer.! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/16/2021 21:26:42'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 16/Jan/2021 21:26:42'!
 setUp
 
 	super setUp.
 	
 	fakeCodeCoverageAnalyzer := FakeCodeCoverageAnalyzer new.! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 1/9/2021 17:17:40'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 9/Jan/2021 17:17:40'!
 tearDown
 
 	super tearDown.
 	
 	compiledMethodAnalyzer ifNotNil: [ compiledMethodAnalyzer uninstall ]! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 1/10/2021 14:15:22'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/Jan/2021 14:15:22'!
 compiledMethodAtM1Selector
 
 	^ self class>>#m1! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 1/10/2021 14:00:26'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'test objects' stamp: 'NPM 10/Jan/2021 14:00:26'!
 m1
 
 	^ 1! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/20/2021 17:29:09'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 20/Jan/2021 17:29:09'!
 test002_CannotBeCreatedFromMethodReferences
 	
 	self assertRaisesCannotBeCreatedError: [ self createAnalyzerFor: self compiledMethodAtM1Selector methodReference ].! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/10/2021 14:15:22'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/Jan/2021 14:15:22'!
 test003_DoesNotReplaceTheWrappedMethodWhenCreated
 	
 	| originalCompiledMethod |
@@ -5891,7 +5891,7 @@ test003_DoesNotReplaceTheWrappedMethodWhenCreated
 		equals: self compiledMethodAtM1Selector
 	! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 11/4/2022 01:57:30'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 4/Nov/2022 01:57:30'!
 test004_ReplacesTheWrappedMethodWhenInstalled
 	
 	| originalMethod |
@@ -5902,7 +5902,7 @@ test004_ReplacesTheWrappedMethodWhenInstalled
 	
 	self deny: originalMethod = self compiledMethodAtM1Selector.! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 11/4/2022 01:58:38'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 4/Nov/2022 01:58:38'!
 test005_DoesNothingWhenInstalledMoreThanOnce
 	
 	| tracedCompiledMethod |
@@ -5917,7 +5917,7 @@ test005_DoesNothingWhenInstalledMoreThanOnce
 		equals:  self compiledMethodAtM1Selector.
 ! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 1/10/2021 14:15:22'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'tests' stamp: 'NPM 10/Jan/2021 14:15:22'!
 test006_RestoresTheWrappedMethodWhenUninstalled
 	
 	| compiledMethod |
@@ -5931,30 +5931,7 @@ test006_RestoresTheWrappedMethodWhenUninstalled
 		assert: compiledMethod
 		equals: self compiledMethodAtM1Selector! !
 
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
-codeCoverageAnalyzer: aCodeCoverageAnalyzer
-
-	self
-		propertyValueAt: self codeCoverageAnalyzerPropertyName
-		put: aCodeCoverageAnalyzer.! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
-codeCoverageAnalyzerPropertyName
-
-	^ #coverageAnalyzer! !
-
-!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 11/4/2022 02:37:21'!
-withCodeCoverageAnalyzerDo: aBlock
-
-	| codeCoverageAnalyzer |
-	codeCoverageAnalyzer := self
-		propertyValueAt: self codeCoverageAnalyzerPropertyName
-		ifAbsent: [ ^ self ].
-		
-	aBlock value: codeCoverageAnalyzer
-	! !
-
-!MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 12/22/2020 21:09:17'!
+!MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 22/Dec/2020 21:09:17'!
 rawSourceRangesAndMethodNodeDo: aBinaryBlock
 
 	"Evaluate aBinaryBlock with the methodNode and rawSourceRanges generated from the receiver.
@@ -5978,7 +5955,7 @@ rawSourceRangesAndMethodNodeDo: aBinaryBlock
 		value: methodNode encoder rawSourceRanges
 		value: methodNode! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/26/2023 18:45:28'!
+!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 26/Jul/2023 18:45:28'!
 basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
 
 	"Extracted from #compile:notifying: to compile code without installing the
@@ -5999,12 +5976,12 @@ basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
 			
 	^ methodAndNode method! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 21:58:40'!
+!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 19/Jan/2021 21:58:40'!
 isTestCaseClass
 	
 	^ self isKindOf: TestCase class! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 7/27/2023 15:07:07'!
+!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 27/Jul/2023 15:07:07'!
 safelyBasicCompile: sourceCode 
 	
 	"I try to compile sourceCode the default way (with compiled optimizations turned in).
@@ -6014,13 +5991,36 @@ safelyBasicCompile: sourceCode
 		on: Error
 		do: [ :error | self basicCompile: sourceCode optimizeSpecialSends: false].! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'HAW 12/31/2024 18:38:40'!
+!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 4/Nov/2022 02:37:21'!
+codeCoverageAnalyzer: aCodeCoverageAnalyzer
+
+	self
+		propertyValueAt: self codeCoverageAnalyzerPropertyName
+		put: aCodeCoverageAnalyzer.! !
+
+!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 4/Nov/2022 02:37:21'!
+codeCoverageAnalyzerPropertyName
+
+	^ #coverageAnalyzer! !
+
+!CompiledMethod methodsFor: '*CodeCoverage' stamp: 'NPM 4/Nov/2022 02:37:21'!
+withCodeCoverageAnalyzerDo: aBlock
+
+	| codeCoverageAnalyzer |
+	codeCoverageAnalyzer := self
+		propertyValueAt: self codeCoverageAnalyzerPropertyName
+		ifAbsent: [ ^ self ].
+		
+	aBlock value: codeCoverageAnalyzer
+	! !
+
+!Browser methodsFor: '*CodeCoverage' stamp: 'HAW 31/Dec/2024 18:38:40'!
 runClassTestsWithCodeCoverage
 	
 	self selectedClass ifNotNil: [ :selectedClass |
 		self runWithCodeCoverage: (TestSuite forClass: selectedClass) ]! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:30:27'!
+!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 19/Jan/2021 17:30:27'!
 runMessageCategoryTestsWithCodeCoverage
 	
 	| testSuite |
@@ -6033,12 +6033,12 @@ runMessageCategoryTestsWithCodeCoverage
 	
 	self runWithCodeCoverage: testSuite.! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:38:34'!
+!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 19/Jan/2021 17:38:34'!
 runMethodTestWithCodeCoverage
 	
 	self runWithCodeCoverage: (TestSuite forCompiledMethod: currentCompiledMethod)! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:29:54'!
+!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 19/Jan/2021 17:29:54'!
 runPackageTestsWithCodeCoverage
 	
 	"Run all the tests in the package with code coverage.
@@ -6060,13 +6060,13 @@ runPackageTestsWithCodeCoverage
 		run: (testSuite)
 		analyzingCodeCoverageWith: (codeCoverageAnalizer)! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 02:25:40'!
+!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 18/Jan/2021 02:25:40'!
 runSystemCategoryTestsWithCodeCoverage
 	
 	self runWithCodeCoverage: (TestSuite forSystemCategoryNamed: selectedSystemCategory using: systemOrganizer)
 	! !
 
-!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:18:21'!
+!Browser methodsFor: '*CodeCoverage' stamp: 'NPM 19/Jan/2021 17:18:21'!
 runWithCodeCoverage: aTestSuite
 
 	ProgressiveCodeCoverageTestRunner
@@ -6074,14 +6074,21 @@ runWithCodeCoverage: aTestSuite
 		analyzingCodeCoverageWith: (CodeCoverageAnalyzerBuilder valueFrom: aTestSuite)
 	! !
 
-!CodePackage methodsFor: '*CodeCoverage' stamp: 'NPM 1/19/2021 17:13:44'!
+!TestSuite class methodsFor: '*CodeCoverage' stamp: 'NPM 18/Jan/2021 21:51:18'!
+forCodePackage: aCodePackage 
+	
+	^ self
+		forClasses: aCodePackage testCaseClasses
+		named: aCodePackage packageName, ' tests'.! !
+
+!CodePackage methodsFor: '*CodeCoverage' stamp: 'NPM 19/Jan/2021 17:13:44'!
 compiledMethodsInNonTestCaseClasses
 	
 	^ self methods
 		select: [ :method | method methodClass isTestCaseClass not ]
 		thenCollect: [ :method | method compiledMethod ]! !
 
-!CodePackage methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 21:53:39'!
+!CodePackage methodsFor: '*CodeCoverage' stamp: 'NPM 18/Jan/2021 21:53:39'!
 testCaseClasses
 	
 	| classes |
@@ -6092,7 +6099,7 @@ testCaseClasses
 	
 	^ classes! !
 
-!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 11/9/2022 02:06:44'!
+!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 9/Nov/2022 02:06:44'!
 codeCoverageInfoAt: mousePositionInText 
 	
 	^ [
@@ -6100,11 +6107,4 @@ codeCoverageInfoAt: mousePositionInText
 			ifTrue: [ morph owningWindow model codeCoverageInfoAt: mousePositionInText ]
 			ifFalse: [ '' ] ]
 		on: Error do: [ '' ] ! !
-
-!TestSuite class methodsFor: '*CodeCoverage' stamp: 'NPM 1/18/2021 21:51:18'!
-forCodePackage: aCodePackage 
-	
-	^ self
-		forClasses: aCodePackage testCaseClasses
-		named: aCodePackage packageName, ' tests'.! !
 CodeCoverageBrowserMenues initialize!
