@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:41:52 am'!
-'Description Remove analyzer from compiler method analyzer'!
-!provides: 'CodeCoverage' 1 79!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:49:04 am'!
+'Description Remove unused coverage notifier instance variable'!
+!provides: 'CodeCoverage' 1 80!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -91,7 +91,7 @@ CompiledMethodCoverageTracker class
 
 !classDefinition: #CompiledMethodCoverageNotifier category: #'CodeCoverage-Model'!
 CompiledMethodCoverageTracker subclass: #CompiledMethodCoverageNotifier
-	instanceVariableNames: 'coverageTrackers coverageTrackers_CHANGE_ME'
+	instanceVariableNames: 'coverageTrackers'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
