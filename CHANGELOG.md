@@ -9,6 +9,7 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Build menus to run tests with coverage using the new Cuis menu API (thanks @hernanwilkinson!).
 * Fix tests to run them in base Cuis image.
 * Unload registered menues (thanks @hernanwilkinson!).
+* Performance improvement: don't save instrumented code in the changes file.
 
 ### Fixed
 * Open the Code Coverage Browser when tests fail.

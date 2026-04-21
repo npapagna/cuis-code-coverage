@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:52:50 am'!
-'Description Remove unsent test message'!
-!provides: 'CodeCoverage' 1 92!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 2:28:03 pm'!
+'Description Don''t save instrumented code in the changes file.'!
+!provides: 'CodeCoverage' 1 93!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -5810,7 +5810,7 @@ test006_RestoresTheWrappedMethodWhenUninstalled
 		assert: compiledMethod
 		equals: self compiledMethodAtM1Selector! !
 
-!Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 26/Jul/2023 18:45:28'!
+!Behavior methodsFor: '*CodeCoverage' stamp: 'NPM 21/Apr/2026 14:24:30'!
 basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
 
 	"Extracted from #compile:notifying: to compile code without installing the
@@ -5825,9 +5825,6 @@ basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
 		trailer: self defaultMethodTrailer
 		ifFail: [^nil]
 		optimizeSpecialSends: doOptimizeSpecialSends.
-		
-	methodAndNode method putSource: code fromParseNode: methodAndNode node inFile: 2
-			withPreamble: [:f | f newLine; nextPut: $!!; nextChunkPut: 'Behavior method'; newLine].
 			
 	^ methodAndNode method! !
 
