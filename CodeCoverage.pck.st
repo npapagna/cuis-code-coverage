@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:07:58 am'!
-'Description Removed unused source code gen. instance var'!
-!provides: 'CodeCoverage' 1 87!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:08:36 am'!
+'Description Remove unused test message'!
+!provides: 'CodeCoverage' 1 88!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -3400,13 +3400,6 @@ collectCoverageForExampleNamed: aSelector with: argument
 	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
 	
 	self collectCodeCoverageDuring: [ self perform: aSelector with: argument ].! !
-
-!CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 6/Nov/2022 01:38:18'!
-collectCoverageForExampleNamed: aSelector withArguments: arguments
-
-	self setupCodeCoverageAnalyzerForExampleNamed: aSelector.
-	
-	self collectCodeCoverageDuring: [ self perform: aSelector withArguments: arguments ].! !
 
 !CodeCoverageTest methodsFor: 'exercising' stamp: 'NPM 6/Nov/2022 01:41:46'!
 collectCoverageForExampleNamed: aSelector withTestCaseArguments: testCaseArguments
