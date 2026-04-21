@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:19:44 am'!
-'Description Remove unsent analyzer report message'!
-!provides: 'CodeCoverage' 1 90!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:20:37 am'!
+'Description Remove unsent test message'!
+!provides: 'CodeCoverage' 1 91!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -3475,11 +3475,6 @@ blockWithReadAndWrittenTemporaryVariable
 blockWithReadTemporaryVariable
 
 	[ |a| a ] value! !
-
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:32:45'!
-blockWithTemporariesDeclaration
-	
-	[ | a | ] value! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 13/Dec/2020 18:34:01'!
 blockWithTemporaryVariables
