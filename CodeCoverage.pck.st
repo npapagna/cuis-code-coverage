@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:50:30 am'!
-'Description Remove unused decision condition instance vars'!
-!provides: 'CodeCoverage' 1 82!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:56:49 am'!
+'Description Remove unused method node extension'!
+!provides: 'CodeCoverage' 1 83!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -5890,30 +5890,6 @@ test006_RestoresTheWrappedMethodWhenUninstalled
 	self
 		assert: compiledMethod
 		equals: self compiledMethodAtM1Selector! !
-
-!MethodNode methodsFor: '*CodeCoverage' stamp: 'NPM 22/Dec/2020 21:09:17'!
-rawSourceRangesAndMethodNodeDo: aBinaryBlock
-
-	"Evaluate aBinaryBlock with the methodNode and rawSourceRanges generated from the receiver.
-	
-	This method is similar to #rawSourceRangesAndMethodDo: except that it:
-	* provides the MethodNode instead of the CompiledMethod
-	* ensures that the same parse nodes instances are used for both the raw source ranges keys and the method node children.
-	
-	If #rawSourceRangesAndMethodDo: was used instead, the method node will have to be recreated from the returned compiled method and that will cause
-	its parse nodes to be different objects (have different identity) that the ones used for the raw souce ranges keys."
-	
-	| methodNode |
-	methodNode := encoder classEncoding parserClass new
-					encoderClass: encoder class;
-					parse: (sourceText "If no source, use decompile string as source to map from"
-							ifNil: [self decompileString]
-							ifNotNil: [sourceText])
-					class: self methodClass.
-
-	^ aBinaryBlock
-		value: methodNode encoder rawSourceRanges
-		value: methodNode! !
 
 !Behavior methodsFor: '*CodeCoverage' stamp: 'HAW 26/Jul/2023 18:45:28'!
 basicCompile: code optimizeSpecialSends: doOptimizeSpecialSends
