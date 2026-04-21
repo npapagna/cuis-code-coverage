@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:49:36 am'!
-'Description Remove unused coveage builder instance variable'!
-!provides: 'CodeCoverage' 1 81!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:50:30 am'!
+'Description Remove unused decision condition instance vars'!
+!provides: 'CodeCoverage' 1 82!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -101,7 +101,7 @@ CompiledMethodCoverageNotifier class
 
 !classDefinition: #DecisionConditionCoverageReportBuilder category: #'CodeCoverage-Model'!
 CompiledMethodCoverageTracker subclass: #DecisionConditionCoverageReportBuilder
-	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted sourceRanges2 decisionReceverRanges decisionSelectors'
+	instanceVariableNames: 'coveredNonBooleanSourceRanges compiledMethod analyzedSourceRanges booleanValuesByDeclaration usagesByDeclaration compiledMethodWasExecuted decisionSelectors'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
