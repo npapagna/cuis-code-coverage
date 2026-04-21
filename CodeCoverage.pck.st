@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:56:49 am'!
-'Description Remove unused method node extension'!
-!provides: 'CodeCoverage' 1 83!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:58:48 am'!
+'Description Remove unused editor extension'!
+!provides: 'CodeCoverage' 1 84!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -6034,13 +6034,4 @@ testCaseClasses
 		class isTestCaseClass ifTrue: [ classes add: class ]].
 	
 	^ classes! !
-
-!Editor methodsFor: '*CodeCoverage' stamp: 'NPM 9/Nov/2022 02:06:44'!
-codeCoverageInfoAt: mousePositionInText 
-	
-	^ [
-		(morph owningWindow model isKindOf: CodeCoverageAnalyzerBrowser)
-			ifTrue: [ morph owningWindow model codeCoverageInfoAt: mousePositionInText ]
-			ifFalse: [ '' ] ]
-		on: Error do: [ '' ] ! !
 CodeCoverageBrowserMenues initialize!
