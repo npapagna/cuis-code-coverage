@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:58:48 am'!
-'Description Remove unused editor extension'!
-!provides: 'CodeCoverage' 1 84!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:06:00 am'!
+'Description Remove unused method report message'!
+!provides: 'CodeCoverage' 1 85!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -915,11 +915,6 @@ numberOfSourceRanges
 totalCoveredSourceRanges
 	
 	^ coverageRatioBySourceRange size - self uncoveredSourceRanges size! !
-
-!CompiledMethodCoverageReport methodsFor: 'testing' stamp: 'NPM 16/Jan/2021 20:09:07'!
-isFor: aCompiledMethod 
-	
-	^ compiledMethod == aCompiledMethod ! !
 
 !CompiledMethodCoverageReport class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022 01:22:40'!
 for: aCompiledMethod executed: aBoolean with: coverageResults messages: messagesBySourceRanges    
