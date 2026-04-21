@@ -1,5 +1,5 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:35:43 am'!
-'Description Fix abstract method test'!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:41:52 am'!
+'Description Remove analyzer from compiler method analyzer'!
 !provides: 'CodeCoverage' 1 79!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
@@ -71,7 +71,7 @@ CompiledMethodCoverageReport class
 
 !classDefinition: #CompiledMethodCoverageAnalyzer category: #'CodeCoverage-Model'!
 Object subclass: #CompiledMethodCoverageAnalyzer
-	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator methodClass codeCoverageAnalyzer selector codeCoverageNotifier installCount'
+	instanceVariableNames: 'originalCompiledMethod sourceCodeGenerator methodClass codeCoverageNotifier installCount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Model'!
@@ -127,16 +127,6 @@ Object subclass: #CodeCoverageTestClass2
 	category: 'CodeCoverage-Tests'!
 !classDefinition: 'CodeCoverageTestClass2 class' category: #'CodeCoverage-Tests'!
 CodeCoverageTestClass2 class
-	instanceVariableNames: ''!
-
-!classDefinition: #FakeCodeCoverageAnalyzer category: #'CodeCoverage-Tests'!
-Object subclass: #FakeCodeCoverageAnalyzer
-	instanceVariableNames: 'enabled'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CodeCoverage-Tests'!
-!classDefinition: 'FakeCodeCoverageAnalyzer class' category: #'CodeCoverage-Tests'!
-FakeCodeCoverageAnalyzer class
 	instanceVariableNames: ''!
 
 !classDefinition: #CodeCoverageAnalyzerBuilder category: #'CodeCoverage-UI'!
@@ -231,7 +221,7 @@ CodeCoverageTest class
 
 !classDefinition: #CompiledMethodCoverageAnalyzerTest category: #'CodeCoverage-Tests'!
 TestCase subclass: #CompiledMethodCoverageAnalyzerTest
-	instanceVariableNames: 'compiledMethodAnalyzer fakeCodeCoverageAnalyzer'
+	instanceVariableNames: 'compiledMethodAnalyzer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-Tests'!
@@ -269,9 +259,6 @@ If code coverage is enabled, I compile an traced version of the wrapped method t
 I use the Objects as Method Wrappers facility provided by the VM to wrap compiled methods.
 My entry point is my #run:with:in: method, which will be executed by the VM when I install myself in the target class's method dictionary.
 !
-
-!FakeCodeCoverageAnalyzer commentStamp: 'NPM 1/10/2021 15:54:50' prior: 0!
-I am used to simulate CodeCoverageAnalyzer in tests.!
 
 !CodeCoverageAnalyzerBuilder commentStamp: 'NPM 1/18/2021 16:37:38' prior: 0!
 I create CodeCoverageAnalyzer instances from a test suite.
@@ -516,12 +503,12 @@ onStopSend: aSelector to: anObject
 
 	self when: #stop send: aSelector to: anObject.! !
 
-!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022 08:31:30'!
+!CodeCoverageAnalyzer methodsFor: 'as yet unclassified' stamp: 'NPM 21/Apr/2026 08:30:38'!
 installCompiledMethodAnalyzer: compiledMethodToAnalyze 
 
 	self triggerEvent: #installCompiledMethodAnalyzer with: compiledMethodToAnalyze.
 	
-	^ compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze using: self! !
+	^ compiledMethodCoverageAnalyzer installOn: compiledMethodToAnalyze ! !
 
 !CodeCoverageAnalyzer class methodsFor: 'code coverage tracking' stamp: 'NPM 11/Jan/2021 22:08:50'!
 stopTrackingCoverageInAllInstances
@@ -945,14 +932,13 @@ for: aCompiledMethod executed: aBoolean with: coverageResults messages: messages
 		messages: messagesBySourceRanges
 		! !
 
-!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 4/Nov/2022 02:44:55'!
-initializeFor: aCompiledMethod using: aCodeCoverageAnalyzer generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
+!CompiledMethodCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 21/Apr/2026 08:28:44'!
+initializeFor: aCompiledMethod generatingSourceCodeWith: aCodeCoverageSourceCodeGenerator  
 
 	originalCompiledMethod := aCompiledMethod.
-	codeCoverageAnalyzer := aCodeCoverageAnalyzer.
 	sourceCodeGenerator := aCodeCoverageSourceCodeGenerator.
 	codeCoverageNotifier := CompiledMethodCoverageTracker notifier.
-	installCount _ 0.
+	installCount := 0.
 	methodClass := originalCompiledMethod methodClass.
 ! !
 
@@ -1059,8 +1045,8 @@ registerNewCoverageReportBuilderUsing: aReportBuilderFactory
 		
 	^ newReportBuilder! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 4/Nov/2022 01:59:45'!
-for: aCompiledMethod using: aCodeCoverageAnalyzer
+!CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 21/Apr/2026 08:30:08'!
+for: aCompiledMethod 
 	
 	"Create an instance of myself to analyze code coverage of aCompiledMethod.
 	aTracedSourceCodeGenerator is used to generate the traced version of aCompiledMethod that will report code coverage
@@ -1083,7 +1069,6 @@ for: aCompiledMethod using: aCodeCoverageAnalyzer
 	^ self
 		new
 		initializeFor: aCompiledMethod
-		using: aCodeCoverageAnalyzer
 		generatingSourceCodeWith: (CodeCoverageSourceCodeGenerator valueFor: aCompiledMethod)! !
 
 !CompiledMethodCoverageAnalyzer class methodsFor: 'instance creation' stamp: 'NPM 4/Nov/2022 02:37:04'!
@@ -1095,12 +1080,12 @@ withCompiledMethodAnayzerFor: aCompiledMethod do: aBlockClosure
 
 	currentCompiledMethod withCodeCoverageAnalyzerDo: aBlockClosure! !
 
-!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 10/Jan/2021 15:46:35'!
-installOn: aCompiledMethod using: aCodeCoverageAnalyzer
+!CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 21/Apr/2026 08:30:38'!
+installOn: aCompiledMethod 
 
 	"Convenience method to create an instance of myself and install it in one-shot."
 	
-	^ (self for: aCompiledMethod using: aCodeCoverageAnalyzer) install! !
+	^ (self for: aCompiledMethod) install! !
 
 !CompiledMethodCoverageAnalyzer class methodsFor: 'installing/uninstalling' stamp: 'NPM 10/Jan/2021 15:48:44'!
 uninstallAll: compiledMethodAnalyzers
@@ -1587,23 +1572,6 @@ m2! !
 
 !CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 19:42:59'!
 m3! !
-
-!FakeCodeCoverageAnalyzer methodsFor: 'code coverage tracking' stamp: 'NPM 10/Jan/2021 13:25:35'!
-enable
-	
-	enabled := true! !
-
-!FakeCodeCoverageAnalyzer methodsFor: 'initialization' stamp: 'NPM 16/Jan/2021 21:26:08'!
-initialize
-
-	super initialize.
-	
-	enabled := false.! !
-
-!FakeCodeCoverageAnalyzer methodsFor: 'testing' stamp: 'NPM 10/Jan/2021 16:25:26'!
-ifRunning: aBlock 
-	
-	enabled ifTrue: aBlock! !
 
 !CodeCoverageAnalyzerBuilder methodsFor: 'evaluating' stamp: 'NPM 11/Nov/2022 15:36:34'!
 value
@@ -5840,21 +5808,13 @@ assertRaisesCannotBeCreatedError: aBlock
 		withMessageText: CompiledMethodCoverageAnalyzer shouldOnlyBeCreatedForCompiledMethodsErrorMessage
 	! !
 
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 10/Sep/2022 16:17:22'!
+!CompiledMethodCoverageAnalyzerTest methodsFor: 'exercising' stamp: 'NPM 21/Apr/2026 08:31:03'!
 createAnalyzerFor: aCompiledMethod
 
 	compiledMethodAnalyzer := CompiledMethodCoverageAnalyzer
-		for: aCompiledMethod
-		using: fakeCodeCoverageAnalyzer.
+		for: aCompiledMethod.
 		
 	^ compiledMethodAnalyzer.! !
-
-!CompiledMethodCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 16/Jan/2021 21:26:42'!
-setUp
-
-	super setUp.
-	
-	fakeCodeCoverageAnalyzer := FakeCodeCoverageAnalyzer new.! !
 
 !CompiledMethodCoverageAnalyzerTest methodsFor: 'setUp/tearDown' stamp: 'NPM 9/Jan/2021 17:17:40'!
 tearDown
