@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:49:04 am'!
-'Description Remove unused coverage notifier instance variable'!
-!provides: 'CodeCoverage' 1 80!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 8:49:36 am'!
+'Description Remove unused coveage builder instance variable'!
+!provides: 'CodeCoverage' 1 81!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -131,7 +131,7 @@ CodeCoverageTestClass2 class
 
 !classDefinition: #CodeCoverageAnalyzerBuilder category: #'CodeCoverage-UI'!
 Object subclass: #CodeCoverageAnalyzerBuilder
-	instanceVariableNames: 'testSuite systemOrganizer packageSnapshot'
+	instanceVariableNames: 'testSuite systemOrganizer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodeCoverage-UI'!
