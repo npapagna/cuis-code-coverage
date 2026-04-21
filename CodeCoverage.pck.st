@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:06:00 am'!
-'Description Remove unused method report message'!
-!provides: 'CodeCoverage' 1 85!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:06:44 am'!
+'Description Remove unused test message'!
+!provides: 'CodeCoverage' 1 86!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -3678,12 +3678,6 @@ ifTrueIfFalse: aReceiver
 	aReceiver
 		ifTrue: []
 		ifFalse: []! !
-
-!CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 5/Nov/2022 20:42:23'!
-ifTrueToNonBooleanReceiver
-
-	CodeCoverageTestClass1 new
-		ifTrue: [ 1 ]! !
 
 !CodeCoverageTest methodsFor: 'test objects' stamp: 'NPM 3/Jan/2021 21:18:13'!
 implicitSelfReturn
