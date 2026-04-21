@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:18:52 am'!
-'Description Remove unused coverage browser message'!
-!provides: 'CodeCoverage' 1 89!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:19:44 am'!
+'Description Remove unsent analyzer report message'!
+!provides: 'CodeCoverage' 1 90!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -737,12 +737,6 @@ percentCovered
 wasClassAnalyzed: aClass 
 	
 	^ reportsByClass includesKey: aClass! !
-
-!CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 21:47:02'!
-wasClassOrMetaclassAnalyzed: aClassOrMetaclass
-
-	^ (self wasClassAnalyzed: aClassOrMetaclass theNonMetaClass) or: [
-		self wasClassAnalyzed: aClassOrMetaclass theMetaClass ]! !
 
 !CodeCoverageAnalyzerReport methodsFor: 'testing' stamp: 'NPM 18/Jan/2021 20:50:47'!
 wasCompiledMethodAnalyzed: aCompiledMethod 
