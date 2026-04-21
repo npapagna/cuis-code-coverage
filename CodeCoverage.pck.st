@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:20:37 am'!
+'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 9:52:50 am'!
 'Description Remove unsent test message'!
-!provides: 'CodeCoverage' 1 91!
+!provides: 'CodeCoverage' 1 92!
 !requires: 'Cuis-Base' 60 5962 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -1519,11 +1519,6 @@ for: aCompiledMethod withSourceRanges: sourceRanges
 m1
 
 	^ #foo! !
-
-!CodeCoverageTestClass1 methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 19:59:27'!
-raiseError
-	
-	self error: 'oops'! !
 
 !CodeCoverageTestClass2 methodsFor: 'test objects' stamp: 'NPM 11/Jan/2021 19:37:27'!
 m2! !
