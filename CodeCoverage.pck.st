@@ -1,7 +1,7 @@
-'From Cuis7.7 [latest update: #7880] on 21 April 2026 at 4:36:09 pm'!
-'Description Fix system category coverage display bug'!
-!provides: 'CodeCoverage' 1 94!
-!requires: 'Cuis-Base' 60 5962 nil!
+'From Cuis7.7 [latest update: #7903] on 4 May 2026 at 2:13:03 pm'!
+'Description Use #labelForClass: to customize class labels'!
+!provides: 'CodeCoverage' 1 95!
+!requires: 'Cuis-Base' 77 7903 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
 SystemOrganization addCategory: #'CodeCoverage-Tests'!
@@ -2453,12 +2453,6 @@ for: aCompiledMethod
 
 	! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 27/Nov/2021 00:20:42'!
-classList
-
-	^ super classList
-		collect: [ :className | self styleClassNamed: className ]! !
-
 !CodeCoverageAnalyzerBrowser methodsFor: 'class list' stamp: 'NPM 18/Jan/2021 19:49:24'!
 classOrMetaclassNamed: aClassName
 
@@ -2538,19 +2532,6 @@ metaClassIndicated: trueOrFalse
 	either the instance or the class side coverage percentage."
 	self changed: #classList.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 18/Jan/2021 21:48:51'!
-styleClassNamed: aClassName
-
-	| classOrMetaclass |
-	classOrMetaclass := (self classOrMetaclassNamed: aClassName).
-	
-	(codeCoverageReport wasClassAnalyzed: classOrMetaclass)
-		ifFalse: [ ^ aClassName ].
-	
-	^ CodeCoverageResultItem
-		for: aClassName
-		report: (codeCoverageReport reportForClass: classOrMetaclass)! !
-
 !CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 19/Jan/2021 21:11:35'!
 styleMessage: aSelector
 
@@ -2620,6 +2601,20 @@ textStylerClassFor: textGetter
 			ifNotAnalyzed: [ super textStylerClassFor: textGetter ] ].
 	
 	^ SHTextStylerST80! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'NPM 4/May/2026 10:56:03'!
+labelForClass: aClassOrPseudoClass
+	
+	| originalLabel report  |
+	
+	originalLabel := super labelForClass: aClassOrPseudoClass.
+	
+	(codeCoverageReport wasClassAnalyzed: aClassOrPseudoClass)
+		ifFalse: [ ^ originalLabel ].
+	
+	report := codeCoverageReport reportForClass: aClassOrPseudoClass.
+	
+	^ '{1} ({2}%)' format: { originalLabel. report percentCovered asFloat printStringFractionDigits: 2 }! !
 
 !CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 19/Jan/2021 20:47:01'!
 displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
