@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7903] on 4 May 2026 at 2:13:03 pm'!
+'From Cuis7.7 [latest update: #7936] on 11 July 2026 at 11:18:29 pm'!
 'Description Use #labelForClass: to customize class labels'!
-!provides: 'CodeCoverage' 1 95!
+!provides: 'CodeCoverage' 1 96!
 !requires: 'Cuis-Base' 77 7903 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -2516,12 +2516,11 @@ messageCategoryListIndex: anInteger
 			ifFalse: [#newClass]]).
 	self acceptedContentsChanged.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'NPM 6/Nov/2022 03:27:29'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'FJG 11/Jul/2026 22:54:03'!
 messageList
 
 	^ super messageList
-		select: [ :message | codeCoverageReport wasCompiledMethodAnalyzed: self selectedClassOrMetaclass>>message ]
-		thenCollect: [ :message | self styleMessage: message ]! !
+		select: [ :message | codeCoverageReport wasCompiledMethodAnalyzed: self selectedClassOrMetaclass>>message ]! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'metaclass' stamp: 'NPM 18/Jan/2021 16:31:13'!
 metaClassIndicated: trueOrFalse
@@ -2531,13 +2530,6 @@ metaClassIndicated: trueOrFalse
 	"I need to notify the class list changed, as the class labels have to be updated to display
 	either the instance or the class side coverage percentage."
 	self changed: #classList.! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 19/Jan/2021 21:11:35'!
-styleMessage: aSelector
-
-	^ CodeCoverageResultItem
-		for: aSelector
-		report: (codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector)! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 19/Jan/2021 21:02:21'!
 styleMessageCategory: messageCategory
@@ -2602,10 +2594,10 @@ textStylerClassFor: textGetter
 	
 	^ SHTextStylerST80! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'NPM 4/May/2026 10:56:03'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 11/Jul/2026 23:14:26'!
 labelForClass: aClassOrPseudoClass
 	
-	| originalLabel report  |
+	| originalLabel report percentCovered |
 	
 	originalLabel := super labelForClass: aClassOrPseudoClass.
 	
@@ -2613,8 +2605,17 @@ labelForClass: aClassOrPseudoClass
 		ifFalse: [ ^ originalLabel ].
 	
 	report := codeCoverageReport reportForClass: aClassOrPseudoClass.
+	percentCovered := report percentCovered asFloat printStringFractionDigits: 2.
 	
-	^ '{1} ({2}%)' format: { originalLabel. report percentCovered asFloat printStringFractionDigits: 2 }! !
+	^ originalLabel, ' (', percentCovered, '%)'! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 11/Jul/2026 22:58:52'!
+labelForSelector: aSelector
+
+	| report percentCovered |
+	report := codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector.
+	percentCovered := report percentCovered asFloat printStringFractionDigits: 2.
+	^ (super labelForSelector: aSelector), ' (', percentCovered, '%)'! !
 
 !CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 19/Jan/2021 20:47:01'!
 displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
