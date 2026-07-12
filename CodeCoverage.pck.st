@@ -1,6 +1,6 @@
-'From Cuis7.7 [latest update: #7936] on 11 July 2026 at 11:18:29 pm'!
+'From Cuis7.7 [latest update: #7936] on 11 July 2026 at 11:30:13 pm'!
 'Description Use #labelForClass: to customize class labels'!
-!provides: 'CodeCoverage' 1 96!
+!provides: 'CodeCoverage' 1 97!
 !requires: 'Cuis-Base' 77 7903 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -1690,6 +1690,11 @@ unload
 initializeWith: aCodeCoverageReport 
 
 	report := aCodeCoverageReport.! !
+
+!CodeCoverageTextStylerFactory methodsFor: 'factory methods' stamp: 'FJG 11/Jul/2026 23:30:00'!
+maxSizeForStyling
+
+	^ CodeCoverageTextStyler maxSizeForStyling! !
 
 !CodeCoverageTextStylerFactory methodsFor: 'factory methods' stamp: 'NPM 18/Jan/2021 18:34:38'!
 new
