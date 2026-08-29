@@ -1,6 +1,8 @@
-'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:11:39 am'!
+'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:14:53 am'!
 'Description '!
-!provides: 'CodeCoverageDemo' 1 11!
+!provides: 'CodeCoverageDemo' 1 12!
+!requires: 'Cuis-Base' 79 8149 nil!
+!requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
 
 
