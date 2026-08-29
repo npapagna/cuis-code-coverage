@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:14:53 am'!
+'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:44:46 am'!
 'Description '!
-!provides: 'CodeCoverageDemo' 1 12!
+!provides: 'CodeCoverageDemo' 1 13!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -137,7 +137,7 @@ Smalltalks2022Presentation class
 	instanceVariableNames: ''!
 
 !classDefinition: #CodeEditorSlide category: #CodeCoverageDemo!
-LayoutMorph subclass: #CodeEditorSlide
+LinearLayoutMorph subclass: #CodeEditorSlide
 	instanceVariableNames: 'codeEditor compiledMethod reportBuilderFactory selector receiver toolbar2 contentPane testCases2 testCasesList argumentInputs2 argumentsBuilder'
 	classVariableNames: ''
 	poolDictionaries: ''
