@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:44:46 am'!
+'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:56:13 am'!
 'Description '!
-!provides: 'CodeCoverageDemo' 1 13!
+!provides: 'CodeCoverageDemo' 1 14!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -312,14 +312,13 @@ usagesOf: aDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
+!DecisionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 29/Aug/2026, 2:51:29 pm (UTC)'!
 value
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
-		with: self consolidateCoverageResults
-		messages: self messages.! !
+		with: self consolidateCoverageResults! !
 
 !DecisionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
@@ -559,13 +558,13 @@ systemCategory
 		methodClass
 		category ! !
 
-!LineCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 6/Nov/2022, 3:20:02 pm (UTC)'!
+!LineCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 29/Aug/2026, 2:51:07 pm (UTC)'!
 value
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
-		with: self consolidateCoverageResults messages: nil.! !
+		with: self consolidateCoverageResults! !
 
 !LineCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022, 5:55:30 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
@@ -654,14 +653,13 @@ systemCategory
 		methodClass
 		category ! !
 
-!MethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 7/Nov/2022, 5:22:57 am (UTC)'!
+!MethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 29/Aug/2026, 2:50:46 pm (UTC)'!
 value
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
-		with: self consolidateCoverageResults
-		messages: Dictionary new.! !
+		with: self consolidateCoverageResults! !
 
 !MethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 3/Nov/2022, 3:13:27 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
@@ -771,13 +769,13 @@ markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!StatementCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 6/Nov/2022, 3:20:02 pm (UTC)'!
+!StatementCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 29/Aug/2026, 2:51:15 pm (UTC)'!
 value
 
 	^ CodeCoverageReport
 		for: compiledMethod
 		executed: compiledMethodWasExecuted
-		with: self consolidateCoverageResults messages: nil.! !
+		with: self consolidateCoverageResults! !
 
 !StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 compiledMethod
