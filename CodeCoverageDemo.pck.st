@@ -1,4 +1,4 @@
-'From Cuis7.3 [latest update: #6991] on 20 January 2025 at 2:06:14 pm'!
+'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:11:39 am'!
 'Description '!
 !provides: 'CodeCoverageDemo' 1 11!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -155,7 +155,7 @@ PresentationWindow class
 	instanceVariableNames: ''!
 
 
-!ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/11/2022 06:49:00'!
+!ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/Nov/2022, 9:49:00 am (UTC)'!
 initializeForm: aForm 
 
 	self buildToolbar .
@@ -165,7 +165,7 @@ initializeForm: aForm
 	self addMorph: image.
 	! !
 
-!ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/11/2022 06:53:29'!
+!ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/Nov/2022, 9:53:29 am (UTC)'!
 layoutSubmorphs
 
 	| aForm newImage scale xScale yScale |
@@ -187,7 +187,7 @@ layoutSubmorphs
 	
 	self layoutNeeded: false! !
 
-!ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/11/2022 06:47:34'!
+!ImageSlide methodsFor: 'initialization' stamp: 'NPM 11/Nov/2022, 9:47:34 am (UTC)'!
 layoutSubmorphs2
 
 	| aForm newImage scale xScale yScale |
@@ -202,7 +202,7 @@ layoutSubmorphs2
 	
 	self layoutNeeded: false! !
 
-!ImageSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:49:28'!
+!ImageSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:49:28 am (UTC)'!
 buildToolbar
 
 	toolbar := LayoutMorph newRow doAdoptWidgetsColor;
@@ -213,39 +213,39 @@ buildToolbar
 
 	^ self addMorph: toolbar! !
 
-!ImageSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:52:47'!
+!ImageSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:52:47 am (UTC)'!
 clipsSubmorphs
 
 	^ true! !
 
-!ImageSlide class methodsFor: 'instance creation' stamp: 'NPM 11/11/2022 06:48:52'!
+!ImageSlide class methodsFor: 'instance creation' stamp: 'NPM 11/Nov/2022, 9:48:52 am (UTC)'!
 form: aForm 
 	
 	^self new initializeForm: aForm ! !
 
-!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:02:31'!
+!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:02:31 pm (UTC)'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
 	
 	self registerBoolean: aBoolean declaredAt: usageSourceRange.
 	self coverAsNonBoolean: declarationSourceRange ! !
 
-!ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:44:16'!
+!ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:44:16 pm (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	self coverAll: sourceRanges! !
 
-!ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:44:24'!
+!ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:44:24 pm (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
 
 	self coverAll: sourceRanges by: result! !
 
-!ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:01:19'!
+!ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:01:19 pm (UTC)'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
 	
 	self registerBoolean: aBoolean declaredAt: usageSourceRange.
 	self coverAsNonBoolean: declarationSourceRange ! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 collectWithUsages: sourceRanges
 	
 	^ sourceRanges
@@ -256,36 +256,36 @@ collectWithUsages: sourceRanges
 				addAll: (self usagesOf: sourceRange);
 				yourself ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coveredSourceRanges
 	
 	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 fulllyCoveredNonBooleanSourceRanges
 	
 	^ self collectWithUsages: coveredNonBooleanSourceRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 fullyCoveredBooleanSourceRanges
 	
 	"A fully-covered boolean source range is one that referenced both true and false."
 	
 	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 2 ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 fullyCoveredSourceRanges
 
 	^ self fulllyCoveredNonBooleanSourceRanges, self fullyCoveredBooleanSourceRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 partiallyCoveredBooleanRanges
 	
 	"A partially-covered boolean source range is one that referenced either true or false."
 	
 	^ self selectBooleanSourceRanges: [ :coveredValues | coveredValues size = 1 ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 selectBooleanSourceRanges: aCondition
 	
 	"Select the boolean source range declarations passing the covered boolean values referenced by them to aCondition.
@@ -298,19 +298,19 @@ selectBooleanSourceRanges: aCondition
 	
 	^ self collectWithUsages: selectedDeclarations! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 uncoveredSourceRanges
 
 	^ analyzedSourceRanges difference: self coveredSourceRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 usagesOf: aDeclaration
 
 	^ usagesByDeclaration
 		at: aDeclaration
 		ifAbsent: [ Set new ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 value
 
 	^ CodeCoverageReport
@@ -319,7 +319,7 @@ value
 		with: self consolidateCoverageResults
 		messages: self messages.! !
 
-!DecisionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
@@ -330,7 +330,7 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	compiledMethodWasExecuted := false.
 	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/9/2022 02:34:39'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/Nov/2022, 5:34:39 am (UTC)'!
 consolidateCoverageResults
 	
 	| coverageRatioBySourceRange |
@@ -347,7 +347,7 @@ consolidateCoverageResults
 	
 	^ coverageRatioBySourceRange! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:35:15'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:35:15 am (UTC)'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 
 	"Register thatanObject covered aSourceRange and its declaration at declarationSourceRange."
@@ -358,12 +358,12 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 			
 	^ anObject! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverAll: sourceRanges
 
 	self coverAsNonBooleanAll: sourceRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverAll: sourceRanges by: anObject 
 	
 	(anObject isKindOf: Boolean)
@@ -372,7 +372,7 @@ coverAll: sourceRanges by: anObject
 		
 	^ anObject! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 
 	"Register that anObject covered sourceRanges"
@@ -383,7 +383,7 @@ coverAll: sourceRanges byLiteralOrPseudoVariable: anObject
 	
 	^ anObject! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	(self isDecisionSelector: aSelector )
@@ -394,7 +394,7 @@ coverAll: sourceRanges fromSending: aSelector to: aReceiver
 		ifFalse: [
 			self coverAll: sourceRanges  ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/8/2022 02:07:27'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 8/Nov/2022, 5:07:27 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result 
 
 	(self isDecisionSelector: aSelector )
@@ -405,17 +405,17 @@ coverAll: sourceRanges fromSending: aSelector to: anObject withResult: result
 		ifFalse: [
 			self coverAsNonBooleanAll: sourceRanges ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:33:32'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:33:32 am (UTC)'!
 coverAsNonBoolean: aSourceRange
 
 	coveredNonBooleanSourceRanges add: aSourceRange.! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverAsNonBooleanAll: sourceRanges
 	
 	sourceRanges do: [ :sourceRange | self coverAsNonBoolean: sourceRange ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverDecisionMessageSendTo: aReceiver atAll: sourceRanges 
 	
 	coveredNonBooleanSourceRanges
@@ -425,7 +425,7 @@ coverDecisionMessageSendTo: aReceiver atAll: sourceRanges
 		registerBoolean: aReceiver
 		declaredAtAll: sourceRanges ! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 coverNonBooleanUsage: usageSourceRange of: declarationSourceRange 
 	
 	"Consider both usageSourceRange and declarationSourceRange as covered.
@@ -438,12 +438,12 @@ coverNonBooleanUsage: usageSourceRange of: declarationSourceRange
 		registerUsage: usageSourceRange of: declarationSourceRange;
 		coverAsNonBoolean: declarationSourceRange.! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 messages
 	
 	^ booleanValuesByDeclaration
@@ -456,7 +456,7 @@ messages
 			'Code Coverge: missing test case: ', missingTestCase asString, '. Only exercised with ',
 			exercisedTestCase asString, '.' ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/9/2022 02:34:34'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/Nov/2022, 5:34:34 am (UTC)'!
 registerBoolean: aValue declaredAt: declarationSourceRange
 
 	"Consider declarationSourceRange as a covered boolean source range."
@@ -469,7 +469,7 @@ registerBoolean: aValue declaredAt: declarationSourceRange
 	(booleanValuesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
 		add: aValue! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
 
 	"Consider declarationSourceRanges as covered boolean source ranges.
@@ -483,18 +483,18 @@ registerBoolean: aBoolean declaredAtAll: declarationSourceRanges
 	declarationSourceRanges do: [ :declarationSourceRange |
 		self registerBoolean: aBoolean declaredAt: declarationSourceRange ]! !
 
-!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 registerUsage: aSourceRange of: declarationSourceRange
 
 	(usagesByDeclaration at: declarationSourceRange ifAbsentPut: [ Set new ])
 		add: aSourceRange! !
 
-!DecisionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder methodsFor: 'testing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 isDecisionSelector: aSelector  
 	
 	^ decisionSelectors includes: aSelector! !
 
-!DecisionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 11/7/2022 03:31:01'!
+!DecisionCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 for: aCompiledMethod withSourceRanges: sourceRanges
 	
 	^ self
@@ -502,12 +502,12 @@ for: aCompiledMethod withSourceRanges: sourceRanges
 		initializeFor: aCompiledMethod
 		with: sourceRanges! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 compiledMethod
 
 	^ compiledMethod! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 consolidateCoverageResults
 
 	^ analyzedSourceRanges
@@ -519,7 +519,7 @@ consolidateCoverageResults
 				
 			coverageRatioBySourceRange ]! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 02:56:52'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 5:56:52 am (UTC)'!
 cover: aSourceRange
 
 	| end range sourceCode x j |
@@ -533,31 +533,31 @@ cover: aSourceRange
 	
 	coveredSourceRanges addAll: (j)! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 02:55:30'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 5:55:30 am (UTC)'!
 coverageRatioFor: aSourceRange 
 	
 	^ (coveredSourceRanges includes: aSourceRange)
 		ifTrue: [ 1.0 ]
 		ifFalse: [ 0.0 ]! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 messageCategory
 	
 	^ compiledMethod category! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 methodClass
 	
 	^ compiledMethod methodClass! !
 
-!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 systemCategory
 	
 	^ compiledMethod
 		methodClass
 		category ! !
 
-!LineCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:20:02'!
+!LineCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 6/Nov/2022, 3:20:02 pm (UTC)'!
 value
 
 	^ CodeCoverageReport
@@ -565,7 +565,7 @@ value
 		executed: compiledMethodWasExecuted
 		with: self consolidateCoverageResults messages: nil.! !
 
-!LineCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/7/2022 02:55:30'!
+!LineCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022, 5:55:30 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 	
 	compiledMethod := aCompiledMethod.
@@ -573,7 +573,7 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	compiledMethodWasExecuted := false.
 	coveredSourceRanges _ Set new.! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 03:43:07'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 6:43:07 am (UTC)'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject 
 	
 	self cover: aSourceRange.
@@ -581,41 +581,41 @@ cover: aSourceRange declaredAt: declarationSourceRange by: anObject
 	
 	^ anObject! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:40:36'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:40:36 am (UTC)'!
 coverAll: sourceRanges 
 	
 	sourceRanges do: [ :r | self cover: r ].! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:56:29'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:56:29 am (UTC)'!
 coverAll: sourceRanges by: anObject 
 
 	self coverAll: sourceRanges.
 
 	^ anObject! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:40:36'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:40:36 am (UTC)'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 	
 	sourceRanges do: [ :r |  self cover: r ].
 	
 	^ anObject! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:57:39'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:57:39 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	self coverAll: sourceRanges.! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:57:18'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:57:18 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
 
 	self coverAll: sourceRanges! !
 
-!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!LineCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 11/3/2022 00:27:35'!
+!LineCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 3/Nov/2022, 3:27:35 am (UTC)'!
 for: aCompiledMethod withSourceRanges: sourceRanges
 	
 	^ self
@@ -623,36 +623,36 @@ for: aCompiledMethod withSourceRanges: sourceRanges
 		initializeFor: aCompiledMethod
 		with: sourceRanges! !
 
-!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/2/2022 23:47:58'!
+!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 2:47:58 am (UTC)'!
 compiledMethod
 
 	^ compiledMethod! !
 
-!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:17:37'!
+!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:17:37 am (UTC)'!
 coverageRatioFor: aSourceRange 
 	
 	^ compiledMethodWasExecuted
 		ifTrue: [ 1.0 ]
 		ifFalse: [ 0.0 ]! !
 
-!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/2/2022 23:48:22'!
+!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 2:48:22 am (UTC)'!
 messageCategory
 	
 	^ compiledMethod category! !
 
-!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/2/2022 23:48:11'!
+!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 2:48:11 am (UTC)'!
 methodClass
 	
 	^ compiledMethod methodClass! !
 
-!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/2/2022 23:48:37'!
+!MethodCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 2:48:37 am (UTC)'!
 systemCategory
 	
 	^ compiledMethod
 		methodClass
 		category ! !
 
-!MethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/7/2022 02:22:57'!
+!MethodCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 7/Nov/2022, 5:22:57 am (UTC)'!
 value
 
 	^ CodeCoverageReport
@@ -661,14 +661,14 @@ value
 		with: self consolidateCoverageResults
 		messages: Dictionary new.! !
 
-!MethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/3/2022 00:13:27'!
+!MethodCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 3/Nov/2022, 3:13:27 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 	
 	compiledMethod := aCompiledMethod.
 	analyzedSourceRanges := aCollecitonOfAnalizedSourceRanges.
 	compiledMethodWasExecuted := false.! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/3/2022 00:17:01'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 3/Nov/2022, 3:17:01 am (UTC)'!
 consolidateCoverageResults
 
 	^ analyzedSourceRanges
@@ -680,36 +680,36 @@ consolidateCoverageResults
 				
 			coverageRatioBySourceRange ]! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/3/2022 00:02:19'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 3/Nov/2022, 3:02:19 am (UTC)'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject 
 	
 	^ anObject! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:20:21'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:20:21 am (UTC)'!
 coverAll: sourceRanges by: anObject 
 
 	^ anObject! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/3/2022 00:01:59'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 3/Nov/2022, 3:01:59 am (UTC)'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 	
 	^ anObject! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:25:11'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:25:11 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 ! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:20:44'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:20:44 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
 
 	! !
 
-!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/2/2022 23:59:19'!
+!MethodCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 3/Nov/2022, 2:59:19 am (UTC)'!
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!MethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 11/2/2022 23:46:59'!
+!MethodCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 3/Nov/2022, 2:46:59 am (UTC)'!
 for: aCompiledMethod withSourceRanges: sourceRanges
 	
 	^ self
@@ -717,7 +717,7 @@ for: aCompiledMethod withSourceRanges: sourceRanges
 		initializeFor: aCompiledMethod
 		with: sourceRanges! !
 
-!StatementCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 11/7/2022 02:54:58'!
+!StatementCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022, 5:54:58 am (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 	
 	compiledMethod := aCompiledMethod.
@@ -725,51 +725,51 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	compiledMethodWasExecuted := false.
 	coveredSourceRanges _ Set new.! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:40:36'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:40:36 am (UTC)'!
 cover: aSourceRange declaredAt: declarationSourceRange by: anObject 
 	
 	self cover: aSourceRange.
 	self cover: declarationSourceRange.
 	^ anObject! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:40:50'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:40:50 am (UTC)'!
 coverAll: sourceRanges 
 	
 	sourceRanges do: [ :sourceRange | self cover: sourceRange ].! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:45:49'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:45:49 am (UTC)'!
 coverAll: sourceRanges by: anObject 
 
 	self coverAll: sourceRanges.
 
 	^ anObject! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:40:36'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:40:36 am (UTC)'!
 coverAll: sourceRanges byLiteralOrPseudoVariable: anObject 
 	
 	sourceRanges do: [ :r |  self cover: r ].
 	
 	^ anObject! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:46:09'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:46:09 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
 	
 	self coverAll: sourceRanges.! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:41:22'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:41:22 am (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver withResult: aResult 
 
 	self coverAll: sourceRanges! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/7/2022 02:40:21'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 7/Nov/2022, 5:40:21 am (UTC)'!
 hingAmount! !
 
-!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 markAsExecuted
 	
 	compiledMethodWasExecuted := true.! !
 
-!StatementCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 11/6/2022 12:20:02'!
+!StatementCoverageReportBuilder methodsFor: 'evaluating' stamp: 'NPM 6/Nov/2022, 3:20:02 pm (UTC)'!
 value
 
 	^ CodeCoverageReport
@@ -777,12 +777,12 @@ value
 		executed: compiledMethodWasExecuted
 		with: self consolidateCoverageResults messages: nil.! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 compiledMethod
 
 	^ compiledMethod! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 consolidateCoverageResults
 
 	^ analyzedSourceRanges
@@ -794,7 +794,7 @@ consolidateCoverageResults
 				
 			coverageRatioBySourceRange ]! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 02:54:58'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 5:54:58 am (UTC)'!
 cover: aSourceRange
 
 	| a |
@@ -802,31 +802,31 @@ cover: aSourceRange
 
 	coveredSourceRanges add: aSourceRange ! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/7/2022 02:54:58'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 5:54:58 am (UTC)'!
 coverageRatioFor: aSourceRange 
 	
 	^ (coveredSourceRanges includes: aSourceRange)
 		ifTrue: [ 1.0 ]
 		ifFalse: [ 0.0 ]! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 messageCategory
 	
 	^ compiledMethod category! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 methodClass
 	
 	^ compiledMethod methodClass! !
 
-!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 systemCategory
 	
 	^ compiledMethod
 		methodClass
 		category ! !
 
-!StatementCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 11/3/2022 00:55:54'!
+!StatementCoverageReportBuilder class methodsFor: 'instance creation' stamp: 'NPM 3/Nov/2022, 3:55:54 am (UTC)'!
 for: aCompiledMethod withSourceRanges: sourceRanges
 	
 	^ self
@@ -834,36 +834,36 @@ for: aCompiledMethod withSourceRanges: sourceRanges
 		initializeFor: aCompiledMethod
 		with: sourceRanges! !
 
-!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:15:46'!
+!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:15:46 pm (UTC)'!
 aBooleanArgument
 	
 	booleanArgument ifNil: [ booleanArgument := true ].
 	
 	^ booleanArgument asString! !
 
-!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:15:46'!
+!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:15:46 pm (UTC)'!
 aBooleanArgument: aString
 	
 	booleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:35:52'!
+!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:35:52 am (UTC)'!
 anotherBooleanArgument
 	
 	anotherBooleanArgument ifNil: [ anotherBooleanArgument := true ].
 	
 	^ anotherBooleanArgument asString! !
 
-!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:35:58'!
+!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:35:58 am (UTC)'!
 anotherBooleanArgument: aString
 	
 	anotherBooleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:36:39'!
+!CodeCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:36:39 am (UTC)'!
 buildArguments
 	
 	^ { booleanArgument. anotherBooleanArgument }! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/11/2022 06:37:19'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/Nov/2022, 9:37:19 am (UTC)'!
 codeCoverageTest: aBoolean and: anotherBoolean
 	
 	| temp1 temp2 temp3 |
@@ -877,28 +877,28 @@ codeCoverageTest: aBoolean and: anotherBoolean
 	
 	! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/10/2022 17:39:49'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 10/Nov/2022, 8:39:49 pm (UTC)'!
 conditionTest: aBoolean or: anotherBoolean
 
 	(aBoolean or: anotherBoolean)
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ]! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/10/2022 18:07:14'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 10/Nov/2022, 9:07:14 pm (UTC)'!
 decisionCondition2Test: aBoolean or: anotherBoolean or: yetAnotherBoolean
 	
 	((aBoolean or: anotherBoolean) or: yetAnotherBoolean)
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ]! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/10/2022 17:53:17'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 10/Nov/2022, 8:53:17 pm (UTC)'!
 decisionConditionTest: aBoolean or: anotherBoolean or: yetAnotherBoolean
 	
 	((aBoolean or: anotherBoolean) or: yetAnotherBoolean)
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ]! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/8/2022 02:11:05'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 8/Nov/2022, 5:11:05 am (UTC)'!
 decisionCoverageExample: aBoolean
 
 	| result |
@@ -909,21 +909,21 @@ decisionCoverageExample: aBoolean
 	
 	^ result! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/8/2022 01:48:25'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 8/Nov/2022, 4:48:25 am (UTC)'!
 lineCoverageExample
 
 	true ifTrue: [ ^ self ]. self printString.
 	
 	self value.! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/8/2022 01:43:56'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 8/Nov/2022, 4:43:56 am (UTC)'!
 methodCoverageExample
 
 	true ifTrue: [ ^ self ].
 	
 	self value.! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/8/2022 01:52:27'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 8/Nov/2022, 4:52:27 am (UTC)'!
 statementCoverageExample
 
 	true
@@ -932,94 +932,94 @@ statementCoverageExample
 		
 	self value.! !
 
-!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:55:21'!
+!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:55:21 pm (UTC)'!
 aBooleanArgument
 	
 	booleanArgument ifNil: [ booleanArgument := false ].
 	
 	^ booleanArgument asString! !
 
-!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:21:09'!
+!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:21:09 pm (UTC)'!
 aBooleanArgument: aString
 	
 	booleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:55:23'!
+!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:55:23 pm (UTC)'!
 anotherBooleanArgument
 	
 	anotherBooleanArgument ifNil: [ anotherBooleanArgument := false ].
 	
 	^ anotherBooleanArgument asString! !
 
-!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:25:59'!
+!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:25:59 pm (UTC)'!
 anotherBooleanArgument: aString
 	
 	anotherBooleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:25:27'!
+!ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:25:27 pm (UTC)'!
 buildArguments
 	
 	^ { booleanArgument. anotherBooleanArgument }! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:54:18'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:54:18 pm (UTC)'!
 aBooleanArgument
 	
 	booleanArgument ifNil: [ booleanArgument := false ].
 	
 	^ booleanArgument asString! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:48:41'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:48:41 pm (UTC)'!
 aBooleanArgument: aString
 	
 	booleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:54:23'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:54:23 pm (UTC)'!
 anotherBooleanArgument
 	
 	anotherBooleanArgument ifNil: [ anotherBooleanArgument := false ].
 	
 	^ anotherBooleanArgument asString! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:48:41'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:48:41 pm (UTC)'!
 anotherBooleanArgument: aString
 	
 	anotherBooleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:51:14'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:51:14 pm (UTC)'!
 buildArguments
 	
 	^ { booleanArgument. anotherBooleanArgument. yetAnotherBooleanArgument }! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:54:26'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:54:26 pm (UTC)'!
 yetAnotherBooleanArgument
 	
 	yetAnotherBooleanArgument ifNil: [ yetAnotherBooleanArgument := false ].
 	
 	^ yetAnotherBooleanArgument asString! !
 
-!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:50:44'!
+!DecisionConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:50:44 pm (UTC)'!
 yetAnotherBooleanArgument: aString
 	
 	yetAnotherBooleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!DecisionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:15:06'!
+!DecisionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:15:06 pm (UTC)'!
 aBooleanArgument
 	
 	booleanArgument ifNil: [ booleanArgument := true ].
 	
 	^ booleanArgument asString! !
 
-!DecisionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:15:55'!
+!DecisionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:15:55 pm (UTC)'!
 aBooleanArgument: aString
 	
 	booleanArgument := aString = 'true' ifTrue: [ true ] ifFalse: [ false ].! !
 
-!DecisionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:27:17'!
+!DecisionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:27:17 am (UTC)'!
 buildArguments
 	
 	^ { booleanArgument }! !
 
-!Smalltalks2022Presentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 06:29:02'!
+!Smalltalks2022Presentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:29:02 am (UTC)'!
 openInWorld
 	
 	| presentation |
@@ -1075,14 +1075,14 @@ openInWorld
 		buildingArgumentsWith: CodeCoverageArgumentsBuilder new).	
 		! !
 
-!Smalltalks2022Presentation class methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:35:51'!
+!Smalltalks2022Presentation class methodsFor: 'as yet unclassified' stamp: 'NPM 9/Nov/2022, 5:35:51 am (UTC)'!
 openInWorld
 	
 	self
 		new
 		openInWorld! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:14:12'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:14:12 pm (UTC)'!
 addTestCase
 	
 	testCases2 add: argumentsBuilder buildArguments.
@@ -1091,12 +1091,12 @@ addTestCase
 	testCasesList redrawNeeded
 	! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:23:54'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 9/Nov/2022, 5:23:54 am (UTC)'!
 arguments
 	
 	^ {}! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 1/20/2025 14:05:08'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 20/Jan/2025, 5:05:08 pm (UTC)'!
 buildArgumentInputs
 	
 	| argumentInputs arguments rightPane buttonsRow |
@@ -1126,7 +1126,7 @@ buildArgumentInputs
 	
 	contentPane addMorph: rightPane fixedWidth: 400.! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:14:19'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:14:19 pm (UTC)'!
 buildInputFor: argument 
 	
 	| argumentRow selectorName |
@@ -1137,14 +1137,14 @@ buildInputFor: argument
 	
 	^ argumentRow! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:10:38'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:10:38 pm (UTC)'!
 clearTestCases
 	
 	testCases2 removeAll.
 	self buildCodeEditorWith: Browser new.
 	self changed: #testCases! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:05:44'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:05:44 pm (UTC)'!
 foo
 	 
 	| analyzer browser |
@@ -1162,22 +1162,22 @@ foo
 	
 	self buildCodeEditorWith: browser! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:40:49'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 9/Nov/2022, 5:40:49 am (UTC)'!
 nextSlide
 	
 	self owner owner nextSlide! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 16:59:34'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 7:59:34 pm (UTC)'!
 previousSlide
 	
 	self owningWindow previousSlide! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:07:14'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:07:14 pm (UTC)'!
 runMethodWithoutArguments
 	
 	self runTestCase: {{}}! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:19:24'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 4:19:24 am (UTC)'!
 runTestCase: arguments
 	 
 	| analyzer browser |
@@ -1195,22 +1195,22 @@ runTestCase: arguments
 	
 	self buildCodeEditorWith: browser! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:00:43'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:00:43 pm (UTC)'!
 runTestCases
 	
 	self runTestCase: testCases2 ! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:14:09'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 4:14:09 am (UTC)'!
 testCaseIndex
 	
 	^ 0! !
 
-!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 01:15:38'!
+!CodeEditorSlide methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 4:15:38 am (UTC)'!
 testCases
 	
 	^ testCases2 collect: [:t | t asString ]! !
 
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 15:46:45'!
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 10/Nov/2022, 6:46:45 pm (UTC)'!
 buildCodeEditorWith: aBrowser
 	
 	| newCodeEditor |
@@ -1234,7 +1234,7 @@ buildCodeEditorWith: aBrowser
 
 	codeEditor := newCodeEditor.! !
 
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 16:48:50'!
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 10/Nov/2022, 7:48:50 pm (UTC)'!
 buildContentPane
 
 	contentPane := LayoutMorph newRow.
@@ -1242,7 +1242,7 @@ buildContentPane
 	self buildCodeEditorWith: Browser new.
 	self buildArgumentInputs! !
 
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 16:56:26'!
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 10/Nov/2022, 7:56:26 pm (UTC)'!
 buildToolbar
 
 	toolbar2 := LayoutMorph newRow doAdoptWidgetsColor;
@@ -1253,7 +1253,7 @@ buildToolbar
 
 	^ self addMorph: toolbar2 fixedHeight: 10.! !
 
-!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 11/10/2022 17:23:48'!
+!CodeEditorSlide methodsFor: 'initialization' stamp: 'NPM 10/Nov/2022, 8:23:48 pm (UTC)'!
 initializeToEdit: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder   
 
 	
@@ -1266,13 +1266,13 @@ initializeToEdit: aCompiledMethod selector: aSelector creatingReportBuildersWith
 	self buildToolbar. 	
 	self buildContentPane.! !
 
-!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/8/2022 17:51:16'!
+!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 8/Nov/2022, 8:51:16 pm (UTC)'!
 new
 
 	^ self
 		newColumn! !
 
-!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:18:19'!
+!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:18:19 pm (UTC)'!
 on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory
 	
 	^ self
@@ -1282,7 +1282,7 @@ on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuild
 		creatingReportBuildersWith: aReportBuilderFactory
 		buildingArgumentsWith: nil! !
 
-!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 17:17:48'!
+!CodeEditorSlide class methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:17:48 pm (UTC)'!
 on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder    
 	
 	^ self
@@ -1291,7 +1291,7 @@ on: aCompiledMethod selector: aSelector creatingReportBuildersWith: aReportBuild
 		selector: aSelector
 		creatingReportBuildersWith: aReportBuilderFactory buildingArgumentsWith: anArgumentsBuilder! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 19:06:05'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 10:06:05 pm (UTC)'!
 addSlide: aSlide
 
 	slides ifEmpty: [
@@ -1302,7 +1302,7 @@ addSlide: aSlide
 
 	! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/11/2022 07:00:49'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 10:00:49 am (UTC)'!
 fullScreen
 	"Zoom Window to Full World size with possible DeskMargins"
 
@@ -1322,14 +1322,14 @@ fullScreen
 		].
 	self morphPosition: possibleBounds topLeft extent: possibleBounds extent! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:52:50'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 9/Nov/2022, 5:52:50 am (UTC)'!
 initialize
 
 	super initialize.
 	slides := OrderedCollection new.
 	originalTitle := 'Code Coverage Examples'.! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:25:17'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:25:17 pm (UTC)'!
 nextSlide
 	
 	| currentIndex |
@@ -1348,13 +1348,13 @@ nextSlide
 	
 	! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:53:43'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 9/Nov/2022, 5:53:43 am (UTC)'!
 openInWorld
 
 	labelString := originalTitle.
 	super openInWorld! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/9/2022 02:55:02'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 9/Nov/2022, 5:55:02 am (UTC)'!
 previousSlide
 	
 	| currentIndex |
@@ -1368,17 +1368,17 @@ previousSlide
 	super model: nil.
 	self redrawNeeded! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:26:04'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:26:04 pm (UTC)'!
 stepAt: millisecondSinceLast
 
 	! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/8/2022 19:12:47'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 8/Nov/2022, 10:12:47 pm (UTC)'!
 submorphToFocusKeyboard
 	
 	^ self! !
 
-!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 11/10/2022 18:25:54'!
+!PresentationWindow methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:25:54 pm (UTC)'!
 wantsSteps
 	
 	^ true! !
