@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 7:12:05 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 7:55:32 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 41!
+!provides: 'ThesisDefense' 1 42!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1235,10 +1235,12 @@ branchCoverageSlide
 		heading: 'Branch Coverage'
 		creatingReportBuildersWith: DecisionCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 7:21:26 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 10:55:26 pm (UTC)'!
 codeCoverageDefinitionSlide
 
-	^ (PolaroidSlideBuilder on: 'code-coverage-definition.png') value! !
+	^ (PolaroidSlideBuilder on: 'code-coverage-definition.png')
+		rotationDegrees: -5;
+		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 8:11:08 pm (UTC)'!
 conditionCoverageSlide
@@ -1287,10 +1289,12 @@ statementCoverageSlide
 		executing: [ CodeCoverageExamples new statementCoverageExample ]
 		creatingReportBuildersWith: StatementCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 7:17:48 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 10:55:27 pm (UTC)'!
 subsumptionDefinitionSlide
 
-	^ (PolaroidSlideBuilder on: 'subsumption-definition.png') value! !
+	^ (PolaroidSlideBuilder on: 'subsumption-definition.png')
+		rotationDegrees: -8;
+		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 6:49:52 pm (UTC)'!
 titleSlide
