@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 7:55:32 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 7:57:28 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 42!
+!provides: 'ThesisDefense' 1 43!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1289,11 +1289,11 @@ statementCoverageSlide
 		executing: [ CodeCoverageExamples new statementCoverageExample ]
 		creatingReportBuildersWith: StatementCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 10:55:27 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 10:56:47 pm (UTC)'!
 subsumptionDefinitionSlide
 
 	^ (PolaroidSlideBuilder on: 'subsumption-definition.png')
-		rotationDegrees: -8;
+		rotationDegrees: 8;
 		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 6:49:52 pm (UTC)'!
