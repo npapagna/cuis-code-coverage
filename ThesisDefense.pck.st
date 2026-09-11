@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 4:40:55 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 5:26:51 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 39!
+!provides: 'ThesisDefense' 1 40!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -794,12 +794,30 @@ rotationDegrees: aNumber
 
 	rotationDegrees := aNumber.! !
 
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 8:26:19 pm (UTC)'!
+scaleToCover: aMorph into: aRectangle
+
+	"Like PlacedMorph>>scaleToFitInto:, but scales so aMorph fully covers aRectangle
+	(cropping the overflow on whichever axis doesn't match) instead of fitting entirely
+	inside it. Needed because photos aren't always exactly 16:9: a contain-fit leaves a
+	gap on one axis, which for this polaroid frame means the photo's own raw edge is
+	left exposed instead of tucked under a paper strip."
+
+	| currentBounds scale |
+	currentBounds := aMorph findFullBoundsInOwner.
+	scale := (aRectangle width / currentBounds width) max: (aRectangle height / currentBounds height).
+	scale := scale asFloat.
+	aMorph scaleBy: scale.
+
+	currentBounds := aMorph findFullBoundsInOwner.
+	aMorph morphPosition: aRectangle origin - (currentBounds origin - aMorph morphPosition) + (aRectangle extent - currentBounds extent // 2).! !
+
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:52 pm (UTC)'!
 setFilename: aString
 
 	filename := aString.! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:59 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 8:26:27 pm (UTC)'!
 value
 
 	| photoWidth photoHeight sidePadding bottomPadding overlap cardWidth cardHeight slide card image canvasExtent center shadow innerRight innerBottom |
@@ -832,8 +850,8 @@ value
 		yourself.
 
 	image := library imageNamed: filename.
-	image scaleToFitInto: (0 @ 0 extent: (photoWidth + (overlap * 2)) @ (photoHeight + (overlap * 2))).
-	image morphPosition: (sidePadding - overlap) @ (sidePadding - overlap).
+	self scaleToCover: image into: ((sidePadding - overlap) @ (sidePadding - overlap)
+		extent: (photoWidth + (overlap * 2)) @ (photoHeight + (overlap * 2))).
 	card addMorph: image.
 
 	"Paper strips on top of the photo hide its jagged rotated edge under a clean antialiased vector edge."
