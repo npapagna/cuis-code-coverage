@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 4:21:38 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 4:40:55 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 36!
+!provides: 'ThesisDefense' 1 39!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -767,13 +767,27 @@ centerMorph: aMorph at: aPoint
 	delta := aPoint - (bounds origin + (bounds extent // 2)).
 	aMorph morphPosition: aMorph morphPosition + delta.! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:51 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:50 pm (UTC)'!
+frameOverlap
+
+	^ 2! !
+
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:25:47 pm (UTC)'!
 initialize
 
 	super initialize.
 
 	library := ThesisDefenseMorphLibrary new.
-	rotationDegrees := -5.! !
+	rotationDegrees := (9 atRandom) - 8.! !
+
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:51 pm (UTC)'!
+paperStripExtent: anExtent position: aPosition
+
+	^ ColoredBoxMorph new
+		color: self paperColor;
+		morphExtent: anExtent;
+		morphPosition: aPosition;
+		yourself! !
 
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:53 pm (UTC)'!
 rotationDegrees: aNumber
@@ -785,10 +799,10 @@ setFilename: aString
 
 	filename := aString.! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:41:23 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:59 pm (UTC)'!
 value
 
-	| photoWidth photoHeight sidePadding bottomPadding cardWidth cardHeight slide card image canvasExtent center shadow |
+	| photoWidth photoHeight sidePadding bottomPadding overlap cardWidth cardHeight slide card image canvasExtent center shadow innerRight innerBottom |
 
 	slide := library blankSlide.
 	canvasExtent := SlideStyle canvasExtent.
@@ -798,9 +812,12 @@ value
 	photoHeight := (photoWidth * 9 / 16) rounded.
 	sidePadding := self sidePadding.
 	bottomPadding := self bottomPadding.
+	overlap := self frameOverlap.
 
 	cardWidth := photoWidth + (sidePadding * 2).
 	cardHeight := photoHeight + sidePadding + bottomPadding.
+	innerRight := sidePadding + photoWidth.
+	innerBottom := sidePadding + photoHeight.
 
 	shadow := self shadowMorphFor: cardWidth @ cardHeight.
 	shadow morphPosition: center.
@@ -815,9 +832,15 @@ value
 		yourself.
 
 	image := library imageNamed: filename.
-	image scaleToFitInto: (0 @ 0 extent: photoWidth @ photoHeight).
-	image morphPosition: sidePadding @ sidePadding.
+	image scaleToFitInto: (0 @ 0 extent: (photoWidth + (overlap * 2)) @ (photoHeight + (overlap * 2))).
+	image morphPosition: (sidePadding - overlap) @ (sidePadding - overlap).
 	card addMorph: image.
+
+	"Paper strips on top of the photo hide its jagged rotated edge under a clean antialiased vector edge."
+	card addMorph: (self paperStripExtent: cardWidth @ sidePadding position: 0 @ 0).
+	card addMorph: (self paperStripExtent: cardWidth @ (cardHeight - innerBottom) position: 0 @ innerBottom).
+	card addMorph: (self paperStripExtent: sidePadding @ photoHeight position: 0 @ sidePadding).
+	card addMorph: (self paperStripExtent: (cardWidth - innerRight) @ photoHeight position: innerRight @ sidePadding).
 
 	card morphPosition: (center x - (cardWidth // 2)) @ (center y - (cardHeight // 2)).
 	slide addMorph: card.
