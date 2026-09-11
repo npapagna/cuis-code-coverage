@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 6 September 2026 at 12:55:51 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 9:16:08 am'!
 'Description '!
-!provides: 'ThesisDefense' 1 26!
+!provides: 'ThesisDefense' 1 28!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
 !requires: 'CodeCoverageDemo' nil nil nil!
@@ -39,7 +39,7 @@ MethodSlideBuilder class
 
 !classDefinition: #CodeCoverageMethodSlideBuilder category: #ThesisDefense!
 MethodSlideBuilder subclass: #CodeCoverageMethodSlideBuilder
-	instanceVariableNames: 'executionBlock runButton coverageBadge slide codeEditorMorph reportBuilderFactory'
+	instanceVariableNames: 'executionBlock runButton clearButton coverageBadge slide codeEditorMorph reportBuilderFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -223,12 +223,13 @@ showSlideAt: anIndex
 	index := anIndex.
 	self currentSlide: (slides at: index)! !
 
-!SlidesPresenter methodsFor: 'keyboard' stamp: 'NPM 6/Sep/2026, 3:55:20 pm (UTC)'!
+!SlidesPresenter methodsFor: 'keyboard' stamp: 'NPM 6/Sep/2026, 3:59:17 pm (UTC)'!
 doubleClick: aMouseEvent localPosition: localEventPosition
 
 	self rotation: 0 scale: 1.
 	self morphPosition: 0 @ 0.
-	self currentSlide: currentSlide! !
+	self currentSlide: currentSlide.
+	self comeToFront! !
 
 !SlidesPresenter methodsFor: 'keyboard' stamp: 'NPM 5/Sep/2026, 6:14:49 pm (UTC)'!
 handlesKeyboardFocus
@@ -372,7 +373,7 @@ initialize
 
 	reportBuilderFactory := DecisionConditionCoverageReportBuilder! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 2:56:07 am (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 12:14:36 pm (UTC)'!
 value
 
 	| top rowHeight headingLabel left right bottom |
@@ -394,7 +395,16 @@ value
 		color: SlideStyle accent
 		labelColor: SlideStyle background.
 
-	rowHeight := (headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight.
+	clearButton := library
+		pillButtonLabeled: 'Clear'
+		target: self
+		action: #clearCoverage
+		actionArgument: nil
+		color: SlideStyle surface
+		labelColor: SlideStyle textSecondary.
+	clearButton disable.
+
+	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
 
 	headingLabel ifNotNil: [
 		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
@@ -402,6 +412,9 @@ value
 
 	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
 	slide addMorph: runButton.
+
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
+	slide addMorph: clearButton.
 
 	top := top + rowHeight + (SlideStyle space: 3).
 
@@ -412,7 +425,30 @@ value
 
 	^ slide! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 6/Sep/2026, 2:56:11 am (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:14:39 pm (UTC)'!
+clearCoverage
+
+	| newEditor right |
+
+	coverageBadge ifNotNil: [
+		slide removeMorph: coverageBadge.
+		coverageBadge := nil ].
+
+	newEditor := self codeEditor.
+	newEditor morphExtent: codeEditorMorph morphExtent.
+	newEditor morphPosition: codeEditorMorph morphPosition.
+
+	slide replaceSubmorph: codeEditorMorph by: newEditor.
+	codeEditorMorph := newEditor.
+
+	library restyleButton: runButton labeled: 'Run Coverage' color: SlideStyle accent labelColor: SlideStyle background.
+	right := slide interiorOrigin x + slide interiorExtent x.
+	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
+
+	clearButton disable.
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:14:43 pm (UTC)'!
 runCoverage
 
 	| compiledMethod analyzer report methodReport browser newEditor right |
@@ -442,9 +478,12 @@ runCoverage
 	right := slide interiorOrigin x + slide interiorExtent x.
 	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
 
+	clearButton enable.
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y.
+
 	self updateBadgeFor: methodReport coverageRatio! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 6/Sep/2026, 12:55:08 am (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:14:45 pm (UTC)'!
 updateBadgeFor: aCoverageRatio
 
 	| text |
@@ -458,8 +497,8 @@ updateBadgeFor: aCoverageRatio
 		ifNotNil: [ coverageBadge contents: text ].
 
 	coverageBadge morphPosition:
-		(runButton morphPosition x - (SlideStyle space: 2) - coverageBadge morphWidth)
-		@ (runButton morphPosition y + ((runButton morphHeight - coverageBadge morphHeight) // 2))! !
+		(clearButton morphPosition x - (SlideStyle space: 2) - coverageBadge morphWidth)
+		@ (clearButton morphPosition y + ((clearButton morphHeight - coverageBadge morphHeight) // 2))! !
 
 !CodeCoverageMethodSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 7:17:20 pm (UTC)'!
 on: aClass selector: aSymbol heading: aString executing: aBlock
@@ -554,7 +593,7 @@ styleToggle: toggle at: index
 	toggle morphExtent: fixedExtent.
 	toggle redrawNeeded! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 2:56:21 am (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 12:14:59 pm (UTC)'!
 value
 
 	| top rowHeight headingLabel barTop barHeight x panel left right bottom |
@@ -580,7 +619,16 @@ value
 		labelColor: SlideStyle background.
 	runButton disable.
 
-	rowHeight := (headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight.
+	clearButton := library
+		pillButtonLabeled: 'Clear'
+		target: self
+		action: #clearCoverage
+		actionArgument: nil
+		color: SlideStyle surface
+		labelColor: SlideStyle textSecondary.
+	clearButton disable.
+
+	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
 
 	headingLabel ifNotNil: [
 		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
@@ -588,6 +636,9 @@ value
 
 	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
 	slide addMorph: runButton.
+
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
+	slide addMorph: clearButton.
 
 	top := top + rowHeight + (SlideStyle space: 3).
 
@@ -646,7 +697,7 @@ removeTestCase: values
 	testCases isEmpty ifTrue: [ runButton disable ].
 	self renderTestCaseChips! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 6/Sep/2026, 2:56:25 am (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:15:03 pm (UTC)'!
 runCoverage
 
 	| compiledMethod analyzer report methodReport browser newEditor right |
@@ -676,6 +727,9 @@ runCoverage
 	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
 	right := slide interiorOrigin x + slide interiorExtent x.
 	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
+
+	clearButton enable.
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y.
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
