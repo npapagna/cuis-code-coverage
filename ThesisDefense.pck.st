@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 3:49:14 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 3:55:13 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 33!
+!provides: 'ThesisDefense' 1 34!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -81,7 +81,7 @@ SlideStyle class
 !classDefinition: #ThesisDefenseMorphLibrary category: #ThesisDefense!
 Object subclass: #ThesisDefenseMorphLibrary
 	instanceVariableNames: ''
-	classVariableNames: ''
+	classVariableNames: 'ImageCache'
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
 !classDefinition: 'ThesisDefenseMorphLibrary class' category: #ThesisDefense!
@@ -1032,10 +1032,21 @@ headingFont
 
 	^ (self fontFamily atPointSize: 42) emphasized: 1! !
 
-!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:46:10 pm (UTC)'!
-imageNamed: filename 
-	
-	^ ImageMorph fromFileNamed: (self class imagesFolder // filename)! !
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 6:54:20 pm (UTC)'!
+imageNamed: filename
+
+	| fileEntry mtime cached form |
+	fileEntry := self class imagesFolder // filename.
+	mtime := fileEntry modificationTime.
+	cached := self class imageCache at: filename ifAbsent: [ nil ].
+	form := (cached notNil and: [ cached key = mtime ])
+		ifTrue: [ cached value ]
+		ifFalse: [
+			| decoded |
+			decoded := Form fromFileNamed: fileEntry.
+			self class imageCache at: filename put: mtime -> decoded.
+			decoded ].
+	^ ImageMorph newWith: form! !
 
 !ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:42:52 pm (UTC)'!
 title: contents
@@ -1159,6 +1170,16 @@ imagesFolder
 loadFonts
 
 	TrueTypeFontFamily readAllTrueTypeFontsIn: self fontsFolder.! !
+
+!ThesisDefenseMorphLibrary class methodsFor: 'image cache' stamp: 'NPM 11/Sep/2026, 6:54:17 pm (UTC)'!
+flushImageCache
+
+	ImageCache := nil! !
+
+!ThesisDefenseMorphLibrary class methodsFor: 'image cache' stamp: 'NPM 11/Sep/2026, 6:54:16 pm (UTC)'!
+imageCache
+
+	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:53:08 pm (UTC)'!
 branchCoverageSlide
