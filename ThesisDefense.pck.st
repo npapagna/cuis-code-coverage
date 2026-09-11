@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 3:55:13 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 3:57:49 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 34!
+!provides: 'ThesisDefense' 1 35!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1190,13 +1190,6 @@ branchCoverageSlide
 		heading: 'Branch Coverage'
 		creatingReportBuildersWith: DecisionCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 9:08:18 pm (UTC)'!
-codeCoverageDefinition
-	
-	| lib |
-	lib := ThesisDefenseMorphLibrary new.
-	^ lib blankSlide addMorph: (lib title: 'code coverage definition'); yourself! !
-
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 8:11:08 pm (UTC)'!
 conditionCoverageSlide
 
@@ -1226,17 +1219,16 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 5:53:02 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 6:57:25 pm (UTC)'!
 slides
 	
 	^ {
 		self titleSlide.
-		self codeCoverageDefinition.
+		self danielSanSlide.
 		self methodCoverageSlide.
 		self statementCoverageSlide.
 		self branchCoverageSlide.
 		self conditionCoverageSlide.
-		self danielSanSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
