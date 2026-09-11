@@ -1,9 +1,10 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 9:16:08 am'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 3:49:14 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 28!
+!provides: 'ThesisDefense' 1 33!
+!requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
-!requires: 'CodeCoverageDemo' nil nil nil!
+!requires: 'Graphics-Files-Additional' nil nil nil!
 SystemOrganization addCategory: #ThesisDefense!
 
 
@@ -55,6 +56,16 @@ CodeCoverageMethodSlideBuilder subclass: #CodeCoverageTestCaseSlideBuilder
 	category: 'ThesisDefense'!
 !classDefinition: 'CodeCoverageTestCaseSlideBuilder class' category: #ThesisDefense!
 CodeCoverageTestCaseSlideBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #PolaroidSlideBuilder category: #ThesisDefense!
+Object subclass: #PolaroidSlideBuilder
+	instanceVariableNames: 'library filename rotationDegrees'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'PolaroidSlideBuilder class' category: #ThesisDefense!
+PolaroidSlideBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #SlideStyle category: #ThesisDefense!
@@ -748,6 +759,146 @@ on: aClass selector: aSymbol heading: aString creatingReportBuildersWith: aRepor
 		creatingReportBuildersWith: aReportBuilderFactory;
 		yourself! !
 
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:30:22 pm (UTC)'!
+centerMorph: aMorph at: aPoint
+
+	| bounds delta |
+	bounds := aMorph findFullBoundsInOwner.
+	delta := aPoint - (bounds origin + (bounds extent // 2)).
+	aMorph morphPosition: aMorph morphPosition + delta.! !
+
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:51 pm (UTC)'!
+initialize
+
+	super initialize.
+
+	library := ThesisDefenseMorphLibrary new.
+	rotationDegrees := -5.! !
+
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:53 pm (UTC)'!
+rotationDegrees: aNumber
+
+	rotationDegrees := aNumber.! !
+
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:52 pm (UTC)'!
+setFilename: aString
+
+	filename := aString.! !
+
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:41:23 pm (UTC)'!
+value
+
+	| photoWidth photoHeight sidePadding bottomPadding cardWidth cardHeight slide card image canvasExtent center shadow |
+
+	slide := library blankSlide.
+	canvasExtent := SlideStyle canvasExtent.
+	center := canvasExtent // 2.
+
+	photoWidth := self photoWidth.
+	photoHeight := (photoWidth * 9 / 16) rounded.
+	sidePadding := self sidePadding.
+	bottomPadding := self bottomPadding.
+
+	cardWidth := photoWidth + (sidePadding * 2).
+	cardHeight := photoHeight + sidePadding + bottomPadding.
+
+	shadow := self shadowMorphFor: cardWidth @ cardHeight.
+	shadow morphPosition: center.
+	slide addMorph: shadow.
+	shadow rotationDegrees: rotationDegrees.
+	self centerMorph: shadow at: center.
+	shadow morphPosition: shadow morphPosition + self shadowOffset.
+
+	card := ColoredBoxMorph new
+		color: self paperColor;
+		morphExtent: cardWidth @ cardHeight;
+		yourself.
+
+	image := library imageNamed: filename.
+	image scaleToFitInto: (0 @ 0 extent: photoWidth @ photoHeight).
+	image morphPosition: sidePadding @ sidePadding.
+	card addMorph: image.
+
+	card morphPosition: (center x - (cardWidth // 2)) @ (center y - (cardHeight // 2)).
+	slide addMorph: card.
+	card rotationDegrees: rotationDegrees.
+	self centerMorph: card at: center.
+
+	^ slide! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:57 pm (UTC)'!
+bottomPadding
+
+	^ 140! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:54 pm (UTC)'!
+paperColor
+
+	^ Color fromHexString: '#F5F1E8'! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:55 pm (UTC)'!
+photoWidth
+
+	^ 1200! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:36:48 pm (UTC)'!
+shadowLayers
+
+	"Each entry is inflate @ screen-space offset @ alpha, faintest/largest first, to fake a soft blurred shadow out of flat rectangles."
+
+	^ {
+		{ 16. 8 @ 11. 0.08 }.
+		{ 8.  5 @ 7.  0.16 }.
+		{ 2.  3 @ 4.  0.28 }.
+	}! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:46:46 pm (UTC)'!
+shadowMorphFor: cardExtent
+
+	| feather sampleScale fullExtent smallExtent bg core smallForm shadowMorph maxDarken |
+
+	feather := 22.
+	sampleScale := 3.
+	maxDarken := 0.14.
+	fullExtent := cardExtent + (feather * 2).
+	smallExtent := (fullExtent // sampleScale) max: 2 @ 2.
+	bg := SlideStyle background.
+	core := (cardExtent // 2) / sampleScale.
+
+	smallForm := Form extent: smallExtent depth: 32.
+	smallForm fillFromXYColorBlock: [ :xRel :yRel |
+		| x y dx dy dist t smoothT darken |
+		x := xRel * (smallExtent x - 1).
+		y := yRel * (smallExtent y - 1).
+		dx := ((x - (smallExtent x / 2)) abs - core x) max: 0.
+		dy := ((y - (smallExtent y / 2)) abs - core y) max: 0.
+		dist := ((dx * dx) + (dy * dy)) sqrt.
+		t := (dist / (feather / sampleScale)) min: 1.0.
+		smoothT := t * t * (3.0 - (2.0 * t)).
+		darken := maxDarken * (1.0 - smoothT).
+		Color r: bg red * (1.0 - darken) g: bg green * (1.0 - darken) b: bg blue * (1.0 - darken) ].
+
+	shadowMorph := ImageMorph newWith: smallForm.
+	shadowMorph scaleToFitInto: (0 @ 0 extent: fullExtent).
+	^ shadowMorph! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:46:47 pm (UTC)'!
+shadowOffset
+
+	^ 3 @ 4! !
+
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:56 pm (UTC)'!
+sidePadding
+
+	^ 32! !
+
+!PolaroidSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 11/Sep/2026, 6:26:02 pm (UTC)'!
+on: aFilename
+
+	^ self new
+		setFilename: aFilename;
+		yourself! !
+
 !SlideStyle class methodsFor: 'colors' stamp: 'NPM 5/Sep/2026, 6:56:35 pm (UTC)'!
 accent
 
@@ -1034,6 +1185,11 @@ conditionCoverageSlide
 		heading: 'Condition Coverage'
 		creatingReportBuildersWith: ConditionCoverageReportBuilder) value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 6:26:06 pm (UTC)'!
+danielSanSlide
+
+	^ (PolaroidSlideBuilder on: 'daniel-san.png') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:22 pm (UTC)'!
 methodCoverageSlide
 
@@ -1049,7 +1205,7 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 9:06:10 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 5:53:02 pm (UTC)'!
 slides
 	
 	^ {
@@ -1059,6 +1215,7 @@ slides
 		self statementCoverageSlide.
 		self branchCoverageSlide.
 		self conditionCoverageSlide.
+		self danielSanSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
