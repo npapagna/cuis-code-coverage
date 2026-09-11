@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 3:57:49 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 4:21:38 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 35!
+!provides: 'ThesisDefense' 1 36!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1190,6 +1190,11 @@ branchCoverageSlide
 		heading: 'Branch Coverage'
 		creatingReportBuildersWith: DecisionCoverageReportBuilder) value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 7:21:26 pm (UTC)'!
+codeCoverageDefinitionSlide
+
+	^ (PolaroidSlideBuilder on: 'code-coverage-definition.png') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 8:11:08 pm (UTC)'!
 conditionCoverageSlide
 
@@ -1198,11 +1203,6 @@ conditionCoverageSlide
 		selector: #conditionTest:or:
 		heading: 'Condition Coverage'
 		creatingReportBuildersWith: ConditionCoverageReportBuilder) value! !
-
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 6:26:06 pm (UTC)'!
-danielSanSlide
-
-	^ (PolaroidSlideBuilder on: 'daniel-san.png') value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:22 pm (UTC)'!
 methodCoverageSlide
@@ -1219,16 +1219,17 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 6:57:25 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 7:19:39 pm (UTC)'!
 slides
 	
 	^ {
 		self titleSlide.
-		self danielSanSlide.
+		self codeCoverageDefinitionSlide.
 		self methodCoverageSlide.
 		self statementCoverageSlide.
 		self branchCoverageSlide.
 		self conditionCoverageSlide.
+		self subsumptionDefinitionSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
@@ -1240,6 +1241,11 @@ statementCoverageSlide
 		heading: 'Statement Coverage'
 		executing: [ CodeCoverageExamples new statementCoverageExample ]
 		creatingReportBuildersWith: StatementCoverageReportBuilder) value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 7:17:48 pm (UTC)'!
+subsumptionDefinitionSlide
+
+	^ (PolaroidSlideBuilder on: 'subsumption-definition.png') value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 6:49:52 pm (UTC)'!
 titleSlide
