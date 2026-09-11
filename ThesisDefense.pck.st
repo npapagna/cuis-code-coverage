@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 5:26:51 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 7:12:05 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 40!
+!provides: 'ThesisDefense' 1 41!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -772,13 +772,17 @@ frameOverlap
 
 	^ 2! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:25:47 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 10:11:57 pm (UTC)'!
 initialize
 
 	super initialize.
 
 	library := ThesisDefenseMorphLibrary new.
-	rotationDegrees := (9 atRandom) - 8.! !
+	"Avoid small nonzero tilts: at this render's antialiasing, a shallow angle
+	like -1 to -4 degrees produces long, clearly-not-quite-straight staircase
+	steps on the rotated seam - more visible than either a flat photo or a
+	more pronounced tilt."
+	rotationDegrees := #(0 -5 -6 -7 -8) atRandom.! !
 
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:51 pm (UTC)'!
 paperStripExtent: anExtent position: aPosition
