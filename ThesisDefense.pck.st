@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 1:54:12 pm'!
-'Description add obc example 1'!
-!provides: 'ThesisDefense' 1 71!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 4:07:40 pm'!
+'Description Rename condition to decision/condition'!
+!provides: 'ThesisDefense' 1 73!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1763,24 +1763,24 @@ codeCoverageDefinitionSlide
 		rotationDegrees: -5;
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 8:11:08 pm (UTC)'!
-conditionCoverageSlide
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:07:22 pm (UTC)'!
+decisionConditionCoverageSlide
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #conditionTest:or:
-		heading: 'Condition Coverage'
-		creatingReportBuildersWith: ConditionCoverageReportBuilder) value! !
+		heading: 'Decision/Condition Coverage'
+		creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 3:12:17 pm (UTC)'!
-conditionVsBooleanCoverageSlide
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:04:56 pm (UTC)'!
+decisionConditionVsBooleanCoverageSlide
 
 	^ (CodeCoverageComparisonTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #OBCExample1:
-		heading: 'Condition vs OBC')
-		leftLabeled: 'Condition Coverage' creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder;
-		rightLabeled: 'OBC' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
+		heading: 'Decision/Condition vs OBC')
+		leftLabeled: 'Decision/Condition Coverage' creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder;
+		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
@@ -1820,7 +1820,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:53:35 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:04:32 pm (UTC)'!
 slides
 	
 	^ {
@@ -1829,8 +1829,8 @@ slides
 		self methodCoverageSlide.
 		self statementCoverageSlide.
 		self branchCoverageSlide.
-		self conditionCoverageSlide.
-		self conditionVsBooleanCoverageSlide.
+		self decisionConditionCoverageSlide.
+		self decisionConditionVsBooleanCoverageSlide.
 		self subsumptionDefinitionSlide.
 		self titleSlide.
 		self decisionSelectorsSlide.
