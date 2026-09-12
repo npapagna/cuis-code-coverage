@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:13:51 pm'!
-'Description '!
-!provides: 'CodeCoverageDemo' 1 16!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 4:56:05 pm'!
+'Description Fix basic decision condition criteria so it does not track booleans outside decisions'!
+!provides: 'CodeCoverageDemo' 1 17!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -225,11 +225,12 @@ form: aForm
 	
 	^self new initializeForm: aForm ! !
 
-!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:02:31 pm (UTC)'!
+!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:54:15 pm (UTC)'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
 	
-	self registerBoolean: aBoolean declaredAt: usageSourceRange.
-	self coverAsNonBoolean: declarationSourceRange ! !
+	self
+		coverNonBooleanUsage: usageSourceRange
+		of: declarationSourceRange! !
 
 !ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:44:16 pm (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
