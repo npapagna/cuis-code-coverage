@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 9:26:48 pm'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 9:22:32 am'!
 'Description '!
-!provides: 'ThesisDefense' 1 49!
+!provides: 'ThesisDefense' 1 51!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -926,7 +926,7 @@ value
 
 	^ slide! !
 
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:57 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 12/Sep/2026, 1:41:59 am (UTC)'!
 bottomPadding
 
 	^ 140! !
@@ -982,7 +982,7 @@ shadowOffset
 
 	^ 3 @ 4! !
 
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:56 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 12/Sep/2026, 1:41:58 am (UTC)'!
 sidePadding
 
 	^ 32! !
@@ -1341,16 +1341,25 @@ methodCoverageSlide
 		executing: [ CodeCoverageExamples new methodCoverageExample ]
 		creatingReportBuildersWith: MethodCoverageReportBuilder) value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:21:33 pm (UTC)'!
+openingSlide
+	
+	 ^ (PolaroidSlideBuilder on: 'Droste916.png')
+		photoWidth: 382
+		height: 680;
+		rotationDegrees: 5;
+		value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 6:49:06 pm (UTC)'!
 present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:26:46 am (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:20:48 pm (UTC)'!
 slides
 	
 	^ {
-		self titleSlide.
+		self openingSlide.
 		self codeCoverageDefinitionSlide.
 		self methodCoverageSlide.
 		self statementCoverageSlide.
