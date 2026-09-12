@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:37:12 am'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 11:58:10 am'!
 'Description Add boole slide'!
-!provides: 'ThesisDefense' 1 56!
+!provides: 'ThesisDefense' 1 59!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -56,6 +56,26 @@ Object subclass: #MethodSlideBuilder
 	category: 'ThesisDefense'!
 !classDefinition: 'MethodSlideBuilder class' category: #ThesisDefense!
 MethodSlideBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageComparisonSlideBuilder category: #ThesisDefense!
+MethodSlideBuilder subclass: #CodeCoverageComparisonSlideBuilder
+	instanceVariableNames: 'executionBlock runButton clearButton slide leftEditorMorph rightEditorMorph leftCaptionLabel rightCaptionLabel leftBadge rightBadge leftReportBuilderFactory rightReportBuilderFactory leftLabel rightLabel'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'CodeCoverageComparisonSlideBuilder class' category: #ThesisDefense!
+CodeCoverageComparisonSlideBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #CodeCoverageComparisonTestCaseSlideBuilder category: #ThesisDefense!
+CodeCoverageComparisonSlideBuilder subclass: #CodeCoverageComparisonTestCaseSlideBuilder
+	instanceVariableNames: 'argumentNames argumentValues argumentToggles testCases testCaseChips chipsRowTop addButton emptyStateLabel'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'CodeCoverageComparisonTestCaseSlideBuilder class' category: #ThesisDefense!
+CodeCoverageComparisonTestCaseSlideBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #CodeCoverageMethodSlideBuilder category: #ThesisDefense!
@@ -434,6 +454,462 @@ on: aClass selector: aSymbol heading: aString
 		setClass: aClass selector: aSymbol;
 		heading: aString;
 		yourself! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:50:59 pm (UTC)'!
+executing: aBlock
+
+	executionBlock := aBlock! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:50:58 pm (UTC)'!
+initialize
+
+	super initialize.
+
+	leftReportBuilderFactory := DecisionConditionCoverageReportBuilder.
+	rightReportBuilderFactory := DecisionConditionCoverageReportBuilder.
+	leftLabel := 'Left'.
+	rightLabel := 'Right'! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:51:00 pm (UTC)'!
+leftLabeled: aString creatingReportBuildersWith: aReportBuilderFactory
+
+	leftLabel := aString.
+	leftReportBuilderFactory := aReportBuilderFactory! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:51:01 pm (UTC)'!
+rightLabeled: aString creatingReportBuildersWith: aReportBuilderFactory
+
+	rightLabel := aString.
+	rightReportBuilderFactory := aReportBuilderFactory! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:51:10 pm (UTC)'!
+value
+
+	| top rowHeight headingLabel left right bottom gap columnWidth leftColumnLeft rightColumnLeft rightColumnRight captionHeight |
+
+	slide := library blankSlide.
+	left := slide interiorOrigin x.
+	top := slide interiorOrigin y.
+	right := left + slide interiorExtent x.
+	bottom := top + slide interiorExtent y.
+
+	heading ifNotNil: [
+		headingLabel := library primaryHeading: heading ].
+
+	runButton := library
+		pillButtonLabeled: 'Run Coverage'
+		target: self
+		action: #runCoverage
+		actionArgument: nil
+		color: SlideStyle accent
+		labelColor: SlideStyle background.
+
+	clearButton := library
+		pillButtonLabeled: 'Clear'
+		target: self
+		action: #clearCoverage
+		actionArgument: nil
+		color: SlideStyle surface
+		labelColor: SlideStyle textSecondary.
+	clearButton disable.
+
+	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
+
+	headingLabel ifNotNil: [
+		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
+		slide addMorph: headingLabel ].
+
+	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
+	slide addMorph: runButton.
+
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
+	slide addMorph: clearButton.
+
+	top := top + rowHeight + (SlideStyle space: 3).
+
+	gap := SlideStyle space: 3.
+	columnWidth := (right - left - gap) // 2.
+	leftColumnLeft := left.
+	rightColumnLeft := leftColumnLeft + columnWidth + gap.
+	rightColumnRight := right.
+
+	leftCaptionLabel := library secondaryCaption: leftLabel.
+	leftCaptionLabel morphPosition: leftColumnLeft @ top.
+	slide addMorph: leftCaptionLabel.
+
+	rightCaptionLabel := library secondaryCaption: rightLabel.
+	rightCaptionLabel morphPosition: rightColumnLeft @ top.
+	slide addMorph: rightCaptionLabel.
+
+	captionHeight := leftCaptionLabel morphHeight max: rightCaptionLabel morphHeight.
+	top := top + captionHeight + (SlideStyle space: 2).
+
+	leftEditorMorph := self codeEditor.
+	leftEditorMorph morphExtent: columnWidth @ (bottom - top).
+	leftEditorMorph morphPosition: leftColumnLeft @ top.
+	slide addMorph: leftEditorMorph.
+
+	rightEditorMorph := self codeEditor.
+	rightEditorMorph morphExtent: (rightColumnRight - rightColumnLeft) @ (bottom - top).
+	rightEditorMorph morphPosition: rightColumnLeft @ top.
+	slide addMorph: rightEditorMorph.
+
+	^ slide! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:28 pm (UTC)'!
+clearCoverage
+
+	| newLeftEditor newRightEditor right |
+
+	leftBadge ifNotNil: [
+		slide removeMorph: leftBadge.
+		leftBadge := nil ].
+	rightBadge ifNotNil: [
+		slide removeMorph: rightBadge.
+		rightBadge := nil ].
+
+	newLeftEditor := self codeEditor.
+	newLeftEditor morphExtent: leftEditorMorph morphExtent.
+	newLeftEditor morphPosition: leftEditorMorph morphPosition.
+	leftEditorMorph owner replaceSubmorph: leftEditorMorph by: newLeftEditor.
+	leftEditorMorph := newLeftEditor.
+
+	newRightEditor := self codeEditor.
+	newRightEditor morphExtent: rightEditorMorph morphExtent.
+	newRightEditor morphPosition: rightEditorMorph morphPosition.
+	rightEditorMorph owner replaceSubmorph: rightEditorMorph by: newRightEditor.
+	rightEditorMorph := newRightEditor.
+
+	library restyleButton: runButton labeled: 'Run Coverage' color: SlideStyle accent labelColor: SlideStyle background.
+	right := slide interiorOrigin x + slide interiorExtent x.
+	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
+
+	clearButton disable.
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:14 pm (UTC)'!
+runCoverage
+
+	| compiledMethod right |
+
+	compiledMethod := methodClass >> selector.
+
+	self runLeftCoverageOn: compiledMethod.
+	self runRightCoverageOn: compiledMethod.
+
+	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
+	right := slide interiorOrigin x + slide interiorExtent x.
+	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
+
+	clearButton enable.
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:18 pm (UTC)'!
+runLeftCoverageOn: compiledMethod
+
+	| analyzer report methodReport browser newEditor |
+
+	analyzer := CodeCoverageAnalyzer
+		toAnalyzeAll: { compiledMethod }
+		creatingReportBuildersWith: leftReportBuilderFactory.
+	analyzer value: executionBlock.
+	report := analyzer report.
+	methodReport := report reportForCompiledMethod: compiledMethod.
+
+	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: report.
+	browser setSelectedSystemCategory: methodClass category.
+	browser selectClass: methodClass.
+	browser selectedMessageName: selector.
+
+	newEditor := library codeEditorOn: browser.
+	newEditor morphExtent: leftEditorMorph morphExtent.
+	newEditor morphPosition: leftEditorMorph morphPosition.
+
+	leftEditorMorph owner replaceSubmorph: leftEditorMorph by: newEditor.
+	leftEditorMorph := newEditor.
+
+	self updateLeftBadgeFor: methodReport coverageRatio! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:20 pm (UTC)'!
+runRightCoverageOn: compiledMethod
+
+	| analyzer report methodReport browser newEditor |
+
+	analyzer := CodeCoverageAnalyzer
+		toAnalyzeAll: { compiledMethod }
+		creatingReportBuildersWith: rightReportBuilderFactory.
+	analyzer value: executionBlock.
+	report := analyzer report.
+	methodReport := report reportForCompiledMethod: compiledMethod.
+
+	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: report.
+	browser setSelectedSystemCategory: methodClass category.
+	browser selectClass: methodClass.
+	browser selectedMessageName: selector.
+
+	newEditor := library codeEditorOn: browser.
+	newEditor morphExtent: rightEditorMorph morphExtent.
+	newEditor morphPosition: rightEditorMorph morphPosition.
+
+	rightEditorMorph owner replaceSubmorph: rightEditorMorph by: newEditor.
+	rightEditorMorph := newEditor.
+
+	self updateRightBadgeFor: methodReport coverageRatio! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:23 pm (UTC)'!
+updateLeftBadgeFor: aCoverageRatio
+
+	| text |
+
+	text := (aCoverageRatio * 100) rounded printString , '% covered'.
+
+	leftBadge
+		ifNil: [
+			leftBadge := library badgeLabeled: text.
+			slide addMorph: leftBadge ]
+		ifNotNil: [ leftBadge contents: text ].
+
+	leftBadge morphPosition:
+		(leftCaptionLabel morphPosition x + leftCaptionLabel morphWidth + (SlideStyle space: 1))
+		@ (leftCaptionLabel morphPosition y + ((leftCaptionLabel morphHeight - leftBadge morphHeight) // 2))! !
+
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:25 pm (UTC)'!
+updateRightBadgeFor: aCoverageRatio
+
+	| text |
+
+	text := (aCoverageRatio * 100) rounded printString , '% covered'.
+
+	rightBadge
+		ifNil: [
+			rightBadge := library badgeLabeled: text.
+			slide addMorph: rightBadge ]
+		ifNotNil: [ rightBadge contents: text ].
+
+	rightBadge morphPosition:
+		(rightCaptionLabel morphPosition x + rightCaptionLabel morphWidth + (SlideStyle space: 1))
+		@ (rightCaptionLabel morphPosition y + ((rightCaptionLabel morphHeight - rightBadge morphHeight) // 2))! !
+
+!CodeCoverageComparisonSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 12/Sep/2026, 2:50:57 pm (UTC)'!
+on: aClass selector: aSymbol heading: aString executing: aBlock
+
+	^ self new
+		setClass: aClass selector: aSymbol;
+		heading: aString;
+		executing: aBlock;
+		yourself! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 2:56:51 pm (UTC)'!
+initialize
+
+	super initialize.
+	argumentNames := #().
+	argumentValues := #().
+	argumentToggles := #().
+	testCases := OrderedCollection new.
+	testCaseChips := OrderedCollection new! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:53 pm (UTC)'!
+buildChipFor: values
+
+	| text pairs |
+	pairs := (1 to: argumentNames size) collect: [ :i | (argumentNames at: i) , ': ' , (values at: i) printString ].
+	text := (pairs inject: '' into: [ :acc :each | acc isEmpty ifTrue: [ each ] ifFalse: [ acc , ', ' , each ] ]) , '   x'.
+	^ library chipLabeled: text target: self action: #removeTestCase: actionArgument: values! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:55 pm (UTC)'!
+buildToggleFor: index
+
+	| toggle name |
+	name := argumentNames at: index.
+	toggle := library
+		pillButtonLabeled: name , ': false'
+		target: self
+		action: #toggleArgumentAt:
+		actionArgument: index
+		color: SlideStyle surface
+		labelColor: SlideStyle textSecondary.
+	self styleToggle: toggle at: index.
+	^ toggle! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:56 pm (UTC)'!
+chipsAreaHeight
+
+	^ library captionFont lineSpacing + 22! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:59 pm (UTC)'!
+renderTestCaseChips
+
+	| x |
+	testCaseChips do: [ :chip | slide removeMorph: chip ].
+	testCaseChips := OrderedCollection new.
+	emptyStateLabel ifNotNil: [ slide removeMorph: emptyStateLabel. emptyStateLabel := nil ].
+
+	x := slide interiorOrigin x.
+
+	testCases isEmpty
+		ifTrue: [
+			emptyStateLabel := library secondaryCaption: 'Toggle an argument, then add a test case to build up coverage.'.
+			emptyStateLabel morphPosition: x @ (chipsRowTop + ((self chipsAreaHeight - emptyStateLabel morphHeight) // 2)).
+			slide addMorph: emptyStateLabel ]
+		ifFalse: [
+			testCases do: [ :values |
+				| chip |
+				chip := self buildChipFor: values.
+				chip morphPosition: x @ (chipsRowTop + ((self chipsAreaHeight - chip morphHeight) // 2)).
+				slide addMorph: chip.
+				testCaseChips add: chip.
+				x := x + chip morphWidth + (SlideStyle space: 1) ] ]! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:57:01 pm (UTC)'!
+styleToggle: toggle at: index
+
+	| state fixedExtent |
+	state := argumentValues at: index.
+	fixedExtent := toggle morphExtent.
+	state
+		ifTrue: [ library restyleButton: toggle labeled: (argumentNames at: index) , ': ' , state printString color: SlideStyle accent labelColor: SlideStyle background ]
+		ifFalse: [ library restyleButton: toggle labeled: (argumentNames at: index) , ': ' , state printString color: SlideStyle surface labelColor: SlideStyle textSecondary ].
+	toggle morphExtent: fixedExtent.
+	toggle redrawNeeded! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:57:20 pm (UTC)'!
+value
+
+	| top rowHeight headingLabel barTop barHeight x panel left right bottom gap columnWidth leftColumnLeft rightColumnLeft rightColumnRight captionHeight |
+
+	slide := library blankSlide.
+	left := slide interiorOrigin x.
+	top := slide interiorOrigin y.
+	right := left + slide interiorExtent x.
+	bottom := top + slide interiorExtent y.
+
+	argumentNames := ((methodClass >> selector) methodNode arguments collect: [ :each | each key asString ]) asArray.
+	argumentValues := argumentNames collect: [ :each | true ].
+
+	heading ifNotNil: [
+		headingLabel := library primaryHeading: heading ].
+
+	runButton := library
+		pillButtonLabeled: 'Run Coverage'
+		target: self
+		action: #runCoverage
+		actionArgument: nil
+		color: SlideStyle accent
+		labelColor: SlideStyle background.
+	runButton disable.
+
+	clearButton := library
+		pillButtonLabeled: 'Clear'
+		target: self
+		action: #clearCoverage
+		actionArgument: nil
+		color: SlideStyle surface
+		labelColor: SlideStyle textSecondary.
+	clearButton disable.
+
+	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
+
+	headingLabel ifNotNil: [
+		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
+		slide addMorph: headingLabel ].
+
+	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
+	slide addMorph: runButton.
+
+	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
+	slide addMorph: clearButton.
+
+	top := top + rowHeight + (SlideStyle space: 3).
+
+	barTop := top.
+	argumentToggles := (1 to: argumentNames size) collect: [ :i | self buildToggleFor: i ].
+
+	addButton := library
+		pillButtonLabeled: 'Add Test Case'
+		target: self
+		action: #addTestCase
+		actionArgument: nil
+		color: SlideStyle accent2
+		labelColor: SlideStyle background.
+
+	barHeight := (argumentToggles inject: addButton morphHeight into: [ :h :toggle | h max: toggle morphHeight ]) + ((SlideStyle space: 2) * 2).
+
+	panel := library panelExtent: (right - left) @ barHeight color: SlideStyle surface.
+	panel morphPosition: left @ barTop.
+	slide addMorph: panel.
+
+	x := left + (SlideStyle space: 2).
+	argumentToggles do: [ :toggle |
+		toggle morphPosition: x @ (barTop + ((barHeight - toggle morphHeight) // 2)).
+		slide addMorph: toggle.
+		x := x + toggle morphWidth + (SlideStyle space: 2) ].
+
+	addButton morphPosition: x @ (barTop + ((barHeight - addButton morphHeight) // 2)).
+	slide addMorph: addButton.
+
+	top := barTop + barHeight + (SlideStyle space: 2).
+	chipsRowTop := top.
+	self renderTestCaseChips.
+	top := top + self chipsAreaHeight + (SlideStyle space: 3).
+
+	gap := SlideStyle space: 3.
+	columnWidth := (right - left - gap) // 2.
+	leftColumnLeft := left.
+	rightColumnLeft := leftColumnLeft + columnWidth + gap.
+	rightColumnRight := right.
+
+	leftCaptionLabel := library secondaryCaption: leftLabel.
+	leftCaptionLabel morphPosition: leftColumnLeft @ top.
+	slide addMorph: leftCaptionLabel.
+
+	rightCaptionLabel := library secondaryCaption: rightLabel.
+	rightCaptionLabel morphPosition: rightColumnLeft @ top.
+	slide addMorph: rightCaptionLabel.
+
+	captionHeight := leftCaptionLabel morphHeight max: rightCaptionLabel morphHeight.
+	top := top + captionHeight + (SlideStyle space: 2).
+
+	leftEditorMorph := self codeEditor.
+	leftEditorMorph morphExtent: columnWidth @ (bottom - top).
+	leftEditorMorph morphPosition: leftColumnLeft @ top.
+	slide addMorph: leftEditorMorph.
+
+	rightEditorMorph := self codeEditor.
+	rightEditorMorph morphExtent: (rightColumnRight - rightColumnLeft) @ (bottom - top).
+	rightEditorMorph morphPosition: rightColumnLeft @ top.
+	slide addMorph: rightEditorMorph.
+
+	^ slide! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:03 pm (UTC)'!
+addTestCase
+
+	| values |
+	values := argumentValues copy.
+	(testCases includes: values) ifTrue: [ ^ self ].
+	testCases add: values.
+	runButton enable.
+	self renderTestCaseChips! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:04 pm (UTC)'!
+removeTestCase: values
+
+	testCases remove: values ifAbsent: [ ^ self ].
+	testCases isEmpty ifTrue: [ runButton disable ].
+	self renderTestCaseChips! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:06 pm (UTC)'!
+runCoverage
+
+	executionBlock := [ testCases do: [ :values | methodClass new perform: selector withArguments: values ] ].
+	super runCoverage! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:05 pm (UTC)'!
+toggleArgumentAt: index
+
+	argumentValues at: index put: (argumentValues at: index) not.
+	self styleToggle: (argumentToggles at: index) at: index! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:12 pm (UTC)'!
 codeEditorAreaLeft: left top: top right: right bottom: bottom
@@ -1371,6 +1847,17 @@ conditionCoverageSlide
 		heading: 'Condition Coverage'
 		creatingReportBuildersWith: ConditionCoverageReportBuilder) value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:58:06 pm (UTC)'!
+conditionVsBooleanCoverageSlide
+
+	^ (CodeCoverageComparisonTestCaseSlideBuilder
+		on: CodeCoverageExamples
+		selector: #conditionTest:or:
+		heading: 'Condition vs Boolean Coverage')
+		leftLabeled: 'Condition Coverage' creatingReportBuildersWith: ConditionCoverageReportBuilder;
+		rightLabeled: 'Boolean Coverage' creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder;
+		value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
 decisionSelectorsSlide
 
@@ -1409,7 +1896,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:35:29 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:53:35 pm (UTC)'!
 slides
 	
 	^ {
@@ -1419,6 +1906,7 @@ slides
 		self statementCoverageSlide.
 		self branchCoverageSlide.
 		self conditionCoverageSlide.
+		self conditionVsBooleanCoverageSlide.
 		self subsumptionDefinitionSlide.
 		self titleSlide.
 		self decisionSelectorsSlide.
