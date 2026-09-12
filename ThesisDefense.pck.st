@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:31:01 am'!
-'Description Add rice slide'!
-!provides: 'ThesisDefense' 1 55!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:37:12 am'!
+'Description Add boole slide'!
+!provides: 'ThesisDefense' 1 56!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1332,6 +1332,15 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:36:19 pm (UTC)'!
+booleSlide
+	
+	 ^ (PolaroidSlideBuilder on: 'george-boole.png')
+		photoWidth: 382
+		height: 680;
+		rotationDegrees: -8;
+		value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:58:47 pm (UTC)'!
 branchCoverageSlide
 
@@ -1400,7 +1409,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:29:27 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:35:29 pm (UTC)'!
 slides
 	
 	^ {
@@ -1414,6 +1423,7 @@ slides
 		self titleSlide.
 		self decisionSelectorsSlide.
 		self riceSlide.
+		self booleSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
