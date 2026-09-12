@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 11:58:10 am'!
-'Description Add boole slide'!
-!provides: 'ThesisDefense' 1 59!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:14:51 pm'!
+'Description add obc example 1'!
+!provides: 'ThesisDefense' 1 60!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1847,15 +1847,15 @@ conditionCoverageSlide
 		heading: 'Condition Coverage'
 		creatingReportBuildersWith: ConditionCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 2:58:06 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 3:12:17 pm (UTC)'!
 conditionVsBooleanCoverageSlide
 
 	^ (CodeCoverageComparisonTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #conditionTest:or:
-		heading: 'Condition vs Boolean Coverage')
-		leftLabeled: 'Condition Coverage' creatingReportBuildersWith: ConditionCoverageReportBuilder;
-		rightLabeled: 'Boolean Coverage' creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder;
+		selector: #OBCExample1:
+		heading: 'Condition vs OBC')
+		leftLabeled: 'Condition Coverage' creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder;
+		rightLabeled: 'OBC' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
