@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:00:07 am'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:13:51 pm'!
 'Description '!
-!provides: 'CodeCoverageDemo' 1 15!
+!provides: 'CodeCoverageDemo' 1 16!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -872,6 +872,13 @@ anotherBooleanArgument: aString
 buildArguments
 	
 	^ { booleanArgument. anotherBooleanArgument }! !
+
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 12/Sep/2026, 3:12:17 pm (UTC)'!
+OBCExample1: aBoolean
+	
+	aBoolean ifTrue: [ ^ 1 ].
+	
+	^ 2! !
 
 !CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/Nov/2022, 9:37:19 am (UTC)'!
 codeCoverageTest: aBoolean and: anotherBoolean
