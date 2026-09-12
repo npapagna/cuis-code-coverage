@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:41:53 pm'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:45:23 pm'!
 'Description add obc example 1'!
-!provides: 'ThesisDefense' 1 65!
+!provides: 'ThesisDefense' 1 66!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -26,6 +26,16 @@ ColoredBoxMorph subclass: #SlidesPresenter
 	category: 'ThesisDefense'!
 !classDefinition: 'SlidesPresenter class' category: #ThesisDefense!
 SlidesPresenter class
+	instanceVariableNames: ''!
+
+!classDefinition: #ThesisDefensePanelMorph category: #ThesisDefense!
+ColoredBoxMorph subclass: #ThesisDefensePanelMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'ThesisDefensePanelMorph class' category: #ThesisDefense!
+ThesisDefensePanelMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #ClippingBoxMorph category: #ThesisDefense!
@@ -337,6 +347,11 @@ on: aCollectionOfSlides
 present: aCollectionOfSlides
 
 	(self on: aCollectionOfSlides) present! !
+
+!ThesisDefensePanelMorph methodsFor: 'drawing' stamp: 'NPM 12/Sep/2026, 3:44:46 pm (UTC)'!
+drawOn: aCanvas
+
+	aCanvas roundRect: self localBounds color: color radius: self morphHeight / 2! !
 
 !ClippingBoxMorph methodsFor: 'geometry testing' stamp: 'NPM 12/Sep/2026, 12:25:22 am (UTC)'!
 clipsSubmorphs
@@ -1616,10 +1631,10 @@ codeEditorOn: aBrowser
 	editor layoutSpec: LayoutSpec useAll.
 	^ editor! !
 
-!ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 6/Sep/2026, 12:54:45 am (UTC)'!
+!ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 12/Sep/2026, 3:45:08 pm (UTC)'!
 panelExtent: anExtent color: aColor
 
-	^ ColoredBoxMorph new
+	^ ThesisDefensePanelMorph new
 		color: aColor;
 		morphExtent: anExtent;
 		yourself! !
