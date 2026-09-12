@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:14:51 pm'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:41:53 pm'!
 'Description add obc example 1'!
-!provides: 'ThesisDefense' 1 60!
+!provides: 'ThesisDefense' 1 65!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -70,7 +70,7 @@ CodeCoverageComparisonSlideBuilder class
 
 !classDefinition: #CodeCoverageComparisonTestCaseSlideBuilder category: #ThesisDefense!
 CodeCoverageComparisonSlideBuilder subclass: #CodeCoverageComparisonTestCaseSlideBuilder
-	instanceVariableNames: 'argumentNames argumentValues argumentToggles testCases testCaseChips chipsRowTop addButton emptyStateLabel'
+	instanceVariableNames: 'argumentNames testCases testCaseChips selectedTestCases'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -90,7 +90,7 @@ CodeCoverageMethodSlideBuilder class
 
 !classDefinition: #CodeCoverageTestCaseSlideBuilder category: #ThesisDefense!
 CodeCoverageMethodSlideBuilder subclass: #CodeCoverageTestCaseSlideBuilder
-	instanceVariableNames: 'argumentNames argumentValues argumentToggles testCases testCaseChips chipsRowTop addButton emptyStateLabel'
+	instanceVariableNames: 'argumentNames testCases testCaseChips selectedTestCases'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -205,7 +205,7 @@ drawRegularLabelOn: aCanvas
 			font: f
 			color: (self enableColorWith: (labelColor ifNil: [ SlideStyle textPrimary ])) ]! !
 
-!ThesisDefenseButtonMorph methodsFor: 'drawing' stamp: 'NPM 5/Sep/2026, 7:52:27 pm (UTC)'!
+!ThesisDefenseButtonMorph methodsFor: 'drawing' stamp: 'NPM 12/Sep/2026, 3:41:22 pm (UTC)'!
 drawRoundLookOn: aCanvas
 
 	| r colorForButton rect |
@@ -699,81 +699,57 @@ on: aClass selector: aSymbol heading: aString executing: aBlock
 		executing: aBlock;
 		yourself! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 2:56:51 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 3:20:43 pm (UTC)'!
 initialize
 
 	super initialize.
 	argumentNames := #().
-	argumentValues := #().
-	argumentToggles := #().
-	testCases := OrderedCollection new.
-	testCaseChips := OrderedCollection new! !
+	testCases := #().
+	testCaseChips := OrderedCollection new.
+	selectedTestCases := Set new! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:53 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:27 pm (UTC)'!
 buildChipFor: values
 
-	| text pairs |
-	pairs := (1 to: argumentNames size) collect: [ :i | (argumentNames at: i) , ': ' , (values at: i) printString ].
-	text := (pairs inject: '' into: [ :acc :each | acc isEmpty ifTrue: [ each ] ifFalse: [ acc , ', ' , each ] ]) , '   x'.
-	^ library chipLabeled: text target: self action: #removeTestCase: actionArgument: values! !
-
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:55 pm (UTC)'!
-buildToggleFor: index
-
-	| toggle name |
-	name := argumentNames at: index.
-	toggle := library
-		pillButtonLabeled: name , ': false'
+	^ library
+		pillButtonLabeled: (self labelFor: values)
 		target: self
-		action: #toggleArgumentAt:
-		actionArgument: index
-		color: SlideStyle surface
-		labelColor: SlideStyle textSecondary.
-	self styleToggle: toggle at: index.
-	^ toggle! !
+		action: #toggleTestCase:
+		actionArgument: values
+		color: SlideStyle background
+		labelColor: SlideStyle textSecondary! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:56 pm (UTC)'!
-chipsAreaHeight
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:20:45 pm (UTC)'!
+computeTestCases
 
-	^ library captionFont lineSpacing + 22! !
+	| combos |
+	combos := OrderedCollection with: #().
+	argumentNames do: [ :each |
+		| next |
+		next := OrderedCollection new.
+		combos do: [ :prefix |
+			next add: prefix , #(true).
+			next add: prefix , #(false) ].
+		combos := next ].
+	^ combos asArray! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:56:59 pm (UTC)'!
-renderTestCaseChips
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:23 pm (UTC)'!
+labelFor: values
 
-	| x |
-	testCaseChips do: [ :chip | slide removeMorph: chip ].
-	testCaseChips := OrderedCollection new.
-	emptyStateLabel ifNotNil: [ slide removeMorph: emptyStateLabel. emptyStateLabel := nil ].
+	^ String streamContents: [ :s | values do: [ :each | s nextPutAll: each printString ] separatedBy: [ s nextPutAll: ', ' ] ]! !
 
-	x := slide interiorOrigin x.
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:28 pm (UTC)'!
+styleChip: chip for: values
 
-	testCases isEmpty
-		ifTrue: [
-			emptyStateLabel := library secondaryCaption: 'Toggle an argument, then add a test case to build up coverage.'.
-			emptyStateLabel morphPosition: x @ (chipsRowTop + ((self chipsAreaHeight - emptyStateLabel morphHeight) // 2)).
-			slide addMorph: emptyStateLabel ]
-		ifFalse: [
-			testCases do: [ :values |
-				| chip |
-				chip := self buildChipFor: values.
-				chip morphPosition: x @ (chipsRowTop + ((self chipsAreaHeight - chip morphHeight) // 2)).
-				slide addMorph: chip.
-				testCaseChips add: chip.
-				x := x + chip morphWidth + (SlideStyle space: 1) ] ]! !
+	| fixedExtent |
+	fixedExtent := chip morphExtent.
+	(selectedTestCases includes: values)
+		ifTrue: [ library restyleButton: chip labeled: (self labelFor: values) color: SlideStyle accent labelColor: SlideStyle background ]
+		ifFalse: [ library restyleButton: chip labeled: (self labelFor: values) color: SlideStyle background labelColor: SlideStyle textSecondary ].
+	chip morphExtent: fixedExtent.
+	chip redrawNeeded! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:57:01 pm (UTC)'!
-styleToggle: toggle at: index
-
-	| state fixedExtent |
-	state := argumentValues at: index.
-	fixedExtent := toggle morphExtent.
-	state
-		ifTrue: [ library restyleButton: toggle labeled: (argumentNames at: index) , ': ' , state printString color: SlideStyle accent labelColor: SlideStyle background ]
-		ifFalse: [ library restyleButton: toggle labeled: (argumentNames at: index) , ': ' , state printString color: SlideStyle surface labelColor: SlideStyle textSecondary ].
-	toggle morphExtent: fixedExtent.
-	toggle redrawNeeded! !
-
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 2:57:20 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:44 pm (UTC)'!
 value
 
 	| top rowHeight headingLabel barTop barHeight x panel left right bottom gap columnWidth leftColumnLeft rightColumnLeft rightColumnRight captionHeight |
@@ -785,7 +761,8 @@ value
 	bottom := top + slide interiorExtent y.
 
 	argumentNames := ((methodClass >> selector) methodNode arguments collect: [ :each | each key asString ]) asArray.
-	argumentValues := argumentNames collect: [ :each | true ].
+	testCases := self computeTestCases.
+	selectedTestCases := Set new.
 
 	heading ifNotNil: [
 		headingLabel := library primaryHeading: heading ].
@@ -821,37 +798,23 @@ value
 	slide addMorph: clearButton.
 
 	top := top + rowHeight + (SlideStyle space: 3).
-
 	barTop := top.
-	argumentToggles := (1 to: argumentNames size) collect: [ :i | self buildToggleFor: i ].
 
-	addButton := library
-		pillButtonLabeled: 'Add Test Case'
-		target: self
-		action: #addTestCase
-		actionArgument: nil
-		color: SlideStyle accent2
-		labelColor: SlideStyle background.
+	testCaseChips := testCases collect: [ :values | self buildChipFor: values ].
 
-	barHeight := (argumentToggles inject: addButton morphHeight into: [ :h :toggle | h max: toggle morphHeight ]) + ((SlideStyle space: 2) * 2).
+	barHeight := (testCaseChips inject: 0 into: [ :h :chip | h max: chip morphHeight ]) + ((SlideStyle space: 2) * 2).
 
 	panel := library panelExtent: (right - left) @ barHeight color: SlideStyle surface.
 	panel morphPosition: left @ barTop.
 	slide addMorph: panel.
 
 	x := left + (SlideStyle space: 2).
-	argumentToggles do: [ :toggle |
-		toggle morphPosition: x @ (barTop + ((barHeight - toggle morphHeight) // 2)).
-		slide addMorph: toggle.
-		x := x + toggle morphWidth + (SlideStyle space: 2) ].
-
-	addButton morphPosition: x @ (barTop + ((barHeight - addButton morphHeight) // 2)).
-	slide addMorph: addButton.
+	testCaseChips do: [ :chip |
+		chip morphPosition: x @ (barTop + ((barHeight - chip morphHeight) // 2)).
+		slide addMorph: chip.
+		x := x + chip morphWidth + (SlideStyle space: 2) ].
 
 	top := barTop + barHeight + (SlideStyle space: 2).
-	chipsRowTop := top.
-	self renderTestCaseChips.
-	top := top + self chipsAreaHeight + (SlideStyle space: 3).
 
 	gap := SlideStyle space: 3.
 	columnWidth := (right - left - gap) // 2.
@@ -882,34 +845,22 @@ value
 
 	^ slide! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:03 pm (UTC)'!
-addTestCase
-
-	| values |
-	values := argumentValues copy.
-	(testCases includes: values) ifTrue: [ ^ self ].
-	testCases add: values.
-	runButton enable.
-	self renderTestCaseChips! !
-
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:04 pm (UTC)'!
-removeTestCase: values
-
-	testCases remove: values ifAbsent: [ ^ self ].
-	testCases isEmpty ifTrue: [ runButton disable ].
-	self renderTestCaseChips! !
-
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:06 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:21:03 pm (UTC)'!
 runCoverage
 
-	executionBlock := [ testCases do: [ :values | methodClass new perform: selector withArguments: values ] ].
+	executionBlock := [ selectedTestCases do: [ :values | methodClass new perform: selector withArguments: values ] ].
 	super runCoverage! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:57:05 pm (UTC)'!
-toggleArgumentAt: index
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:21:02 pm (UTC)'!
+toggleTestCase: values
 
-	argumentValues at: index put: (argumentValues at: index) not.
-	self styleToggle: (argumentToggles at: index) at: index! !
+	(selectedTestCases includes: values)
+		ifTrue: [ selectedTestCases remove: values ]
+		ifFalse: [ selectedTestCases add: values ].
+	self styleChip: (testCaseChips at: (testCases indexOf: values)) for: values.
+	selectedTestCases isEmpty
+		ifTrue: [ runButton disable ]
+		ifFalse: [ runButton enable ]! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:12 pm (UTC)'!
 codeEditorAreaLeft: left top: top right: right bottom: bottom
@@ -1097,81 +1048,57 @@ on: aClass selector: aSymbol heading: aString executing: aBlock creatingReportBu
 		creatingReportBuildersWith: aReportBuilderFactory;
 		yourself! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 5/Sep/2026, 7:52:35 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 3:20:20 pm (UTC)'!
 initialize
 
 	super initialize.
 	argumentNames := #().
-	argumentValues := #().
-	argumentToggles := #().
-	testCases := OrderedCollection new.
-	testCaseChips := OrderedCollection new! !
+	testCases := #().
+	testCaseChips := OrderedCollection new.
+	selectedTestCases := Set new! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 12:55:29 am (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:23 pm (UTC)'!
 buildChipFor: values
 
-	| text pairs |
-	pairs := (1 to: argumentNames size) collect: [ :i | (argumentNames at: i) , ': ' , (values at: i) printString ].
-	text := (pairs inject: '' into: [ :acc :each | acc isEmpty ifTrue: [ each ] ifFalse: [ acc , ', ' , each ] ]) , '   x'.
-	^ library chipLabeled: text target: self action: #removeTestCase: actionArgument: values! !
-
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 12:55:25 am (UTC)'!
-buildToggleFor: index
-
-	| toggle name |
-	name := argumentNames at: index.
-	toggle := library
-		pillButtonLabeled: name , ': false'
+	^ library
+		pillButtonLabeled: (self labelFor: values)
 		target: self
-		action: #toggleArgumentAt:
-		actionArgument: index
-		color: SlideStyle surface
-		labelColor: SlideStyle textSecondary.
-	self styleToggle: toggle at: index.
-	^ toggle! !
+		action: #toggleTestCase:
+		actionArgument: values
+		color: SlideStyle background
+		labelColor: SlideStyle textSecondary! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 5/Sep/2026, 7:52:36 pm (UTC)'!
-chipsAreaHeight
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:20:22 pm (UTC)'!
+computeTestCases
 
-	^ library captionFont lineSpacing + 22! !
+	| combos |
+	combos := OrderedCollection with: #().
+	argumentNames do: [ :each |
+		| next |
+		next := OrderedCollection new.
+		combos do: [ :prefix |
+			next add: prefix , #(true).
+			next add: prefix , #(false) ].
+		combos := next ].
+	^ combos asArray! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 2:56:28 am (UTC)'!
-renderTestCaseChips
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:22 pm (UTC)'!
+labelFor: values
 
-	| x |
-	testCaseChips do: [ :chip | slide removeMorph: chip ].
-	testCaseChips := OrderedCollection new.
-	emptyStateLabel ifNotNil: [ slide removeMorph: emptyStateLabel. emptyStateLabel := nil ].
+	^ String streamContents: [ :s | values do: [ :each | s nextPutAll: each printString ] separatedBy: [ s nextPutAll: ', ' ] ]! !
 
-	x := slide interiorOrigin x.
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:25 pm (UTC)'!
+styleChip: chip for: values
 
-	testCases isEmpty
-		ifTrue: [
-			emptyStateLabel := library secondaryCaption: 'Toggle an argument, then add a test case to build up coverage.'.
-			emptyStateLabel morphPosition: x @ (chipsRowTop + ((self chipsAreaHeight - emptyStateLabel morphHeight) // 2)).
-			slide addMorph: emptyStateLabel ]
-		ifFalse: [
-			testCases do: [ :values |
-				| chip |
-				chip := self buildChipFor: values.
-				chip morphPosition: x @ (chipsRowTop + ((self chipsAreaHeight - chip morphHeight) // 2)).
-				slide addMorph: chip.
-				testCaseChips add: chip.
-				x := x + chip morphWidth + (SlideStyle space: 1) ] ]! !
+	| fixedExtent |
+	fixedExtent := chip morphExtent.
+	(selectedTestCases includes: values)
+		ifTrue: [ library restyleButton: chip labeled: (self labelFor: values) color: SlideStyle accent labelColor: SlideStyle background ]
+		ifFalse: [ library restyleButton: chip labeled: (self labelFor: values) color: SlideStyle background labelColor: SlideStyle textSecondary ].
+	chip morphExtent: fixedExtent.
+	chip redrawNeeded! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 12:55:27 am (UTC)'!
-styleToggle: toggle at: index
-
-	| state fixedExtent |
-	state := argumentValues at: index.
-	fixedExtent := toggle morphExtent.
-	state
-		ifTrue: [ library restyleButton: toggle labeled: (argumentNames at: index) , ': ' , state printString color: SlideStyle accent labelColor: SlideStyle background ]
-		ifFalse: [ library restyleButton: toggle labeled: (argumentNames at: index) , ': ' , state printString color: SlideStyle surface labelColor: SlideStyle textSecondary ].
-	toggle morphExtent: fixedExtent.
-	toggle redrawNeeded! !
-
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:42 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:34 pm (UTC)'!
 value
 
 	| top rowHeight headingLabel barTop barHeight x panel left right bottom |
@@ -1183,7 +1110,8 @@ value
 	bottom := top + slide interiorExtent y.
 
 	argumentNames := ((methodClass >> selector) methodNode arguments collect: [ :each | each key asString ]) asArray.
-	argumentValues := argumentNames collect: [ :each | true ].
+	testCases := self computeTestCases.
+	selectedTestCases := Set new.
 
 	heading ifNotNil: [
 		headingLabel := library primaryHeading: heading ].
@@ -1219,61 +1147,30 @@ value
 	slide addMorph: clearButton.
 
 	top := top + rowHeight + (SlideStyle space: 3).
-
 	barTop := top.
-	argumentToggles := (1 to: argumentNames size) collect: [ :i | self buildToggleFor: i ].
 
-	addButton := library
-		pillButtonLabeled: 'Add Test Case'
-		target: self
-		action: #addTestCase
-		actionArgument: nil
-		color: SlideStyle accent2
-		labelColor: SlideStyle background.
+	testCaseChips := testCases collect: [ :values | self buildChipFor: values ].
 
-	barHeight := (argumentToggles inject: addButton morphHeight into: [ :h :toggle | h max: toggle morphHeight ]) + ((SlideStyle space: 2) * 2).
+	barHeight := (testCaseChips inject: 0 into: [ :h :chip | h max: chip morphHeight ]) + ((SlideStyle space: 2) * 2).
 
 	panel := library panelExtent: (right - left) @ barHeight color: SlideStyle surface.
 	panel morphPosition: left @ barTop.
 	slide addMorph: panel.
 
 	x := left + (SlideStyle space: 2).
-	argumentToggles do: [ :toggle |
-		toggle morphPosition: x @ (barTop + ((barHeight - toggle morphHeight) // 2)).
-		slide addMorph: toggle.
-		x := x + toggle morphWidth + (SlideStyle space: 2) ].
+	testCaseChips do: [ :chip |
+		chip morphPosition: x @ (barTop + ((barHeight - chip morphHeight) // 2)).
+		slide addMorph: chip.
+		x := x + chip morphWidth + (SlideStyle space: 2) ].
 
-	addButton morphPosition: x @ (barTop + ((barHeight - addButton morphHeight) // 2)).
-	slide addMorph: addButton.
-
-	top := barTop + barHeight + (SlideStyle space: 2).
-	chipsRowTop := top.
-	self renderTestCaseChips.
-	top := top + self chipsAreaHeight + (SlideStyle space: 3).
+	top := barTop + barHeight + (SlideStyle space: 3).
 
 	codeEditorMorph := self codeEditor.
 	slide addMorph: (self codeEditorAreaLeft: left top: top right: right bottom: bottom).
 
 	^ slide! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 5/Sep/2026, 7:52:53 pm (UTC)'!
-addTestCase
-
-	| values |
-	values := argumentValues copy.
-	(testCases includes: values) ifTrue: [ ^ self ].
-	testCases add: values.
-	runButton enable.
-	self renderTestCaseChips! !
-
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 5/Sep/2026, 7:52:54 pm (UTC)'!
-removeTestCase: values
-
-	testCases remove: values ifAbsent: [ ^ self ].
-	testCases isEmpty ifTrue: [ runButton disable ].
-	self renderTestCaseChips! !
-
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:30 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:20:40 pm (UTC)'!
 runCoverage
 
 	| compiledMethod analyzer report methodReport browser newEditor right |
@@ -1284,7 +1181,7 @@ runCoverage
 		toAnalyzeAll: { compiledMethod }
 		creatingReportBuildersWith: reportBuilderFactory.
 	analyzer value: [
-		testCases do: [ :values | methodClass new perform: selector withArguments: values ] ].
+		selectedTestCases do: [ :values | methodClass new perform: selector withArguments: values ] ].
 	report := analyzer report.
 	methodReport := report reportForCompiledMethod: compiledMethod.
 
@@ -1309,11 +1206,16 @@ runCoverage
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 5/Sep/2026, 7:52:52 pm (UTC)'!
-toggleArgumentAt: index
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:20:36 pm (UTC)'!
+toggleTestCase: values
 
-	argumentValues at: index put: (argumentValues at: index) not.
-	self styleToggle: (argumentToggles at: index) at: index! !
+	(selectedTestCases includes: values)
+		ifTrue: [ selectedTestCases remove: values ]
+		ifFalse: [ selectedTestCases add: values ].
+	self styleChip: (testCaseChips at: (testCases indexOf: values)) for: values.
+	selectedTestCases isEmpty
+		ifTrue: [ runButton disable ]
+		ifFalse: [ runButton enable ]! !
 
 !CodeCoverageTestCaseSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 7:52:34 pm (UTC)'!
 on: aClass selector: aSymbol heading: aString creatingReportBuildersWith: aReportBuilderFactory
