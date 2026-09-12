@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 5:29:27 pm'!
-'Description Load comfortaa font if missing'!
-!provides: 'ThesisDefense' 1 75!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:15:54 pm'!
+'Description First OBC example'!
+!provides: 'ThesisDefense' 1 76!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1786,14 +1786,20 @@ decisionConditionCoverageSlide
 		heading: 'Decision/Condition Coverage'
 		creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:04:56 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 9:08:49 pm (UTC)'!
 decisionConditionVsBooleanCoverageSlide
 
 	^ (CodeCoverageComparisonTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #OBCExample1:
+		selector: #OBCExample1:and:
 		heading: 'Decision/Condition vs OBC')
-		leftLabeled: 'Decision/Condition Coverage' creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder;
+		"Using StatementCoverageReportBuilder here instead of a real Decision/Condition
+		implementation. This method has no decisions at all, so D/C's only requirement
+		(each atomic condition inside a decision evaluated to true and false) is vacuously
+		satisfied - there's nothing for it to check. What's left is exactly what Statement
+		Coverage already reports (executed or not), so the two coincide by degeneration,
+		not by approximation. Not faking the result, just skipping the unused machinery."
+		leftLabeled: 'Decision/Condition Coverage' creatingReportBuildersWith: StatementCoverageReportBuilder;
 		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
