@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 4:07:40 pm'!
-'Description Rename condition to decision/condition'!
-!provides: 'ThesisDefense' 1 73!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 4:15:16 pm'!
+'Description Reorder d/c vs obc slide'!
+!provides: 'ThesisDefense' 1 74!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1820,7 +1820,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:04:32 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:13:48 pm (UTC)'!
 slides
 	
 	^ {
@@ -1830,12 +1830,12 @@ slides
 		self statementCoverageSlide.
 		self branchCoverageSlide.
 		self decisionConditionCoverageSlide.
-		self decisionConditionVsBooleanCoverageSlide.
 		self subsumptionDefinitionSlide.
 		self titleSlide.
 		self decisionSelectorsSlide.
 		self riceSlide.
 		self booleSlide.
+		self decisionConditionVsBooleanCoverageSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
