@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 7:57:28 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 9:14:52 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 43!
+!provides: 'ThesisDefense' 1 47!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -26,6 +26,16 @@ ColoredBoxMorph subclass: #SlidesPresenter
 	category: 'ThesisDefense'!
 !classDefinition: 'SlidesPresenter class' category: #ThesisDefense!
 SlidesPresenter class
+	instanceVariableNames: ''!
+
+!classDefinition: #ImageSlideBuilder category: #ThesisDefense!
+Object subclass: #ImageSlideBuilder
+	instanceVariableNames: 'library filename'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'ImageSlideBuilder class' category: #ThesisDefense!
+ImageSlideBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #MethodSlideBuilder category: #ThesisDefense!
@@ -297,6 +307,39 @@ on: aCollectionOfSlides
 present: aCollectionOfSlides
 
 	(self on: aCollectionOfSlides) present! !
+
+!ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:01 am (UTC)'!
+initialize
+
+	super initialize.
+
+	library := ThesisDefenseMorphLibrary new.! !
+
+!ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:01 am (UTC)'!
+setFilename: aString
+
+	filename := aString.! !
+
+!ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:10 am (UTC)'!
+value
+
+	| slide image canvasExtent |
+
+	slide := library blankSlide.
+	canvasExtent := SlideStyle canvasExtent.
+
+	image := library imageNamed: filename.
+	image scaleToFitInto: (0 @ 0 extent: canvasExtent).
+	slide addMorph: image.
+
+	^ slide! !
+
+!ImageSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 12/Sep/2026, 12:14:00 am (UTC)'!
+on: aFilename
+
+	^ self new
+		setFilename: aFilename;
+		yourself! !
 
 !MethodSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 12:54:55 am (UTC)'!
 codeEditor
@@ -1266,7 +1309,7 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 7:19:39 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:14:47 am (UTC)'!
 slides
 	
 	^ {
