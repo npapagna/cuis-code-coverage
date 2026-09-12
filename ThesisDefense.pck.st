@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 9:25:54 am'!
-'Description '!
-!provides: 'ThesisDefense' 1 52!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:00:32 am'!
+'Description Add decision selectors slide'!
+!provides: 'ThesisDefense' 1 54!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -60,7 +60,7 @@ MethodSlideBuilder class
 
 !classDefinition: #CodeCoverageMethodSlideBuilder category: #ThesisDefense!
 MethodSlideBuilder subclass: #CodeCoverageMethodSlideBuilder
-	instanceVariableNames: 'executionBlock runButton clearButton coverageBadge slide codeEditorMorph reportBuilderFactory'
+	instanceVariableNames: 'executionBlock runButton clearButton coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -361,15 +361,20 @@ on: aFilename
 		setFilename: aFilename;
 		yourself! !
 
-!MethodSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 12:54:55 am (UTC)'!
+!MethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:09 pm (UTC)'!
 codeEditor
+
+	^ self codeEditorForClass: methodClass selector: selector! !
+
+!MethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:08 pm (UTC)'!
+codeEditorForClass: aClass selector: aSymbol
 
 	| browser |
 
 	browser := Browser new.
-	browser setSelectedSystemCategory: methodClass category.
-	browser selectClass: methodClass.
-	browser selectedMessageName: selector.
+	browser setSelectedSystemCategory: aClass category.
+	browser selectClass: aClass.
+	browser selectedMessageName: aSymbol.
 
 	^ library codeEditorOn: browser! !
 
@@ -430,6 +435,25 @@ on: aClass selector: aSymbol heading: aString
 		heading: aString;
 		yourself! !
 
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:12 pm (UTC)'!
+codeEditorAreaLeft: left top: top right: right bottom: bottom
+
+	| container |
+
+	container := secondaryClass
+		ifNil: [ codeEditorMorph ]
+		ifNotNil: [
+			| row |
+			row := LinearLayoutMorph newRow.
+			row gap: (SlideStyle space: 3).
+			row addMorph: codeEditorMorph proportionalWidth: 1.
+			row addMorph: (self codeEditorForClass: secondaryClass selector: secondarySelector) proportionalWidth: 1.
+			row ].
+
+	container morphExtent: (right - left) @ (bottom - top).
+	container morphPosition: left @ top.
+	^ container! !
+
 !CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 5/Sep/2026, 7:27:30 pm (UTC)'!
 creatingReportBuildersWith: aReportBuilderFactory
 
@@ -447,7 +471,13 @@ initialize
 
 	reportBuilderFactory := DecisionConditionCoverageReportBuilder! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 12:14:36 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:10 pm (UTC)'!
+secondaryOn: aClass selector: aSymbol
+
+	secondaryClass := aClass.
+	secondarySelector := aSymbol! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:19 pm (UTC)'!
 value
 
 	| top rowHeight headingLabel left right bottom |
@@ -493,13 +523,11 @@ value
 	top := top + rowHeight + (SlideStyle space: 3).
 
 	codeEditorMorph := self codeEditor.
-	codeEditorMorph morphExtent: (right - left) @ (bottom - top).
-	codeEditorMorph morphPosition: left @ top.
-	slide addMorph: codeEditorMorph.
+	slide addMorph: (self codeEditorAreaLeft: left top: top right: right bottom: bottom).
 
 	^ slide! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:14:39 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:22 pm (UTC)'!
 clearCoverage
 
 	| newEditor right |
@@ -512,7 +540,7 @@ clearCoverage
 	newEditor morphExtent: codeEditorMorph morphExtent.
 	newEditor morphPosition: codeEditorMorph morphPosition.
 
-	slide replaceSubmorph: codeEditorMorph by: newEditor.
+	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
 	codeEditorMorph := newEditor.
 
 	library restyleButton: runButton labeled: 'Run Coverage' color: SlideStyle accent labelColor: SlideStyle background.
@@ -522,7 +550,7 @@ clearCoverage
 	clearButton disable.
 	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:14:43 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:26 pm (UTC)'!
 runCoverage
 
 	| compiledMethod analyzer report methodReport browser newEditor right |
@@ -545,7 +573,7 @@ runCoverage
 	newEditor morphExtent: codeEditorMorph morphExtent.
 	newEditor morphPosition: codeEditorMorph morphPosition.
 
-	slide replaceSubmorph: codeEditorMorph by: newEditor.
+	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
 	codeEditorMorph := newEditor.
 
 	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
@@ -667,7 +695,7 @@ styleToggle: toggle at: index
 	toggle morphExtent: fixedExtent.
 	toggle redrawNeeded! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 12:14:59 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:42 pm (UTC)'!
 value
 
 	| top rowHeight headingLabel barTop barHeight x panel left right bottom |
@@ -748,9 +776,7 @@ value
 	top := top + self chipsAreaHeight + (SlideStyle space: 3).
 
 	codeEditorMorph := self codeEditor.
-	codeEditorMorph morphExtent: (right - left) @ (bottom - top).
-	codeEditorMorph morphPosition: left @ top.
-	slide addMorph: codeEditorMorph.
+	slide addMorph: (self codeEditorAreaLeft: left top: top right: right bottom: bottom).
 
 	^ slide! !
 
@@ -771,7 +797,7 @@ removeTestCase: values
 	testCases isEmpty ifTrue: [ runButton disable ].
 	self renderTestCaseChips! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:15:03 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:30 pm (UTC)'!
 runCoverage
 
 	| compiledMethod analyzer report methodReport browser newEditor right |
@@ -795,7 +821,7 @@ runCoverage
 	newEditor morphExtent: codeEditorMorph morphExtent.
 	newEditor morphPosition: codeEditorMorph morphPosition.
 
-	slide replaceSubmorph: codeEditorMorph by: newEditor.
+	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
 	codeEditorMorph := newEditor.
 
 	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
@@ -1306,14 +1332,19 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:53:08 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:58:47 pm (UTC)'!
 branchCoverageSlide
 
-	^ (CodeCoverageTestCaseSlideBuilder
+	^ self branchCoverageSlideBuilder value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:58:42 pm (UTC)'!
+branchCoverageSlideBuilder
+
+	^ CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #decisionCoverageExample:
 		heading: 'Branch Coverage'
-		creatingReportBuildersWith: DecisionCoverageReportBuilder) value! !
+		creatingReportBuildersWith: DecisionCoverageReportBuilder! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 10:55:26 pm (UTC)'!
 codeCoverageDefinitionSlide
@@ -1330,6 +1361,14 @@ conditionCoverageSlide
 		selector: #conditionTest:or:
 		heading: 'Condition Coverage'
 		creatingReportBuildersWith: ConditionCoverageReportBuilder) value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
+decisionSelectorsSlide
+
+	^ (self branchCoverageSlideBuilder
+		heading: 'Decision Selectors';
+		secondaryOn: DecisionCoverageReportBuilder selector: #decisionSelectors)
+		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:22 pm (UTC)'!
 methodCoverageSlide
@@ -1355,7 +1394,7 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:23:10 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:39:26 pm (UTC)'!
 slides
 	
 	^ {
@@ -1367,6 +1406,7 @@ slides
 		self conditionCoverageSlide.
 		self subsumptionDefinitionSlide.
 		self titleSlide.
+		self decisionSelectorsSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
