@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 29 August 2026 at 11:56:13 am'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:00:07 am'!
 'Description '!
-!provides: 'CodeCoverageDemo' 1 14!
+!provides: 'CodeCoverageDemo' 1 15!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -263,6 +263,16 @@ coveredSourceRanges
 	
 	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
 
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 12/Sep/2026, 12:59:55 pm (UTC)'!
+decisionSelectors
+
+	^ #(
+		#ifTrue:
+		#ifFalse:
+		#ifTrue:ifFalse:
+		#ifFalse:ifTrue:
+		)! !
+
 !DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
 fulllyCoveredNonBooleanSourceRanges
 	
@@ -320,7 +330,7 @@ value
 		executed: compiledMethodWasExecuted
 		with: self consolidateCoverageResults! !
 
-!DecisionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 7/Nov/2022, 6:31:01 am (UTC)'!
+!DecisionCoverageReportBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 12:51:37 pm (UTC)'!
 initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges 
 
 	compiledMethod := aCompiledMethod.
@@ -329,7 +339,7 @@ initializeFor: aCompiledMethod with: aCollecitonOfAnalizedSourceRanges
 	booleanValuesByDeclaration := Dictionary new.
 	usagesByDeclaration := Dictionary new.
 	compiledMethodWasExecuted := false.
-	decisionSelectors := #(#ifTrue: #ifFalse: #ifTrue:ifFalse: #ifFalse:ifTrue:).! !
+	decisionSelectors := self decisionSelectors.! !
 
 !DecisionCoverageReportBuilder methodsFor: 'registering code coverage' stamp: 'NPM 9/Nov/2022, 5:34:39 am (UTC)'!
 consolidateCoverageResults
