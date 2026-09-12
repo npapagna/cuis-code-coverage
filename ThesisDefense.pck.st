@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 1:39:12 pm'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 1:54:12 pm'!
 'Description add obc example 1'!
-!provides: 'ThesisDefense' 1 70!
+!provides: 'ThesisDefense' 1 71!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -752,10 +752,12 @@ computeTestCases
 		combos := next ].
 	^ combos asArray! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:23 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:52:31 pm (UTC)'!
 labelFor: values
 
-	^ String streamContents: [ :s | values do: [ :each | s nextPutAll: each printString ] separatedBy: [ s nextPutAll: ', ' ] ]! !
+	| text |
+	text := String streamContents: [ :s | values do: [ :each | s nextPutAll: each printString ] separatedBy: [ s nextPutAll: ', ' ] ].
+	^ text isEmpty ifTrue: [ 'Run Coverage' ] ifFalse: [ text ]! !
 
 !CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:28 pm (UTC)'!
 styleChip: chip for: values
@@ -1094,10 +1096,12 @@ computeTestCases
 		combos := next ].
 	^ combos asArray! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:22 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:52:29 pm (UTC)'!
 labelFor: values
 
-	^ String streamContents: [ :s | values do: [ :each | s nextPutAll: each printString ] separatedBy: [ s nextPutAll: ', ' ] ]! !
+	| text |
+	text := String streamContents: [ :s | values do: [ :each | s nextPutAll: each printString ] separatedBy: [ s nextPutAll: ', ' ] ].
+	^ text isEmpty ifTrue: [ 'Run Coverage' ] ifFalse: [ text ]! !
 
 !CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:25 pm (UTC)'!
 styleChip: chip for: values
@@ -1787,14 +1791,13 @@ decisionSelectorsSlide
 		secondaryOn: DecisionCoverageReportBuilder selector: #decisionSelectors)
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:22 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:42 pm (UTC)'!
 methodCoverageSlide
 
-	^ (CodeCoverageMethodSlideBuilder
+	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #methodCoverageExample
 		heading: 'Method Coverage'
-		executing: [ CodeCoverageExamples new methodCoverageExample ]
 		creatingReportBuildersWith: MethodCoverageReportBuilder) value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:21:33 pm (UTC)'!
@@ -1835,14 +1838,13 @@ slides
 		self booleSlide.
 	}! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
 statementCoverageSlide
 
-	^ (CodeCoverageMethodSlideBuilder
+	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #statementCoverageExample
 		heading: 'Statement Coverage'
-		executing: [ CodeCoverageExamples new statementCoverageExample ]
 		creatingReportBuildersWith: StatementCoverageReportBuilder) value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Sep/2026, 10:56:47 pm (UTC)'!
