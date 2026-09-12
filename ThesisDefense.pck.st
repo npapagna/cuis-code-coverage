@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 4:15:16 pm'!
-'Description Reorder d/c vs obc slide'!
-!provides: 'ThesisDefense' 1 74!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 5:29:27 pm'!
+'Description Load comfortaa font if missing'!
+!provides: 'ThesisDefense' 1 75!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1562,10 +1562,19 @@ captionFont
 
 	^ (self fontFamily) atPointSize: 20! !
 
-!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:44:18 pm (UTC)'!
-fontFamily
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 8:25:55 pm (UTC)'!
+comfortaaFontFamily
 
 	^ FontFamily familyNamed: 'Comfortaa'! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 8:29:05 pm (UTC)'!
+fontFamily
+
+	^ self comfortaaFontFamily
+		ifNil: [
+			self
+				loadComfortaaFont;
+				comfortaaFontFamily ]! !
 
 !ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:52:23 pm (UTC)'!
 heading: contents
@@ -1594,6 +1603,11 @@ imageNamed: filename
 			self class imageCache at: filename put: mtime -> decoded.
 			decoded ].
 	^ ImageMorph newWith: form! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 8:29:05 pm (UTC)'!
+loadComfortaaFont
+	
+	TrueTypeFontFamily readTrueTypeFontEntry: self class fontsFolder // 'Comfortaa/static/Comfortaa-Regular.ttf'! !
 
 !ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 3:58:50 pm (UTC)'!
 restyleButton: aButton labeled: aString font: aFont color: bgColor labelColor: fgColor
