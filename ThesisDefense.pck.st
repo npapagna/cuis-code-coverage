@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 9:22:32 am'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 9:25:54 am'!
 'Description '!
-!provides: 'ThesisDefense' 1 51!
+!provides: 'ThesisDefense' 1 52!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1355,7 +1355,7 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:20:48 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:23:10 pm (UTC)'!
 slides
 	
 	^ {
@@ -1366,6 +1366,7 @@ slides
 		self branchCoverageSlide.
 		self conditionCoverageSlide.
 		self subsumptionDefinitionSlide.
+		self titleSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
