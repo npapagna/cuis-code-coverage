@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 4:56:05 pm'!
-'Description Fix basic decision condition criteria so it does not track booleans outside decisions'!
-!provides: 'CodeCoverageDemo' 1 17!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:16:02 pm'!
+'Description First OBC example'!
+!provides: 'CodeCoverageDemo' 1 18!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -225,12 +225,11 @@ form: aForm
 	
 	^self new initializeForm: aForm ! !
 
-!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:54:15 pm (UTC)'!
+!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:02:31 pm (UTC)'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
 	
-	self
-		coverNonBooleanUsage: usageSourceRange
-		of: declarationSourceRange! !
+	self registerBoolean: aBoolean declaredAt: usageSourceRange.
+	self coverAsNonBoolean: declarationSourceRange ! !
 
 !ConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:44:16 pm (UTC)'!
 coverAll: sourceRanges fromSending: aSelector to: aReceiver 
@@ -880,6 +879,15 @@ OBCExample1: aBoolean
 	aBoolean ifTrue: [ ^ 1 ].
 	
 	^ 2! !
+
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 12/Sep/2026, 9:09:29 pm (UTC)'!
+OBCExample1: aBoolean and: anotherBoolean
+
+	| temp |
+	
+	temp := aBoolean and: anotherBoolean.
+	
+	^ temp! !
 
 !CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/Nov/2022, 9:37:19 am (UTC)'!
 codeCoverageTest: aBoolean and: anotherBoolean
