@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 12:45:23 pm'!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 1:07:03 pm'!
 'Description add obc example 1'!
-!provides: 'ThesisDefense' 1 66!
+!provides: 'ThesisDefense' 1 69!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -571,7 +571,7 @@ value
 
 	^ slide! !
 
-!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:28 pm (UTC)'!
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:49:32 pm (UTC)'!
 clearCoverage
 
 	| newLeftEditor newRightEditor right |
@@ -599,10 +599,11 @@ clearCoverage
 	right := slide interiorOrigin x + slide interiorExtent x.
 	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
 
-	clearButton disable.
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
+	clearButton ifNotNil: [
+		clearButton disable.
+		clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y ]! !
 
-!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:14 pm (UTC)'!
+!CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:50:29 pm (UTC)'!
 runCoverage
 
 	| compiledMethod right |
@@ -616,8 +617,9 @@ runCoverage
 	right := slide interiorOrigin x + slide interiorExtent x.
 	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
 
-	clearButton enable.
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
+	clearButton ifNotNil: [
+		clearButton enable.
+		clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y ]! !
 
 !CodeCoverageComparisonSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 2:51:18 pm (UTC)'!
 runLeftCoverageOn: compiledMethod
@@ -764,10 +766,10 @@ styleChip: chip for: values
 	chip morphExtent: fixedExtent.
 	chip redrawNeeded! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:44 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:05:37 pm (UTC)'!
 value
 
-	| top rowHeight headingLabel barTop barHeight x panel left right bottom gap columnWidth leftColumnLeft rightColumnLeft rightColumnRight captionHeight |
+	| top rowHeight headingLabel barTop barHeight x panel left right bottom gap columnWidth leftColumnLeft rightColumnLeft rightColumnRight captionHeight clearAllButton clearAllFont |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -791,16 +793,7 @@ value
 		labelColor: SlideStyle background.
 	runButton disable.
 
-	clearButton := library
-		pillButtonLabeled: 'Clear'
-		target: self
-		action: #clearCoverage
-		actionArgument: nil
-		color: SlideStyle surface
-		labelColor: SlideStyle textSecondary.
-	clearButton disable.
-
-	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
+	rowHeight := (headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight.
 
 	headingLabel ifNotNil: [
 		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
@@ -809,21 +802,25 @@ value
 	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
 	slide addMorph: runButton.
 
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
-	slide addMorph: clearButton.
-
 	top := top + rowHeight + (SlideStyle space: 3).
 	barTop := top.
 
+	clearAllFont := (FontFamily familyNamed: (Preferences at: #standardButtonFont) familyName) atPointSize: 18.
+	clearAllButton := ThesisDefenseButtonMorph model: self action: #clearCoverage actionArgument: nil label: nil.
+	library restyleButton: clearAllButton labeled: 'X' font: clearAllFont color: SlideStyle background labelColor: SlideStyle textSecondary.
 	testCaseChips := testCases collect: [ :values | self buildChipFor: values ].
 
-	barHeight := (testCaseChips inject: 0 into: [ :h :chip | h max: chip morphHeight ]) + ((SlideStyle space: 2) * 2).
+	barHeight := (testCaseChips inject: clearAllButton morphHeight into: [ :h :chip | h max: chip morphHeight ]) + ((SlideStyle space: 2) * 2).
 
 	panel := library panelExtent: (right - left) @ barHeight color: SlideStyle surface.
 	panel morphPosition: left @ barTop.
 	slide addMorph: panel.
 
 	x := left + (SlideStyle space: 2).
+	clearAllButton morphPosition: x @ (barTop + ((barHeight - clearAllButton morphHeight) // 2)).
+	slide addMorph: clearAllButton.
+	x := x + clearAllButton morphWidth + (SlideStyle space: 2).
+
 	testCaseChips do: [ :chip |
 		chip morphPosition: x @ (barTop + ((barHeight - chip morphHeight) // 2)).
 		slide addMorph: chip.
@@ -859,6 +856,12 @@ value
 	slide addMorph: rightEditorMorph.
 
 	^ slide! !
+
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:49:35 pm (UTC)'!
+clearCoverage
+
+	selectedTestCases asArray do: [ :values | self toggleTestCase: values ].
+	super clearCoverage! !
 
 !CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:21:03 pm (UTC)'!
 runCoverage
@@ -969,7 +972,7 @@ value
 
 	^ slide! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:22 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:49:28 pm (UTC)'!
 clearCoverage
 
 	| newEditor right |
@@ -989,8 +992,9 @@ clearCoverage
 	right := slide interiorOrigin x + slide interiorExtent x.
 	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
 
-	clearButton disable.
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y! !
+	clearButton ifNotNil: [
+		clearButton disable.
+		clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y ]! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:26 pm (UTC)'!
 runCoverage
@@ -1027,10 +1031,10 @@ runCoverage
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 11/Sep/2026, 12:14:45 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:53:27 pm (UTC)'!
 updateBadgeFor: aCoverageRatio
 
-	| text |
+	| text anchor |
 
 	text := (aCoverageRatio * 100) rounded printString , '% covered'.
 
@@ -1040,9 +1044,10 @@ updateBadgeFor: aCoverageRatio
 			slide addMorph: coverageBadge ]
 		ifNotNil: [ coverageBadge contents: text ].
 
+	anchor := clearButton ifNil: [ runButton ] ifNotNil: [ clearButton ].
 	coverageBadge morphPosition:
-		(clearButton morphPosition x - (SlideStyle space: 2) - coverageBadge morphWidth)
-		@ (clearButton morphPosition y + ((clearButton morphHeight - coverageBadge morphHeight) // 2))! !
+		(anchor morphPosition x - (SlideStyle space: 2) - coverageBadge morphWidth)
+		@ (anchor morphPosition y + ((anchor morphHeight - coverageBadge morphHeight) // 2))! !
 
 !CodeCoverageMethodSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 7:17:20 pm (UTC)'!
 on: aClass selector: aSymbol heading: aString executing: aBlock
@@ -1113,10 +1118,10 @@ styleChip: chip for: values
 	chip morphExtent: fixedExtent.
 	chip redrawNeeded! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:35:34 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:05:27 pm (UTC)'!
 value
 
-	| top rowHeight headingLabel barTop barHeight x panel left right bottom |
+	| top rowHeight headingLabel barTop barHeight x panel left right bottom clearAllButton clearAllFont |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -1140,16 +1145,7 @@ value
 		labelColor: SlideStyle background.
 	runButton disable.
 
-	clearButton := library
-		pillButtonLabeled: 'Clear'
-		target: self
-		action: #clearCoverage
-		actionArgument: nil
-		color: SlideStyle surface
-		labelColor: SlideStyle textSecondary.
-	clearButton disable.
-
-	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
+	rowHeight := (headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight.
 
 	headingLabel ifNotNil: [
 		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
@@ -1158,21 +1154,25 @@ value
 	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
 	slide addMorph: runButton.
 
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
-	slide addMorph: clearButton.
-
 	top := top + rowHeight + (SlideStyle space: 3).
 	barTop := top.
 
+	clearAllFont := (FontFamily familyNamed: (Preferences at: #standardButtonFont) familyName) atPointSize: 18.
+	clearAllButton := ThesisDefenseButtonMorph model: self action: #clearCoverage actionArgument: nil label: nil.
+	library restyleButton: clearAllButton labeled: 'X' font: clearAllFont color: SlideStyle background labelColor: SlideStyle textSecondary.
 	testCaseChips := testCases collect: [ :values | self buildChipFor: values ].
 
-	barHeight := (testCaseChips inject: 0 into: [ :h :chip | h max: chip morphHeight ]) + ((SlideStyle space: 2) * 2).
+	barHeight := (testCaseChips inject: clearAllButton morphHeight into: [ :h :chip | h max: chip morphHeight ]) + ((SlideStyle space: 2) * 2).
 
 	panel := library panelExtent: (right - left) @ barHeight color: SlideStyle surface.
 	panel morphPosition: left @ barTop.
 	slide addMorph: panel.
 
 	x := left + (SlideStyle space: 2).
+	clearAllButton morphPosition: x @ (barTop + ((barHeight - clearAllButton morphHeight) // 2)).
+	slide addMorph: clearAllButton.
+	x := x + clearAllButton morphWidth + (SlideStyle space: 2).
+
 	testCaseChips do: [ :chip |
 		chip morphPosition: x @ (barTop + ((barHeight - chip morphHeight) // 2)).
 		slide addMorph: chip.
@@ -1185,7 +1185,13 @@ value
 
 	^ slide! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:20:40 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:49:35 pm (UTC)'!
+clearCoverage
+
+	selectedTestCases asArray do: [ :values | self toggleTestCase: values ].
+	super clearCoverage! !
+
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:50:27 pm (UTC)'!
 runCoverage
 
 	| compiledMethod analyzer report methodReport browser newEditor right |
@@ -1215,9 +1221,6 @@ runCoverage
 	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
 	right := slide interiorOrigin x + slide interiorExtent x.
 	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
-
-	clearButton enable.
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y.
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
@@ -1592,6 +1595,14 @@ imageNamed: filename
 			decoded ].
 	^ ImageMorph newWith: form! !
 
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 3:58:50 pm (UTC)'!
+restyleButton: aButton labeled: aString font: aFont color: bgColor labelColor: fgColor
+
+	aButton label: aString font: aFont.
+	aButton morphExtent: aButton morphWidth + 32 @ (aButton morphHeight + 16).
+	aButton labelColor: fgColor.
+	aButton color: bgColor! !
+
 !ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:42:52 pm (UTC)'!
 title: contents
 
@@ -1647,13 +1658,10 @@ pillButtonLabeled: aString target: aTarget action: aSelector actionArgument: anO
 	self restyleButton: button labeled: aString color: bgColor labelColor: fgColor.
 	^ button! !
 
-!ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 6/Sep/2026, 12:54:41 am (UTC)'!
+!ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 12/Sep/2026, 3:58:49 pm (UTC)'!
 restyleButton: aButton labeled: aString color: bgColor labelColor: fgColor
 
-	aButton label: aString font: self captionFont.
-	aButton morphExtent: aButton morphWidth + 32 @ (aButton morphHeight + 16).
-	aButton labelColor: fgColor.
-	aButton color: bgColor! !
+	self restyleButton: aButton labeled: aString font: self captionFont color: bgColor labelColor: fgColor! !
 
 !ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 6/Sep/2026, 1:35:54 am (UTC)'!
 spacer: aStepIndex
