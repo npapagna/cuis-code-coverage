@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:16:02 pm'!
-'Description First OBC example'!
-!provides: 'CodeCoverageDemo' 1 18!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:51:28 pm'!
+'Description Second OBC example'!
+!provides: 'CodeCoverageDemo' 1 19!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -225,9 +225,9 @@ form: aForm
 	
 	^self new initializeForm: aForm ! !
 
-!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 9:02:31 pm (UTC)'!
+!BasicDecisionConditionCoverageReportBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 9:31:02 pm (UTC)'!
 registerBoolean: aBoolean usedAt: usageSourceRange declaredAt: declarationSourceRange 
-	
+
 	self registerBoolean: aBoolean declaredAt: usageSourceRange.
 	self coverAsNonBoolean: declarationSourceRange ! !
 
@@ -888,6 +888,17 @@ OBCExample1: aBoolean and: anotherBoolean
 	temp := aBoolean and: anotherBoolean.
 	
 	^ temp! !
+
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 12/Sep/2026, 9:23:32 pm (UTC)'!
+OBCExample2: aBoolean and: anotherBoolean
+
+	| temp |
+	
+	temp := aBoolean and: anotherBoolean.
+	
+	^ temp
+		ifTrue: [ 1 ]
+		ifFalse: [ 2 ]! !
 
 !CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/Nov/2022, 9:37:19 am (UTC)'!
 codeCoverageTest: aBoolean and: anotherBoolean

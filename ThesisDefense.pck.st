@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:15:54 pm'!
-'Description First OBC example'!
-!provides: 'ThesisDefense' 1 76!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:51:25 pm'!
+'Description Second OBC example'!
+!provides: 'ThesisDefense' 1 77!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1803,6 +1803,20 @@ decisionConditionVsBooleanCoverageSlide
 		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 9:51:06 pm (UTC)'!
+decisionConditionVsBooleanCoverageSlide2
+
+	^ (CodeCoverageComparisonTestCaseSlideBuilder
+		on: CodeCoverageExamples
+		selector: #OBCExample2:and:
+		heading: 'Decision/Condition vs OBC')
+		"Using DecisionCoverageReportBuilder here instead of a real Decision/Condition
+		implementation. This method has once decisions but no conditions, so D/C's in this case
+		is exactly DecisionCoverageReportBuilder"
+		leftLabeled: 'Decision/Condition Coverage' creatingReportBuildersWith: DecisionCoverageReportBuilder;
+		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
+		value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
 decisionSelectorsSlide
 
@@ -1840,7 +1854,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:13:48 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 9:17:29 pm (UTC)'!
 slides
 	
 	^ {
@@ -1856,6 +1870,7 @@ slides
 		self riceSlide.
 		self booleSlide.
 		self decisionConditionVsBooleanCoverageSlide.
+		self decisionConditionVsBooleanCoverageSlide2.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
