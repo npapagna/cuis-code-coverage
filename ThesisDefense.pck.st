@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 7:39:23 pm'!
-'Description Reify test cases generator'!
-!provides: 'ThesisDefense' 1 78!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 7:47:55 pm'!
+'Description OBC example 3'!
+!provides: 'ThesisDefense' 1 79!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1242,6 +1242,11 @@ updateBadgeFor: aCoverageRatio
 		(right - coverageBadge morphWidth)
 		@ (topRowTop + ((topRowHeight - coverageBadge morphHeight) // 2))! !
 
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:41:48 pm (UTC)'!
+generateTestsCasesWith: aTestCasesGenerator 
+	
+	testCasesGenerator := aTestCasesGenerator! !
+
 !CodeCoverageTestCaseSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 7:52:34 pm (UTC)'!
 on: aClass selector: aSymbol heading: aString creatingReportBuildersWith: aReportBuilderFactory
 
@@ -1824,6 +1829,17 @@ decisionConditionVsBooleanCoverageSlide2
 		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:45:17 pm (UTC)'!
+decisionConditionVsBooleanCoverageSlide3
+
+	^ (CodeCoverageTestCaseSlideBuilder
+		on: CodeCoverageExamples
+		selector: #OBCExample3:
+		heading: 'OBC: Testigo 2')
+		secondaryOn: CodeCoverageExamples selector: #m1:;
+		generateTestsCasesWith: [ :argumentNames | { {'foo'}. {'bar'} } ];
+		value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
 decisionSelectorsSlide
 
@@ -1861,7 +1877,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 9:17:29 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:40:19 pm (UTC)'!
 slides
 	
 	^ {
@@ -1878,6 +1894,7 @@ slides
 		self booleSlide.
 		self decisionConditionVsBooleanCoverageSlide.
 		self decisionConditionVsBooleanCoverageSlide2.
+		self decisionConditionVsBooleanCoverageSlide3.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
