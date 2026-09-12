@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 9:14:52 pm'!
+'From Cuis7.9 [latest update: #8149] on 11 September 2026 at 9:26:48 pm'!
 'Description '!
-!provides: 'ThesisDefense' 1 47!
+!provides: 'ThesisDefense' 1 49!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -26,6 +26,16 @@ ColoredBoxMorph subclass: #SlidesPresenter
 	category: 'ThesisDefense'!
 !classDefinition: 'SlidesPresenter class' category: #ThesisDefense!
 SlidesPresenter class
+	instanceVariableNames: ''!
+
+!classDefinition: #ClippingBoxMorph category: #ThesisDefense!
+BoxMorph subclass: #ClippingBoxMorph
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'ClippingBoxMorph class' category: #ThesisDefense!
+ClippingBoxMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #ImageSlideBuilder category: #ThesisDefense!
@@ -70,7 +80,7 @@ CodeCoverageTestCaseSlideBuilder class
 
 !classDefinition: #PolaroidSlideBuilder category: #ThesisDefense!
 Object subclass: #PolaroidSlideBuilder
-	instanceVariableNames: 'library filename rotationDegrees'
+	instanceVariableNames: 'library filename rotationDegrees photoWidth photoHeight'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -307,6 +317,16 @@ on: aCollectionOfSlides
 present: aCollectionOfSlides
 
 	(self on: aCollectionOfSlides) present! !
+
+!ClippingBoxMorph methodsFor: 'geometry testing' stamp: 'NPM 12/Sep/2026, 12:25:22 am (UTC)'!
+clipsSubmorphs
+
+	^ true! !
+
+!ClippingBoxMorph methodsFor: 'drawing' stamp: 'NPM 12/Sep/2026, 12:25:22 am (UTC)'!
+drawOn: aCanvas
+
+	"Transparent - only here to clip our submorphs to our bounds."! !
 
 !ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:01 am (UTC)'!
 initialize
@@ -815,18 +835,6 @@ frameOverlap
 
 	^ 2! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 10:11:57 pm (UTC)'!
-initialize
-
-	super initialize.
-
-	library := ThesisDefenseMorphLibrary new.
-	"Avoid small nonzero tilts: at this render's antialiasing, a shallow angle
-	like -1 to -4 degrees produces long, clearly-not-quite-straight staircase
-	steps on the rotated seam - more visible than either a flat photo or a
-	more pronounced tilt."
-	rotationDegrees := #(0 -5 -6 -7 -8) atRandom.! !
-
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:51 pm (UTC)'!
 paperStripExtent: anExtent position: aPosition
 
@@ -864,25 +872,25 @@ setFilename: aString
 
 	filename := aString.! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 8:26:27 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:25:50 am (UTC)'!
 value
 
-	| photoWidth photoHeight sidePadding bottomPadding overlap cardWidth cardHeight slide card image canvasExtent center shadow innerRight innerBottom |
+	| pw ph sidePadding bottomPadding overlap cardWidth cardHeight slide card image canvasExtent center shadow innerRight innerBottom photoWindow |
 
 	slide := library blankSlide.
 	canvasExtent := SlideStyle canvasExtent.
 	center := canvasExtent // 2.
 
-	photoWidth := self photoWidth.
-	photoHeight := (photoWidth * 9 / 16) rounded.
+	pw := self photoWidth.
+	ph := self photoHeight.
 	sidePadding := self sidePadding.
 	bottomPadding := self bottomPadding.
 	overlap := self frameOverlap.
 
-	cardWidth := photoWidth + (sidePadding * 2).
-	cardHeight := photoHeight + sidePadding + bottomPadding.
-	innerRight := sidePadding + photoWidth.
-	innerBottom := sidePadding + photoHeight.
+	cardWidth := pw + (sidePadding * 2).
+	cardHeight := ph + sidePadding + bottomPadding.
+	innerRight := sidePadding + pw.
+	innerBottom := sidePadding + ph.
 
 	shadow := self shadowMorphFor: cardWidth @ cardHeight.
 	shadow morphPosition: center.
@@ -896,16 +904,20 @@ value
 		morphExtent: cardWidth @ cardHeight;
 		yourself.
 
+	photoWindow := ClippingBoxMorph new
+		morphExtent: (pw + (overlap * 2)) @ (ph + (overlap * 2));
+		morphPosition: (sidePadding - overlap) @ (sidePadding - overlap);
+		yourself.
 	image := library imageNamed: filename.
-	self scaleToCover: image into: ((sidePadding - overlap) @ (sidePadding - overlap)
-		extent: (photoWidth + (overlap * 2)) @ (photoHeight + (overlap * 2))).
-	card addMorph: image.
+	self scaleToCover: image into: (0 @ 0 extent: photoWindow morphExtent).
+	photoWindow addMorph: image.
+	card addMorph: photoWindow.
 
 	"Paper strips on top of the photo hide its jagged rotated edge under a clean antialiased vector edge."
 	card addMorph: (self paperStripExtent: cardWidth @ sidePadding position: 0 @ 0).
 	card addMorph: (self paperStripExtent: cardWidth @ (cardHeight - innerBottom) position: 0 @ innerBottom).
-	card addMorph: (self paperStripExtent: sidePadding @ photoHeight position: 0 @ sidePadding).
-	card addMorph: (self paperStripExtent: (cardWidth - innerRight) @ photoHeight position: innerRight @ sidePadding).
+	card addMorph: (self paperStripExtent: sidePadding @ ph position: 0 @ sidePadding).
+	card addMorph: (self paperStripExtent: (cardWidth - innerRight) @ ph position: innerRight @ sidePadding).
 
 	card morphPosition: (center x - (cardWidth // 2)) @ (center y - (cardHeight // 2)).
 	slide addMorph: card.
@@ -923,11 +935,6 @@ bottomPadding
 paperColor
 
 	^ Color fromHexString: '#F5F1E8'! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:55 pm (UTC)'!
-photoWidth
-
-	^ 1200! !
 
 !PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:36:48 pm (UTC)'!
 shadowLayers
@@ -979,6 +986,36 @@ shadowOffset
 sidePadding
 
 	^ 32! !
+
+!PolaroidSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 12:25:58 am (UTC)'!
+initialize
+
+	super initialize.
+
+	library := ThesisDefenseMorphLibrary new.
+	"Avoid small nonzero tilts: at this render's antialiasing, a shallow angle
+	like -1 to -4 degrees produces long, clearly-not-quite-straight staircase
+	steps on the rotated seam - more visible than either a flat photo or a
+	more pronounced tilt."
+	rotationDegrees := #(0 -5 -6 -7 -8) atRandom.
+	photoWidth := 1200.
+	photoHeight := 675.! !
+
+!PolaroidSlideBuilder methodsFor: 'accessing' stamp: 'NPM 12/Sep/2026, 12:26:00 am (UTC)'!
+photoHeight
+
+	^ photoHeight! !
+
+!PolaroidSlideBuilder methodsFor: 'accessing' stamp: 'NPM 12/Sep/2026, 12:25:59 am (UTC)'!
+photoWidth
+
+	^ photoWidth! !
+
+!PolaroidSlideBuilder methodsFor: 'accessing' stamp: 'NPM 12/Sep/2026, 12:26:01 am (UTC)'!
+photoWidth: aWidth height: aHeight
+
+	photoWidth := aWidth.
+	photoHeight := aHeight.! !
 
 !PolaroidSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 11/Sep/2026, 6:26:02 pm (UTC)'!
 on: aFilename
@@ -1309,7 +1346,7 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:14:47 am (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:26:46 am (UTC)'!
 slides
 	
 	^ {
