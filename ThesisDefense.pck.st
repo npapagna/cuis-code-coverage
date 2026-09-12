@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 6:51:25 pm'!
-'Description Second OBC example'!
-!provides: 'ThesisDefense' 1 77!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 7:39:23 pm'!
+'Description Reify test cases generator'!
+!provides: 'ThesisDefense' 1 78!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -46,6 +46,16 @@ BoxMorph subclass: #ClippingBoxMorph
 	category: 'ThesisDefense'!
 !classDefinition: 'ClippingBoxMorph class' category: #ThesisDefense!
 ClippingBoxMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #BooleanTestCasesGenerator category: #ThesisDefense!
+Object subclass: #BooleanTestCasesGenerator
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'BooleanTestCasesGenerator class' category: #ThesisDefense!
+BooleanTestCasesGenerator class
 	instanceVariableNames: ''!
 
 !classDefinition: #ImageSlideBuilder category: #ThesisDefense!
@@ -100,7 +110,7 @@ CodeCoverageMethodSlideBuilder class
 
 !classDefinition: #CodeCoverageTestCaseSlideBuilder category: #ThesisDefense!
 CodeCoverageMethodSlideBuilder subclass: #CodeCoverageTestCaseSlideBuilder
-	instanceVariableNames: 'argumentNames testCases testCaseChips selectedTestCases topRowTop topRowHeight'
+	instanceVariableNames: 'argumentNames testCases testCaseChips selectedTestCases topRowTop topRowHeight testCasesGenerator'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -362,6 +372,20 @@ clipsSubmorphs
 drawOn: aCanvas
 
 	"Transparent - only here to clip our submorphs to our bounds."! !
+
+!BooleanTestCasesGenerator methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:36:59 pm (UTC)'!
+value: argumentNames
+
+	| combos |
+	combos := OrderedCollection with: #().
+	argumentNames do: [ :each |
+		| next |
+		next := OrderedCollection new.
+		combos do: [ :prefix |
+			next add: prefix , #(true).
+			next add: prefix , #(false) ].
+		combos := next ].
+	^ combos asArray! !
 
 !ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:01 am (UTC)'!
 initialize
@@ -738,19 +762,10 @@ buildChipFor: values
 		color: SlideStyle background
 		labelColor: SlideStyle textSecondary! !
 
-!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:20:45 pm (UTC)'!
+!CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 10:37:37 pm (UTC)'!
 computeTestCases
 
-	| combos |
-	combos := OrderedCollection with: #().
-	argumentNames do: [ :each |
-		| next |
-		next := OrderedCollection new.
-		combos do: [ :prefix |
-			next add: prefix , #(true).
-			next add: prefix , #(false) ].
-		combos := next ].
-	^ combos asArray! !
+	^ BooleanTestCasesGenerator new value: argumentNames! !
 
 !CodeCoverageComparisonTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:52:31 pm (UTC)'!
 labelFor: values
@@ -1062,14 +1077,15 @@ on: aClass selector: aSymbol heading: aString executing: aBlock creatingReportBu
 		creatingReportBuildersWith: aReportBuilderFactory;
 		yourself! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 3:20:20 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 10:38:26 pm (UTC)'!
 initialize
 
 	super initialize.
 	argumentNames := #().
 	testCases := #().
 	testCaseChips := OrderedCollection new.
-	selectedTestCases := Set new! !
+	selectedTestCases := Set new.
+	testCasesGenerator := BooleanTestCasesGenerator new.! !
 
 !CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:41:23 pm (UTC)'!
 buildChipFor: values
@@ -1082,19 +1098,10 @@ buildChipFor: values
 		color: SlideStyle background
 		labelColor: SlideStyle textSecondary! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 3:20:22 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 10:38:32 pm (UTC)'!
 computeTestCases
 
-	| combos |
-	combos := OrderedCollection with: #().
-	argumentNames do: [ :each |
-		| next |
-		next := OrderedCollection new.
-		combos do: [ :prefix |
-			next add: prefix , #(true).
-			next add: prefix , #(false) ].
-		combos := next ].
-	^ combos asArray! !
+	^ testCasesGenerator value: argumentNames! !
 
 !CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:52:29 pm (UTC)'!
 labelFor: values
