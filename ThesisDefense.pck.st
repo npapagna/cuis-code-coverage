@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:00:32 am'!
-'Description Add decision selectors slide'!
-!provides: 'ThesisDefense' 1 54!
+'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 10:31:01 am'!
+'Description Add rice slide'!
+!provides: 'ThesisDefense' 1 55!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1394,7 +1394,13 @@ present
 
 	SlidesPresenter present: self slides! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:39:26 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:29:55 pm (UTC)'!
+riceSlide
+	
+	 ^ (ImageSlideBuilder on: 'rice-paper.png')
+		value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:29:27 pm (UTC)'!
 slides
 	
 	^ {
@@ -1407,6 +1413,7 @@ slides
 		self subsumptionDefinitionSlide.
 		self titleSlide.
 		self decisionSelectorsSlide.
+		self riceSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 7:30:23 pm (UTC)'!
