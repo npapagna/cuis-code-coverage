@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 4:50:32 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:15:03 pm'!
 'Description Add interaccion entre criterios slide'!
-!provides: 'ThesisDefense' 1 94!
+!provides: 'ThesisDefense' 1 95!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -66,6 +66,16 @@ Object subclass: #BooleanTestCasesGenerator
 	category: 'ThesisDefense'!
 !classDefinition: 'BooleanTestCasesGenerator class' category: #ThesisDefense!
 BooleanTestCasesGenerator class
+	instanceVariableNames: ''!
+
+!classDefinition: #EmbeddedPackageBrowserSlideBuilder category: #ThesisDefense!
+Object subclass: #EmbeddedPackageBrowserSlideBuilder
+	instanceVariableNames: 'library packageName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'EmbeddedPackageBrowserSlideBuilder class' category: #ThesisDefense!
+EmbeddedPackageBrowserSlideBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #ImageSlideBuilder category: #ThesisDefense!
@@ -449,6 +459,60 @@ value: argumentNames
 			next add: prefix , #(false) ].
 		combos := next ].
 	^ combos asArray! !
+
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 7:56:27 pm (UTC)'!
+initialize
+
+	super initialize.
+
+	library := ThesisDefenseMorphLibrary new! !
+
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 7:56:28 pm (UTC)'!
+setPackageName: aString
+
+	packageName := aString! !
+
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:13:27 pm (UTC)'!
+value
+
+	| slide package browser window firstCategory firstClass |
+
+	slide := library blankSlide.
+
+	package := CodePackage named: packageName createIfAbsent: false registerIfNew: false.
+	browser := SinglePackageBrowser new package: package; yourself.
+
+	firstCategory := package systemCategories first.
+	browser setSelectedSystemCategory: firstCategory.
+	firstClass := browser basicClassList first.
+	firstClass ifNotNil: [ browser selectClass: firstClass ].
+
+	window := BrowserWindow new.
+	window model: browser; buildMorphicWindow.
+	window setLabel: packageName.
+
+	"SystemWindow>>openInWorld is the only place this normally gets sent - it
+	propagates the theme's pane color to every widget in the window. We never
+	send the window #openInWorld (embedding it directly instead, since
+	openInWorld can defer itself via UISupervisor when not run from the UI
+	process, which would leave the window only half-built), so without this
+	the panes are left with whatever gray default they were built with."
+	Theme current widgetsColorFromToolColor ifTrue: [
+		window widgetsColor: window windowColor ].
+
+	window morphExtent: slide interiorExtent.
+	window morphPosition: slide interiorOrigin.
+
+	slide addMorph: window.
+
+	^ slide! !
+
+!EmbeddedPackageBrowserSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 13/Sep/2026, 7:56:26 pm (UTC)'!
+on: aPackageName
+
+	^ self new
+		setPackageName: aPackageName;
+		yourself! !
 
 !ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:01 am (UTC)'!
 initialize
@@ -2001,6 +2065,11 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:57:21 pm (UTC)'!
+aconcaguaBrowserSlide
+
+	^ (EmbeddedPackageBrowserSlideBuilder on: 'Aconcagua') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:40 pm (UTC)'!
 alcanceSlide
 
@@ -2204,7 +2273,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 6:45:51 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:14:42 pm (UTC)'!
 slides
 	
 	^ {
@@ -2230,6 +2299,7 @@ slides
 		self ejercitarSlide.
 		self notificarSlide.
 		self detenerSlide.
+		self aconcaguaBrowserSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
