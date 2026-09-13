@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 7:47:55 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 10:46:44 am'!
 'Description OBC example 3'!
-!provides: 'ThesisDefense' 1 79!
+!provides: 'ThesisDefense' 1 80!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -100,7 +100,7 @@ CodeCoverageComparisonTestCaseSlideBuilder class
 
 !classDefinition: #CodeCoverageMethodSlideBuilder category: #ThesisDefense!
 MethodSlideBuilder subclass: #CodeCoverageMethodSlideBuilder
-	instanceVariableNames: 'executionBlock runButton clearButton coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector'
+	instanceVariableNames: 'executionBlock runButton clearButton coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector secondaryCodeEditorMorph shouldAnalyzeSecondaryClass'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -888,7 +888,12 @@ toggleTestCase: values
 		ifTrue: [ self clearCoverage ]
 		ifFalse: [ self runCoverage ]! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:12 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 1:41:55 pm (UTC)'!
+analyzeSecondaryClass
+
+	shouldAnalyzeSecondaryClass := true! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 3:28:35 am (UTC)'!
 codeEditorAreaLeft: left top: top right: right bottom: bottom
 
 	| container |
@@ -897,10 +902,11 @@ codeEditorAreaLeft: left top: top right: right bottom: bottom
 		ifNil: [ codeEditorMorph ]
 		ifNotNil: [
 			| row |
+			secondaryCodeEditorMorph := self secondaryCodeEditor.
 			row := LinearLayoutMorph newRow.
 			row gap: (SlideStyle space: 3).
 			row addMorph: codeEditorMorph proportionalWidth: 1.
-			row addMorph: (self codeEditorForClass: secondaryClass selector: secondarySelector) proportionalWidth: 1.
+			row addMorph: secondaryCodeEditorMorph proportionalWidth: 1.
 			row ].
 
 	container morphExtent: (right - left) @ (bottom - top).
@@ -917,12 +923,10 @@ executing: aBlock
 
 	executionBlock := aBlock! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 5/Sep/2026, 7:27:30 pm (UTC)'!
-initialize
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 3:28:35 am (UTC)'!
+secondaryCodeEditor
 
-	super initialize.
-
-	reportBuilderFactory := DecisionConditionCoverageReportBuilder! !
+	^ self codeEditorForClass: secondaryClass selector: secondarySelector! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:10 pm (UTC)'!
 secondaryOn: aClass selector: aSymbol
@@ -980,7 +984,7 @@ value
 
 	^ slide! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 4:37:10 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 3:30:09 am (UTC)'!
 clearCoverage
 
 	| newEditor right |
@@ -995,6 +999,15 @@ clearCoverage
 
 	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
 	codeEditorMorph := newEditor.
+	
+	secondaryCodeEditorMorph ifNotNil: [ | newEditor2 |
+		newEditor2 := self secondaryCodeEditor.
+		newEditor2 morphExtent: secondaryCodeEditorMorph morphExtent.
+		newEditor2 morphPosition: secondaryCodeEditorMorph morphPosition.
+
+		secondaryCodeEditorMorph owner replaceSubmorph: secondaryCodeEditorMorph by: newEditor2.
+		secondaryCodeEditorMorph := newEditor2.
+	].
 
 	runButton ifNotNil: [
 		library restyleButton: runButton labeled: 'Run Coverage' color: SlideStyle accent labelColor: SlideStyle background.
@@ -1005,31 +1018,12 @@ clearCoverage
 		clearButton disable.
 		clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y ]! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 12:37:26 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:36:14 pm (UTC)'!
 runCoverage
 
-	| compiledMethod analyzer report methodReport browser newEditor right |
+	| methodReport right |
 
-	compiledMethod := methodClass >> selector.
-
-	analyzer := CodeCoverageAnalyzer
-		toAnalyzeAll: { compiledMethod }
-		creatingReportBuildersWith: reportBuilderFactory.
-	analyzer value: executionBlock.
-	report := analyzer report.
-	methodReport := report reportForCompiledMethod: compiledMethod.
-
-	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: report.
-	browser setSelectedSystemCategory: methodClass category.
-	browser selectClass: methodClass.
-	browser selectedMessageName: selector.
-
-	newEditor := library codeEditorOn: browser.
-	newEditor morphExtent: codeEditorMorph morphExtent.
-	newEditor morphPosition: codeEditorMorph morphPosition.
-
-	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
-	codeEditorMorph := newEditor.
+	methodReport := self runCoverageAnalyzingWith: executionBlock.
 
 	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
 	right := slide interiorOrigin x + slide interiorExtent x.
@@ -1039,6 +1033,44 @@ runCoverage
 	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y.
 
 	self updateBadgeFor: methodReport coverageRatio! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:41:58 pm (UTC)'!
+runCoverageAnalyzingWith: aBlock
+
+	| compiledMethod analyzer report methodsToAnalyze |
+
+	compiledMethod := methodClass >> selector.
+	methodsToAnalyze := OrderedCollection with: compiledMethod.
+	shouldAnalyzeSecondaryClass ifTrue: [ methodsToAnalyze add: secondaryClass >> secondarySelector ].
+
+	analyzer := CodeCoverageAnalyzer
+		toAnalyzeAll: methodsToAnalyze
+		creatingReportBuildersWith: reportBuilderFactory.
+	analyzer value: aBlock.
+	report := analyzer report.
+
+	codeEditorMorph := self showCoverage: report forClass: methodClass selector: selector in: codeEditorMorph.
+	shouldAnalyzeSecondaryClass ifTrue: [
+		secondaryCodeEditorMorph := self showCoverage: report forClass: secondaryClass selector: secondarySelector in: secondaryCodeEditorMorph ].
+
+	^ report reportForCompiledMethod: compiledMethod! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:25:28 pm (UTC)'!
+showCoverage: report forClass: aClass selector: aSelector in: aCodeEditor
+
+	| browser newEditor |
+	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: report.
+	browser setSelectedSystemCategory: aClass category.
+	browser selectClass: aClass.
+	browser selectedMessageName: aSelector.
+
+	newEditor := library codeEditorOn: browser.
+	
+	newEditor morphExtent: aCodeEditor morphExtent.
+	newEditor morphPosition: aCodeEditor morphPosition.
+
+	aCodeEditor owner replaceSubmorph: aCodeEditor by: newEditor.
+	^ newEditor! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:53:27 pm (UTC)'!
 updateBadgeFor: aCoverageRatio
@@ -1057,6 +1089,14 @@ updateBadgeFor: aCoverageRatio
 	coverageBadge morphPosition:
 		(anchor morphPosition x - (SlideStyle space: 2) - coverageBadge morphWidth)
 		@ (anchor morphPosition y + ((anchor morphHeight - coverageBadge morphHeight) // 2))! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 1:41:54 pm (UTC)'!
+initialize
+
+	super initialize.
+
+	reportBuilderFactory := DecisionConditionCoverageReportBuilder.
+	shouldAnalyzeSecondaryClass := false.! !
 
 !CodeCoverageMethodSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 7:17:20 pm (UTC)'!
 on: aClass selector: aSymbol heading: aString executing: aBlock
@@ -1077,7 +1117,7 @@ on: aClass selector: aSymbol heading: aString executing: aBlock creatingReportBu
 		creatingReportBuildersWith: aReportBuilderFactory;
 		yourself! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 10:38:26 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 1:36:18 pm (UTC)'!
 initialize
 
 	super initialize.
@@ -1184,32 +1224,13 @@ clearCoverage
 	1 to: testCases size do: [ :i | self styleChip: (testCaseChips at: i) for: (testCases at: i) ].
 	super clearCoverage! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 4:37:39 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:36:17 pm (UTC)'!
 runCoverage
 
-	| compiledMethod analyzer report methodReport browser newEditor |
+	| methodReport |
 
-	compiledMethod := methodClass >> selector.
-
-	analyzer := CodeCoverageAnalyzer
-		toAnalyzeAll: { compiledMethod }
-		creatingReportBuildersWith: reportBuilderFactory.
-	analyzer value: [
+	methodReport := self runCoverageAnalyzingWith: [
 		selectedTestCases do: [ :values | methodClass new perform: selector withArguments: values ] ].
-	report := analyzer report.
-	methodReport := report reportForCompiledMethod: compiledMethod.
-
-	browser := CodeCoverageAnalyzerBrowser displayingCodeCoverageResultsFrom: report.
-	browser setSelectedSystemCategory: methodClass category.
-	browser selectClass: methodClass.
-	browser selectedMessageName: selector.
-
-	newEditor := library codeEditorOn: browser.
-	newEditor morphExtent: codeEditorMorph morphExtent.
-	newEditor morphPosition: codeEditorMorph morphPosition.
-
-	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
-	codeEditorMorph := newEditor.
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
@@ -1829,15 +1850,27 @@ decisionConditionVsBooleanCoverageSlide2
 		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:45:17 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 1:42:02 pm (UTC)'!
 decisionConditionVsBooleanCoverageSlide3
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #OBCExample3:
-		heading: 'OBC: Testigo 2')
+		heading: 'Boolean Coverage no subsume a OBC')
 		secondaryOn: CodeCoverageExamples selector: #m1:;
 		generateTestsCasesWith: [ :argumentNames | { {'foo'}. {'bar'} } ];
+		analyzeSecondaryClass;
+		value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 1:42:03 pm (UTC)'!
+decisionConditionVsBooleanCoverageSlide4
+
+	^ (CodeCoverageTestCaseSlideBuilder
+		on: CodeCoverageExamples
+		selector: #sayHello
+		heading: 'OBC no subsume a Boolean Coverage')
+		secondaryOn: CodeCoverageExamples selector: #returnTrue;
+		analyzeSecondaryClass;
 		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:59:37 pm (UTC)'!
@@ -1877,7 +1910,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:40:19 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 11:09:49 pm (UTC)'!
 slides
 	
 	^ {
@@ -1894,6 +1927,7 @@ slides
 		self booleSlide.
 		self decisionConditionVsBooleanCoverageSlide.
 		self decisionConditionVsBooleanCoverageSlide2.
+		self decisionConditionVsBooleanCoverageSlide4.
 		self decisionConditionVsBooleanCoverageSlide3.
 	}! !
 
