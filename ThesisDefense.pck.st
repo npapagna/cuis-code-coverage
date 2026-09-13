@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:26:55 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:52:41 pm'!
 'Description Change embedded aconcagua order'!
-!provides: 'ThesisDefense' 1 97!
+!provides: 'ThesisDefense' 1 102!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -77,6 +77,16 @@ Object subclass: #EmbeddedPackageBrowserSlideBuilder
 	category: 'ThesisDefense'!
 !classDefinition: 'EmbeddedPackageBrowserSlideBuilder class' category: #ThesisDefense!
 EmbeddedPackageBrowserSlideBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #EmbeddedWorkspaceSlideBuilder category: #ThesisDefense!
+Object subclass: #EmbeddedWorkspaceSlideBuilder
+	instanceVariableNames: 'library contents heading'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'EmbeddedWorkspaceSlideBuilder class' category: #ThesisDefense!
+EmbeddedWorkspaceSlideBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #ImageSlideBuilder category: #ThesisDefense!
@@ -513,6 +523,85 @@ on: aPackageName
 
 	^ self new
 		setPackageName: aPackageName;
+		yourself! !
+
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:37:09 pm (UTC)'!
+initialize
+
+	super initialize.
+
+	library := ThesisDefenseMorphLibrary new.
+	contents := ''! !
+
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:37:10 pm (UTC)'!
+setContents: aString
+
+	contents := aString! !
+
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:50:26 pm (UTC)'!
+setHeading: aString
+
+	heading := aString! !
+
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:50:34 pm (UTC)'!
+value
+
+	| slide workspace window content left top bottom |
+
+	slide := library blankSlide.
+	left := slide interiorOrigin x.
+	top := slide interiorOrigin y.
+	bottom := top + slide interiorExtent y.
+
+	heading ifNotNil: [
+		| headingLabel |
+		headingLabel := library primaryHeading: heading.
+		headingLabel morphPosition: left @ top.
+		slide addMorph: headingLabel.
+		top := top + headingLabel morphHeight + (SlideStyle space: 3) ].
+
+	workspace := Workspace new.
+	workspace contents: contents.
+
+	window := WorkspaceWindow new model: workspace.
+	window setLabel: 'Workspace'.
+	window layoutMorph
+		addMorph: ((TextModelMorph withModel: workspace) wrapFlag: true)
+		proportionalHeight: 1.
+
+	"SystemWindow>>openInWorld is the only place this normally gets sent - it
+	propagates the theme's pane color to every widget in the window. We never
+	send the window #openInWorld (embedding it directly instead, since
+	openInWorld can defer itself via UISupervisor when not run from the UI
+	process, which would leave the window only half-built), so without this
+	the panes are left with whatever gray default they were built with."
+	Theme current widgetsColorFromToolColor ifTrue: [
+		window widgetsColor: window windowColor ].
+
+	"Only the window's layoutMorph (its content pane) is placed on the slide,
+	not the window itself - that drops the title bar, border and
+	close/collapse/expand/menu buttons, leaving just the editable text area."
+	content := window layoutMorph.
+	content morphExtent: slide interiorExtent x @ (bottom - top).
+	content morphPosition: left @ top.
+
+	slide addMorph: content.
+
+	^ slide! !
+
+!EmbeddedWorkspaceSlideBuilder class methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:37:10 pm (UTC)'!
+on: aString
+
+	^ self new
+		setContents: aString;
+		yourself! !
+
+!EmbeddedWorkspaceSlideBuilder class methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:50:27 pm (UTC)'!
+on: aString heading: aHeadingString
+
+	^ self new
+		setContents: aString;
+		setHeading: aHeadingString;
 		yourself! !
 
 !ImageSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:14:01 am (UTC)'!
@@ -2274,7 +2363,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:25:55 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:29:30 pm (UTC)'!
 slides
 	
 	^ {
@@ -2301,6 +2390,7 @@ slides
 		self ejercitarSlide.
 		self notificarSlide.
 		self detenerSlide.
+		self workspaceSlide.
 		
 	}! !
 
@@ -2324,6 +2414,26 @@ subsumptionDefinitionSlide
 titleSlide
 	
 	^ TitleSlideBuilder new value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:51:52 pm (UTC)'!
+workspaceSlide
+
+	^ (EmbeddedWorkspaceSlideBuilder on: '"Alcance"
+packageToAnalyze := CodePackage installedPackages at: ''Tools-Finder''.
+methodsToAnalyze := packageToAnalyze compiledMethodsInNonTestCaseClasses.
+
+"Creacion del analizador"
+coverageAnalyzer := CodeCoverageAnalyzer toAnalyzeAll: methodsToAnalyze.
+
+"Iniciar el analisis"
+coverageAnalyzer startTrackingCodeCoverage.
+
+"Detener el analisis"
+coverageAnalyzer stopTrackingCodeCoverage.
+
+"Abrir el reporte de cobertura de codigo"
+codeCoverageReport := coverageAnalyzer report.
+CodeCoverageAnalyzerBrowser displayCodeCoverageResultsFrom: codeCoverageReport.' heading: 'Modo Manual') value! !
 
 !ThesisDefensePresentation class methodsFor: 'opening' stamp: 'NPM 5/Sep/2026, 6:48:59 pm (UTC)'!
 present
