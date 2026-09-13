@@ -1,12 +1,22 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 2:02:22 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 4:50:32 pm'!
 'Description Add interaccion entre criterios slide'!
-!provides: 'ThesisDefense' 1 87!
+!provides: 'ThesisDefense' 1 94!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
 !requires: 'Graphics-Files-Additional' nil nil nil!
 SystemOrganization addCategory: #ThesisDefense!
 
+
+!classDefinition: #InstrumentedSourceProvider category: #ThesisDefense!
+CodeProvider subclass: #InstrumentedSourceProvider
+	instanceVariableNames: 'source methodClass'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'InstrumentedSourceProvider class' category: #ThesisDefense!
+InstrumentedSourceProvider class
+	instanceVariableNames: ''!
 
 !classDefinition: #ThesisDefenseButtonMorph category: #ThesisDefense!
 PluggableButtonMorph subclass: #ThesisDefenseButtonMorph
@@ -118,6 +128,26 @@ CodeCoverageMethodSlideBuilder subclass: #CodeCoverageTestCaseSlideBuilder
 CodeCoverageTestCaseSlideBuilder class
 	instanceVariableNames: ''!
 
+!classDefinition: #PipelineInstrumentSlideBuilder category: #ThesisDefense!
+MethodSlideBuilder subclass: #PipelineInstrumentSlideBuilder
+	instanceVariableNames: 'slide leftEditorMorph rightEditorMorph'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'PipelineInstrumentSlideBuilder class' category: #ThesisDefense!
+PipelineInstrumentSlideBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #PipelineRoadmapSlideBuilder category: #ThesisDefense!
+Object subclass: #PipelineRoadmapSlideBuilder
+	instanceVariableNames: 'library currentStep'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'PipelineRoadmapSlideBuilder class' category: #ThesisDefense!
+PipelineRoadmapSlideBuilder class
+	instanceVariableNames: ''!
+
 !classDefinition: #PolaroidSlideBuilder category: #ThesisDefense!
 Object subclass: #PolaroidSlideBuilder
 	instanceVariableNames: 'library filename rotationDegrees photoWidth photoHeight'
@@ -185,6 +215,34 @@ Structure:
 Design tokens for the thesis defense slides: dark palette and 8px-grid spacing.
 
 Fonts (family, sizes, weights) live on ThesisDefenseMorphLibrary, which already resolved the Comfortaa/emphasized: selectors for this image.!
+
+!InstrumentedSourceProvider methodsFor: 'accessing' stamp: 'NPM 13/Sep/2026, 6:49:06 pm (UTC)'!
+methodClass: aClass
+
+	methodClass := aClass! !
+
+!InstrumentedSourceProvider methodsFor: 'accessing' stamp: 'NPM 13/Sep/2026, 6:49:06 pm (UTC)'!
+selectedClass
+
+	^ methodClass! !
+
+!InstrumentedSourceProvider methodsFor: 'accessing' stamp: 'NPM 13/Sep/2026, 5:19:27 pm (UTC)'!
+source: aString
+
+	source := aString! !
+
+!InstrumentedSourceProvider methodsFor: 'contents' stamp: 'NPM 13/Sep/2026, 5:19:28 pm (UTC)'!
+acceptedStringOrText
+
+	^ source! !
+
+!InstrumentedSourceProvider methodsFor: 'contents' stamp: 'NPM 13/Sep/2026, 5:19:29 pm (UTC)'!
+contents: input notifying: aController
+
+	"Read-only: this slide displays a live-generated snapshot of instrumented
+	source, it is not meant to be edited."
+
+	^ true! !
 
 !ThesisDefenseButtonMorph methodsFor: 'initialization' stamp: 'NPM 5/Sep/2026, 7:52:23 pm (UTC)'!
 initialize
@@ -345,6 +403,11 @@ mouseButton1Down: aMouseEvent localPosition: localEventPosition
 		dblClkNHalfSel: nil
 		tripleClkSel: nil
 		dragSel: #dragEvent:localPosition:! !
+
+!SlidesPresenter methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:44:10 pm (UTC)'!
+clipsSubmorphs
+
+	^ true ! !
 
 !SlidesPresenter class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 6:14:45 pm (UTC)'!
 on: aCollectionOfSlides
@@ -1283,6 +1346,149 @@ on: aClass selector: aSymbol heading: aString creatingReportBuildersWith: aRepor
 		creatingReportBuildersWith: aReportBuilderFactory;
 		yourself! !
 
+!PipelineInstrumentSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 7:28:49 pm (UTC)'!
+instrumentedCodeEditor
+
+	| provider |
+	provider := InstrumentedSourceProvider new
+		methodClass: methodClass;
+		source: self instrumentedSource;
+		yourself.
+	^ library codeEditorOn: provider! !
+
+!PipelineInstrumentSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 5:19:30 pm (UTC)'!
+instrumentedSource
+
+	| generator |
+	generator := CodeCoverageSourceCodeGenerator for: (methodClass >> selector).
+	generator value.
+	^ generator tracedSourceCode! !
+
+!PipelineInstrumentSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 7:28:54 pm (UTC)'!
+value
+
+	| left top right bottom gap columnWidth headingLabel refreshButton rowHeight |
+
+	slide := library blankSlide.
+	left := slide interiorOrigin x.
+	top := slide interiorOrigin y.
+	right := left + slide interiorExtent x.
+	bottom := top + slide interiorExtent y.
+
+	heading ifNotNil: [
+		headingLabel := library primaryHeading: heading ].
+
+	refreshButton := library
+		pillButtonLabeled: 'Refresh'
+		target: self
+		action: #refresh
+		actionArgument: nil
+		color: SlideStyle surface
+		labelColor: SlideStyle textSecondary.
+
+	rowHeight := (headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: refreshButton morphHeight.
+
+	headingLabel ifNotNil: [
+		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
+		slide addMorph: headingLabel ].
+
+	refreshButton morphPosition: (right - refreshButton morphWidth) @ (top + ((rowHeight - refreshButton morphHeight) // 2)).
+	slide addMorph: refreshButton.
+
+	top := top + rowHeight + (SlideStyle space: 3).
+
+	gap := SlideStyle space: 3.
+	columnWidth := (right - left - gap) // 2.
+
+	leftEditorMorph := self codeEditor.
+	leftEditorMorph morphExtent: columnWidth @ (bottom - top).
+	leftEditorMorph morphPosition: left @ top.
+	slide addMorph: leftEditorMorph.
+
+	rightEditorMorph := self instrumentedCodeEditor.
+	rightEditorMorph morphExtent: columnWidth @ (bottom - top).
+	rightEditorMorph morphPosition: (left + columnWidth + gap) @ top.
+	slide addMorph: rightEditorMorph.
+
+	^ slide! !
+
+!PipelineInstrumentSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 7:28:57 pm (UTC)'!
+refresh
+
+	"Re-read the method's current source and regenerate the instrumented
+	source from it, in case either was edited since this slide was built."
+
+	| newLeftEditor newRightEditor |
+
+	newLeftEditor := self codeEditor.
+	newLeftEditor morphExtent: leftEditorMorph morphExtent.
+	newLeftEditor morphPosition: leftEditorMorph morphPosition.
+	leftEditorMorph owner replaceSubmorph: leftEditorMorph by: newLeftEditor.
+	leftEditorMorph := newLeftEditor.
+
+	newRightEditor := self instrumentedCodeEditor.
+	newRightEditor morphExtent: rightEditorMorph morphExtent.
+	newRightEditor morphPosition: rightEditorMorph morphPosition.
+	rightEditorMorph owner replaceSubmorph: rightEditorMorph by: newRightEditor.
+	rightEditorMorph := newRightEditor! !
+
+!PipelineRoadmapSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 5:19:20 pm (UTC)'!
+initialize
+
+	super initialize.
+
+	library := ThesisDefenseMorphLibrary new! !
+
+!PipelineRoadmapSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 5:23:50 pm (UTC)'!
+labelFor: aStepName
+
+	"Use the same font (weight and size) for every label, current or not, so that
+	which step is current never changes any label's width/height and therefore
+	never shifts the row's layout from slide to slide. Only color/opacity differs."
+
+	| label |
+	label := library heading: aStepName.
+	label color: (aStepName = currentStep
+		ifTrue: [ SlideStyle textPrimary ]
+		ifFalse: [ SlideStyle textSecondary alpha: 0.35 ]).
+	^ label! !
+
+!PipelineRoadmapSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 5:19:21 pm (UTC)'!
+setCurrentStep: aString
+
+	currentStep := aString! !
+
+!PipelineRoadmapSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 5:19:25 pm (UTC)'!
+value
+
+	| slide row centered |
+	slide := library blankSlide.
+
+	row := LinearLayoutMorph newRow.
+	row separation: (SlideStyle space: 4).
+	row color: Color transparent.
+	centered := LayoutSizeSpec keepMorphExtent offAxisEdgeWeight: #center.
+	self class steps do: [ :each |
+		row addMorph: (self labelFor: each) layoutSpec: centered ].
+	row morphExtent: row minimumExtent.
+
+	slide addMorph: row.
+	library centerMorph: row at: SlideStyle canvasExtent // 2.
+
+	^ slide! !
+
+!PipelineRoadmapSlideBuilder class methodsFor: 'accessing' stamp: 'NPM 13/Sep/2026, 5:19:18 pm (UTC)'!
+steps
+
+	^ #('Alcance' 'Instrumentar' 'Ejercitar' 'Notificar' 'Detener')! !
+
+!PipelineRoadmapSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 13/Sep/2026, 5:19:19 pm (UTC)'!
+on: aStepName
+
+	^ self new
+		setCurrentStep: aStepName;
+		yourself! !
+
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:53 pm (UTC)'!
 rotationDegrees: aNumber
 
@@ -1795,6 +2001,11 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:40 pm (UTC)'!
+alcanceSlide
+
+	^ (PipelineRoadmapSlideBuilder on: 'Alcance') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:36:19 pm (UTC)'!
 booleSlide
 	
@@ -1931,6 +2142,24 @@ decisionSelectorsSlide
 		secondaryOn: DecisionCoverageReportBuilder selector: #decisionSelectors)
 		value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:44 pm (UTC)'!
+detenerSlide
+
+	^ (PipelineRoadmapSlideBuilder on: 'Detener') value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:43 pm (UTC)'!
+ejercitarSlide
+
+	^ (PipelineRoadmapSlideBuilder on: 'Ejercitar') value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:23:50 pm (UTC)'!
+instrumentarSlide
+
+	^ (PipelineInstrumentSlideBuilder
+		on: CodeCoverageExamples
+		selector: #instrumentExample
+		heading: 'Instrumentar') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:04:31 pm (UTC)'!
 interaccionEntreCriteriosSlide
 
@@ -1949,6 +2178,11 @@ methodCoverageSlide
 		selector: #methodCoverageExample
 		heading: 'Method Coverage'
 		creatingReportBuildersWith: MethodCoverageReportBuilder) value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:43 pm (UTC)'!
+notificarSlide
+
+	^ (PipelineRoadmapSlideBuilder on: 'Notificar') value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:21:33 pm (UTC)'!
 openingSlide
@@ -1970,7 +2204,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:26:13 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 6:45:51 pm (UTC)'!
 slides
 	
 	^ {
@@ -1991,6 +2225,11 @@ slides
 		self decisionConditionVsBooleanCoverageSlide3.
 		self interaccionEntreCriteriosSlide.
 		self coverageToolLogosSlide.
+		self alcanceSlide.
+		self instrumentarSlide.
+		self ejercitarSlide.
+		self notificarSlide.
+		self detenerSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
