@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 11:04:42 am'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 11:34:28 am'!
 'Description Add interaccion entre criterios slide'!
-!provides: 'ThesisDefense' 1 81!
+!provides: 'ThesisDefense' 1 85!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1277,170 +1277,31 @@ on: aClass selector: aSymbol heading: aString creatingReportBuildersWith: aRepor
 		creatingReportBuildersWith: aReportBuilderFactory;
 		yourself! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:30:22 pm (UTC)'!
-centerMorph: aMorph at: aPoint
-
-	| bounds delta |
-	bounds := aMorph findFullBoundsInOwner.
-	delta := aPoint - (bounds origin + (bounds extent // 2)).
-	aMorph morphPosition: aMorph morphPosition + delta.! !
-
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:50 pm (UTC)'!
-frameOverlap
-
-	^ 2! !
-
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 7:35:51 pm (UTC)'!
-paperStripExtent: anExtent position: aPosition
-
-	^ ColoredBoxMorph new
-		color: self paperColor;
-		morphExtent: anExtent;
-		morphPosition: aPosition;
-		yourself! !
-
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:53 pm (UTC)'!
 rotationDegrees: aNumber
 
 	rotationDegrees := aNumber.! !
-
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 8:26:19 pm (UTC)'!
-scaleToCover: aMorph into: aRectangle
-
-	"Like PlacedMorph>>scaleToFitInto:, but scales so aMorph fully covers aRectangle
-	(cropping the overflow on whichever axis doesn't match) instead of fitting entirely
-	inside it. Needed because photos aren't always exactly 16:9: a contain-fit leaves a
-	gap on one axis, which for this polaroid frame means the photo's own raw edge is
-	left exposed instead of tucked under a paper strip."
-
-	| currentBounds scale |
-	currentBounds := aMorph findFullBoundsInOwner.
-	scale := (aRectangle width / currentBounds width) max: (aRectangle height / currentBounds height).
-	scale := scale asFloat.
-	aMorph scaleBy: scale.
-
-	currentBounds := aMorph findFullBoundsInOwner.
-	aMorph morphPosition: aRectangle origin - (currentBounds origin - aMorph morphPosition) + (aRectangle extent - currentBounds extent // 2).! !
 
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:52 pm (UTC)'!
 setFilename: aString
 
 	filename := aString.! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:25:50 am (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 2:23:13 pm (UTC)'!
 value
 
-	| pw ph sidePadding bottomPadding overlap cardWidth cardHeight slide card image canvasExtent center shadow innerRight innerBottom photoWindow |
+	| slide polaroid |
 
 	slide := library blankSlide.
-	canvasExtent := SlideStyle canvasExtent.
-	center := canvasExtent // 2.
-
-	pw := self photoWidth.
-	ph := self photoHeight.
-	sidePadding := self sidePadding.
-	bottomPadding := self bottomPadding.
-	overlap := self frameOverlap.
-
-	cardWidth := pw + (sidePadding * 2).
-	cardHeight := ph + sidePadding + bottomPadding.
-	innerRight := sidePadding + pw.
-	innerBottom := sidePadding + ph.
-
-	shadow := self shadowMorphFor: cardWidth @ cardHeight.
-	shadow morphPosition: center.
-	slide addMorph: shadow.
-	shadow rotationDegrees: rotationDegrees.
-	self centerMorph: shadow at: center.
-	shadow morphPosition: shadow morphPosition + self shadowOffset.
-
-	card := ColoredBoxMorph new
-		color: self paperColor;
-		morphExtent: cardWidth @ cardHeight;
-		yourself.
-
-	photoWindow := ClippingBoxMorph new
-		morphExtent: (pw + (overlap * 2)) @ (ph + (overlap * 2));
-		morphPosition: (sidePadding - overlap) @ (sidePadding - overlap);
-		yourself.
-	image := library imageNamed: filename.
-	self scaleToCover: image into: (0 @ 0 extent: photoWindow morphExtent).
-	photoWindow addMorph: image.
-	card addMorph: photoWindow.
-
-	"Paper strips on top of the photo hide its jagged rotated edge under a clean antialiased vector edge."
-	card addMorph: (self paperStripExtent: cardWidth @ sidePadding position: 0 @ 0).
-	card addMorph: (self paperStripExtent: cardWidth @ (cardHeight - innerBottom) position: 0 @ innerBottom).
-	card addMorph: (self paperStripExtent: sidePadding @ ph position: 0 @ sidePadding).
-	card addMorph: (self paperStripExtent: (cardWidth - innerRight) @ ph position: innerRight @ sidePadding).
-
-	card morphPosition: (center x - (cardWidth // 2)) @ (center y - (cardHeight // 2)).
-	slide addMorph: card.
-	card rotationDegrees: rotationDegrees.
-	self centerMorph: card at: center.
+	polaroid := library
+		polaroidFor: filename
+		photoWidth: self photoWidth
+		height: self photoHeight
+		rotationDegrees: rotationDegrees.
+	slide addMorph: polaroid.
+	library centerMorph: polaroid at: SlideStyle canvasExtent // 2.
 
 	^ slide! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 12/Sep/2026, 1:41:59 am (UTC)'!
-bottomPadding
-
-	^ 140! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:25:54 pm (UTC)'!
-paperColor
-
-	^ Color fromHexString: '#F5F1E8'! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:36:48 pm (UTC)'!
-shadowLayers
-
-	"Each entry is inflate @ screen-space offset @ alpha, faintest/largest first, to fake a soft blurred shadow out of flat rectangles."
-
-	^ {
-		{ 16. 8 @ 11. 0.08 }.
-		{ 8.  5 @ 7.  0.16 }.
-		{ 2.  3 @ 4.  0.28 }.
-	}! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:46:46 pm (UTC)'!
-shadowMorphFor: cardExtent
-
-	| feather sampleScale fullExtent smallExtent bg core smallForm shadowMorph maxDarken |
-
-	feather := 22.
-	sampleScale := 3.
-	maxDarken := 0.14.
-	fullExtent := cardExtent + (feather * 2).
-	smallExtent := (fullExtent // sampleScale) max: 2 @ 2.
-	bg := SlideStyle background.
-	core := (cardExtent // 2) / sampleScale.
-
-	smallForm := Form extent: smallExtent depth: 32.
-	smallForm fillFromXYColorBlock: [ :xRel :yRel |
-		| x y dx dy dist t smoothT darken |
-		x := xRel * (smallExtent x - 1).
-		y := yRel * (smallExtent y - 1).
-		dx := ((x - (smallExtent x / 2)) abs - core x) max: 0.
-		dy := ((y - (smallExtent y / 2)) abs - core y) max: 0.
-		dist := ((dx * dx) + (dy * dy)) sqrt.
-		t := (dist / (feather / sampleScale)) min: 1.0.
-		smoothT := t * t * (3.0 - (2.0 * t)).
-		darken := maxDarken * (1.0 - smoothT).
-		Color r: bg red * (1.0 - darken) g: bg green * (1.0 - darken) b: bg blue * (1.0 - darken) ].
-
-	shadowMorph := ImageMorph newWith: smallForm.
-	shadowMorph scaleToFitInto: (0 @ 0 extent: fullExtent).
-	^ shadowMorph! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 11/Sep/2026, 6:46:47 pm (UTC)'!
-shadowOffset
-
-	^ 3 @ 4! !
-
-!PolaroidSlideBuilder methodsFor: 'styling' stamp: 'NPM 12/Sep/2026, 1:41:58 am (UTC)'!
-sidePadding
-
-	^ 32! !
 
 !PolaroidSlideBuilder methodsFor: 'initialization' stamp: 'NPM 12/Sep/2026, 12:25:58 am (UTC)'!
 initialize
@@ -1755,6 +1616,154 @@ secondaryTitle: aString
 
 	^ (self title: aString) color: SlideStyle textSecondary! !
 
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:22:56 pm (UTC)'!
+centerMorph: aMorph at: aPoint
+
+	| bounds delta |
+	bounds := aMorph findFullBoundsInOwner.
+	delta := aPoint - (bounds origin + (bounds extent // 2)).
+	aMorph morphPosition: aMorph morphPosition + delta.! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:23:07 pm (UTC)'!
+polaroidBottomPadding
+
+	^ 140! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:28:35 pm (UTC)'!
+polaroidFor: aFilename photoWidth: pw height: ph rotationDegrees: rotationDegrees
+
+	| sidePadding bottomPadding overlap cardWidth cardHeight group card image shadow innerRight innerBottom photoWindow localCenter |
+
+	sidePadding := self polaroidSidePadding.
+	bottomPadding := self polaroidBottomPadding.
+	overlap := self polaroidFrameOverlap.
+
+	cardWidth := pw + (sidePadding * 2).
+	cardHeight := ph + sidePadding + bottomPadding.
+	innerRight := sidePadding + pw.
+	innerBottom := sidePadding + ph.
+	localCenter := cardWidth // 2 @ (cardHeight // 2).
+
+	group := ColoredBoxMorph new
+		color: Color transparent;
+		morphExtent: cardWidth @ cardHeight;
+		yourself.
+
+	shadow := self polaroidShadowMorphFor: cardWidth @ cardHeight.
+	shadow morphPosition: localCenter.
+	group addMorph: shadow.
+	shadow rotationDegrees: rotationDegrees.
+	self centerMorph: shadow at: localCenter.
+	shadow morphPosition: shadow morphPosition + self polaroidShadowOffset.
+
+	card := ColoredBoxMorph new
+		color: self polaroidPaperColor;
+		morphExtent: cardWidth @ cardHeight;
+		yourself.
+
+	photoWindow := ClippingBoxMorph new
+		morphExtent: (pw + (overlap * 2)) @ (ph + (overlap * 2));
+		morphPosition: (sidePadding - overlap) @ (sidePadding - overlap);
+		yourself.
+	photoWindow addMorph: (ColoredBoxMorph new
+		color: Color white;
+		morphExtent: photoWindow morphExtent;
+		morphPosition: 0 @ 0;
+		yourself).
+	image := self imageNamed: aFilename.
+	self scaleToCover: image into: (0 @ 0 extent: photoWindow morphExtent).
+	photoWindow addMorph: image.
+	card addMorph: photoWindow.
+
+	"Paper strips on top of the photo hide its jagged rotated edge under a clean antialiased vector edge."
+	card addMorph: (self polaroidPaperStripExtent: cardWidth @ sidePadding position: 0 @ 0).
+	card addMorph: (self polaroidPaperStripExtent: cardWidth @ (cardHeight - innerBottom) position: 0 @ innerBottom).
+	card addMorph: (self polaroidPaperStripExtent: sidePadding @ ph position: 0 @ sidePadding).
+	card addMorph: (self polaroidPaperStripExtent: (cardWidth - innerRight) @ ph position: innerRight @ sidePadding).
+
+	card morphPosition: (localCenter x - (cardWidth // 2)) @ (localCenter y - (cardHeight // 2)).
+	group addMorph: card.
+	card rotationDegrees: rotationDegrees.
+	self centerMorph: card at: localCenter.
+
+	^ group! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:23:08 pm (UTC)'!
+polaroidFrameOverlap
+
+	^ 2! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:23:06 pm (UTC)'!
+polaroidPaperColor
+
+	^ Color fromHexString: '#F5F1E8'! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:23:00 pm (UTC)'!
+polaroidPaperStripExtent: anExtent position: aPosition
+
+	^ ColoredBoxMorph new
+		color: self polaroidPaperColor;
+		morphExtent: anExtent;
+		morphPosition: aPosition;
+		yourself! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:31:17 pm (UTC)'!
+polaroidShadowMorphFor: cardExtent
+
+	| feather sampleScale fullExtent smallExtent core smallForm shadowMorph maxDarken |
+
+	feather := 22.
+	sampleScale := 3.
+	maxDarken := 0.14.
+	fullExtent := cardExtent + (feather * 2).
+	smallExtent := (fullExtent // sampleScale) max: 2 @ 2.
+	core := (cardExtent // 2) / sampleScale.
+
+	smallForm := Form extent: smallExtent depth: 32.
+	smallForm fillFromXYColorBlock: [ :xRel :yRel |
+		| x y dx dy dist t smoothT darken |
+		x := xRel * (smallExtent x - 1).
+		y := yRel * (smallExtent y - 1).
+		dx := ((x - (smallExtent x / 2)) abs - core x) max: 0.
+		dy := ((y - (smallExtent y / 2)) abs - core y) max: 0.
+		dist := ((dx * dx) + (dy * dy)) sqrt.
+		t := (dist / (feather / sampleScale)) min: 1.0.
+		smoothT := t * t * (3.0 - (2.0 * t)).
+		darken := maxDarken * (1.0 - smoothT).
+		Color black alpha: darken ].
+
+	shadowMorph := ImageMorph newWith: smallForm.
+	shadowMorph scaleToFitInto: (0 @ 0 extent: fullExtent).
+	^ shadowMorph! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:23:09 pm (UTC)'!
+polaroidShadowOffset
+
+	^ 3 @ 4! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:23:07 pm (UTC)'!
+polaroidSidePadding
+
+	^ 32! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:22:59 pm (UTC)'!
+scaleToCover: aMorph into: aRectangle
+
+	"Like PlacedMorph>>scaleToFitInto:, but scales so aMorph fully covers aRectangle
+	(cropping the overflow on whichever axis doesn't match) instead of fitting entirely
+	inside it. Needed because photos aren't always exactly 16:9: a contain-fit leaves a
+	gap on one axis, which for this polaroid frame means the photo's own raw edge is
+	left exposed instead of tucked under a paper strip."
+
+	| currentBounds scale |
+	currentBounds := aMorph findFullBoundsInOwner.
+	scale := (aRectangle width / currentBounds width) max: (aRectangle height / currentBounds height).
+	scale := scale asFloat.
+	aMorph scaleBy: scale.
+
+	currentBounds := aMorph findFullBoundsInOwner.
+	aMorph morphPosition: aRectangle origin - (currentBounds origin - aMorph morphPosition) + (aRectangle extent - currentBounds extent // 2).! !
+
 !ThesisDefenseMorphLibrary class methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:40:30 pm (UTC)'!
 fontsFolder
 	
@@ -1809,6 +1818,41 @@ codeCoverageDefinitionSlide
 	^ (PolaroidSlideBuilder on: 'code-coverage-definition.png')
 		rotationDegrees: -5;
 		value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:26:08 pm (UTC)'!
+coverageToolLogosSlide
+
+	| library slide photoExtent gap cardWidth totalWidth leftMargin centerY specs |
+
+	library := ThesisDefenseMorphLibrary new.
+	slide := library blankSlide.
+
+	photoExtent := 260 @ 260.
+	gap := 60.
+	cardWidth := photoExtent x + (library polaroidSidePadding * 2).
+	totalWidth := (cardWidth * 4) + (gap * 3).
+	leftMargin := (SlideStyle canvasExtent x - totalWidth) // 2.
+	centerY := SlideStyle canvasExtent y // 2.
+
+	specs := {
+		{ 'squeak-logo.png'. -6 }.
+		{ 'pharo-logo.png'. 4 }.
+		{ 'instantiations-logo.png'. -3 }.
+		{ 'haskell-logo.png'. 7 }.
+	}.
+
+	specs doWithIndex: [ :spec :i |
+		| polaroid centerX |
+		polaroid := library
+			polaroidFor: spec first
+			photoWidth: photoExtent x
+			height: photoExtent y
+			rotationDegrees: spec last.
+		slide addMorph: polaroid.
+		centerX := leftMargin + ((i - 1) * (cardWidth + gap)) + (cardWidth // 2).
+		library centerMorph: polaroid at: centerX @ centerY ].
+
+	^ slide! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:07:22 pm (UTC)'!
 decisionConditionCoverageSlide
@@ -1920,7 +1964,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:00:41 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:26:13 pm (UTC)'!
 slides
 	
 	^ {
@@ -1940,6 +1984,7 @@ slides
 		self decisionConditionVsBooleanCoverageSlide4.
 		self decisionConditionVsBooleanCoverageSlide3.
 		self interaccionEntreCriteriosSlide.
+		self coverageToolLogosSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
