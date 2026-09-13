@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:52:41 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:53:24 pm'!
 'Description Change embedded aconcagua order'!
-!provides: 'ThesisDefense' 1 102!
+!provides: 'ThesisDefense' 1 103!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -71,7 +71,7 @@ BooleanTestCasesGenerator class
 
 !classDefinition: #EmbeddedPackageBrowserSlideBuilder category: #ThesisDefense!
 Object subclass: #EmbeddedPackageBrowserSlideBuilder
-	instanceVariableNames: 'library packageName'
+	instanceVariableNames: 'library packageName heading'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -483,12 +483,22 @@ setPackageName: aString
 
 	packageName := aString! !
 
-!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:13:27 pm (UTC)'!
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:53:07 pm (UTC)'!
 value
 
-	| slide package browser window firstCategory firstClass |
+	| slide package browser window content firstCategory firstClass left top bottom |
 
 	slide := library blankSlide.
+	left := slide interiorOrigin x.
+	top := slide interiorOrigin y.
+	bottom := top + slide interiorExtent y.
+
+	heading ifNotNil: [
+		| headingLabel |
+		headingLabel := library primaryHeading: heading.
+		headingLabel morphPosition: left @ top.
+		slide addMorph: headingLabel.
+		top := top + headingLabel morphHeight + (SlideStyle space: 3) ].
 
 	package := CodePackage named: packageName createIfAbsent: false registerIfNew: false.
 	browser := SinglePackageBrowser new package: package; yourself.
@@ -511,18 +521,35 @@ value
 	Theme current widgetsColorFromToolColor ifTrue: [
 		window widgetsColor: window windowColor ].
 
-	window morphExtent: slide interiorExtent.
-	window morphPosition: slide interiorOrigin.
+	"Only the window's layoutMorph (its content pane) is placed on the slide,
+	not the window itself - that drops the title bar, border and
+	close/collapse/expand/menu buttons, leaving just the browser panes."
+	content := window layoutMorph.
+	content morphExtent: slide interiorExtent x @ (bottom - top).
+	content morphPosition: left @ top.
 
-	slide addMorph: window.
+	slide addMorph: content.
 
 	^ slide! !
+
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:52:59 pm (UTC)'!
+setHeading: aString
+
+	heading := aString! !
 
 !EmbeddedPackageBrowserSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 13/Sep/2026, 7:56:26 pm (UTC)'!
 on: aPackageName
 
 	^ self new
 		setPackageName: aPackageName;
+		yourself! !
+
+!EmbeddedPackageBrowserSlideBuilder class methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:53:00 pm (UTC)'!
+on: aPackageName heading: aHeadingString
+
+	^ self new
+		setPackageName: aPackageName;
+		setHeading: aHeadingString;
 		yourself! !
 
 !EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:37:09 pm (UTC)'!
@@ -2155,10 +2182,10 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:57:21 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:53:10 pm (UTC)'!
 aconcaguaBrowserSlide
 
-	^ (EmbeddedPackageBrowserSlideBuilder on: 'Aconcagua') value! !
+	^ (EmbeddedPackageBrowserSlideBuilder on: 'Aconcagua' heading: 'Aconcagua') value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:40 pm (UTC)'!
 alcanceSlide
