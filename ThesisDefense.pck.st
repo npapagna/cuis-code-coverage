@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:56:11 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:58:35 pm'!
 'Description Change embedded aconcagua order'!
-!provides: 'ThesisDefense' 1 104!
+!provides: 'ThesisDefense' 1 105!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -483,7 +483,7 @@ setPackageName: aString
 
 	packageName := aString! !
 
-!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:53:07 pm (UTC)'!
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:58:08 pm (UTC)'!
 value
 
 	| slide package browser window content firstCategory firstClass left top bottom |
@@ -523,8 +523,13 @@ value
 
 	"Only the window's layoutMorph (its content pane) is placed on the slide,
 	not the window itself - that drops the title bar, border and
-	close/collapse/expand/menu buttons, leaving just the browser panes."
+	close/collapse/expand/menu buttons, leaving just the browser panes.
+	A thin border replaces the one lost with the window frame, so the panes
+	still read as a distinct embedded tool rather than floating content."
 	content := window layoutMorph.
+	content
+		borderWidth: 1;
+		borderColor: SlideStyle textSecondary.
 	content morphExtent: slide interiorExtent x @ (bottom - top).
 	content morphPosition: left @ top.
 
@@ -570,7 +575,7 @@ setHeading: aString
 
 	heading := aString! !
 
-!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:50:34 pm (UTC)'!
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:58:00 pm (UTC)'!
 value
 
 	| slide workspace window content left top bottom |
@@ -607,8 +612,13 @@ value
 
 	"Only the window's layoutMorph (its content pane) is placed on the slide,
 	not the window itself - that drops the title bar, border and
-	close/collapse/expand/menu buttons, leaving just the editable text area."
+	close/collapse/expand/menu buttons, leaving just the editable text area.
+	A thin border replaces the one lost with the window frame, so the pane
+	still reads as a distinct embedded tool rather than floating content."
 	content := window layoutMorph.
+	content
+		borderWidth: 1;
+		borderColor: SlideStyle textSecondary.
 	content morphExtent: slide interiorExtent x @ (bottom - top).
 	content morphPosition: left @ top.
 
