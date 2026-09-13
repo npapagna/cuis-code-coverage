@@ -1,8 +1,9 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:15:03 pm'!
-'Description Add interaccion entre criterios slide'!
-!provides: 'ThesisDefense' 1 95!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:26:55 pm'!
+'Description Change embedded aconcagua order'!
+!provides: 'ThesisDefense' 1 97!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
+!requires: 'Aconcagua' 1 25 nil!
 !requires: 'CodeCoverage' nil nil nil!
 !requires: 'Graphics-Files-Additional' nil nil nil!
 SystemOrganization addCategory: #ThesisDefense!
@@ -2273,7 +2274,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:14:42 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:25:55 pm (UTC)'!
 slides
 	
 	^ {
@@ -2294,12 +2295,13 @@ slides
 		self decisionConditionVsBooleanCoverageSlide3.
 		self interaccionEntreCriteriosSlide.
 		self coverageToolLogosSlide.
+		self aconcaguaBrowserSlide.
 		self alcanceSlide.
 		self instrumentarSlide.
 		self ejercitarSlide.
 		self notificarSlide.
 		self detenerSlide.
-		self aconcaguaBrowserSlide.
+		
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
