@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 6:20:03 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 8:29:34 pm'!
 'Description Scale and rotate when dragged'!
-!provides: 'ThesisDefense' 1 109!
+!provides: 'ThesisDefense' 1 113!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -171,7 +171,7 @@ PipelineRoadmapSlideBuilder class
 
 !classDefinition: #PolaroidSlideBuilder category: #ThesisDefense!
 Object subclass: #PolaroidSlideBuilder
-	instanceVariableNames: 'library filename rotationDegrees photoWidth photoHeight'
+	instanceVariableNames: 'library filename rotationDegrees photoWidth photoHeight caption'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -1687,6 +1687,11 @@ on: aStepName
 		setCurrentStep: aStepName;
 		yourself! !
 
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 11:15:38 pm (UTC)'!
+caption: aStringOrNil
+
+	caption := aStringOrNil.! !
+
 !PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 11/Sep/2026, 6:25:53 pm (UTC)'!
 rotationDegrees: aNumber
 
@@ -1697,7 +1702,7 @@ setFilename: aString
 
 	filename := aString.! !
 
-!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 2:23:13 pm (UTC)'!
+!PolaroidSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 11:15:39 pm (UTC)'!
 value
 
 	| slide polaroid |
@@ -1707,7 +1712,8 @@ value
 		polaroidFor: filename
 		photoWidth: self photoWidth
 		height: self photoHeight
-		rotationDegrees: rotationDegrees.
+		rotationDegrees: rotationDegrees
+		caption: caption.
 	slide addMorph: polaroid.
 	library centerMorph: polaroid at: SlideStyle canvasExtent // 2.
 
@@ -1866,6 +1872,11 @@ captionFont
 
 	^ (self fontFamily) atPointSize: 20! !
 
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:15:42 pm (UTC)'!
+caveatFontFamily
+
+	^ FontFamily familyNamed: 'Caveat'! !
+
 !ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 8:25:55 pm (UTC)'!
 comfortaaFontFamily
 
@@ -1907,6 +1918,11 @@ imageNamed: filename
 			self class imageCache at: filename put: mtime -> decoded.
 			decoded ].
 	^ ImageMorph newWith: form! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:16:47 pm (UTC)'!
+loadCaveatFont
+
+	TrueTypeFontFamily readTrueTypeFontEntry: self class fontsFolder // 'Caveat/static/Caveat-Regular.ttf'! !
 
 !ThesisDefenseMorphLibrary methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 8:29:05 pm (UTC)'!
 loadComfortaaFont
@@ -2039,8 +2055,40 @@ polaroidBottomPadding
 
 	^ 140! !
 
-!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 2:28:35 pm (UTC)'!
-polaroidFor: aFilename photoWidth: pw height: ph rotationDegrees: rotationDegrees
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 11:15:46 pm (UTC)'!
+polaroidCaptionColor
+
+	^ Color fromHexString: '#3A3229'! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 11:15:45 pm (UTC)'!
+polaroidCaptionFont
+
+	^ self polaroidCaptionFontFamily atPointSize: 36! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 11:15:45 pm (UTC)'!
+polaroidCaptionFontFamily
+
+	^ self caveatFontFamily
+		ifNil: [
+			self
+				loadCaveatFont;
+				caveatFontFamily ]! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 11:15:50 pm (UTC)'!
+polaroidCaptionMorph: aString cardWidth: cardWidth innerBottom: innerBottom cardHeight: cardHeight
+
+	| label |
+	label := LabelMorph
+		contents: aString
+		font: self polaroidCaptionFont.
+	label color: self polaroidCaptionColor.
+	label morphPosition:
+		((cardWidth - label morphWidth) // 2)
+		@ (innerBottom + ((cardHeight - innerBottom - label morphHeight) // 2)).
+	^ label! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'polaroid' stamp: 'NPM 13/Sep/2026, 11:15:59 pm (UTC)'!
+polaroidFor: aFilename photoWidth: pw height: ph rotationDegrees: rotationDegrees caption: aCaptionOrNil
 
 	| sidePadding bottomPadding overlap cardWidth cardHeight group card image shadow innerRight innerBottom photoWindow localCenter |
 
@@ -2090,6 +2138,13 @@ polaroidFor: aFilename photoWidth: pw height: ph rotationDegrees: rotationDegree
 	card addMorph: (self polaroidPaperStripExtent: cardWidth @ (cardHeight - innerBottom) position: 0 @ innerBottom).
 	card addMorph: (self polaroidPaperStripExtent: sidePadding @ ph position: 0 @ sidePadding).
 	card addMorph: (self polaroidPaperStripExtent: (cardWidth - innerRight) @ ph position: innerRight @ sidePadding).
+
+	aCaptionOrNil ifNotNil: [
+		card addMorph: (self
+			polaroidCaptionMorph: aCaptionOrNil
+			cardWidth: cardWidth
+			innerBottom: innerBottom
+			cardHeight: cardHeight) ].
 
 	card morphPosition: (localCenter x - (cardWidth // 2)) @ (localCenter y - (cardHeight // 2)).
 	group addMorph: card.
@@ -2204,13 +2259,14 @@ alcanceSlide
 
 	^ (PipelineRoadmapSlideBuilder on: 'Alcance') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:36:19 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:20:34 pm (UTC)'!
 booleSlide
 	
 	 ^ (PolaroidSlideBuilder on: 'george-boole.png')
 		photoWidth: 382
 		height: 680;
 		rotationDegrees: -8;
+		caption: 'George Boole';
 		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:58:47 pm (UTC)'!
@@ -2218,12 +2274,12 @@ branchCoverageSlide
 
 	^ self branchCoverageSlideBuilder value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:58:42 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 10:47:42 pm (UTC)'!
 branchCoverageSlideBuilder
 
 	^ CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #decisionCoverageExample:
+		selector: #branchCoverageExample:
 		heading: 'Branch Coverage'
 		creatingReportBuildersWith: DecisionCoverageReportBuilder! !
 
@@ -2234,7 +2290,7 @@ codeCoverageDefinitionSlide
 		rotationDegrees: -5;
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:26:08 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:22:27 pm (UTC)'!
 coverageToolLogosSlide
 
 	| library slide photoExtent gap cardWidth totalWidth leftMargin centerY specs |
@@ -2250,10 +2306,10 @@ coverageToolLogosSlide
 	centerY := SlideStyle canvasExtent y // 2.
 
 	specs := {
-		{ 'squeak-logo.png'. -6 }.
-		{ 'pharo-logo.png'. 4 }.
-		{ 'instantiations-logo.png'. -3 }.
-		{ 'haskell-logo.png'. 7 }.
+		{ 'squeak-logo.png'. -6. 'Squeak' }.
+		{ 'pharo-logo.png'. 4. 'Pharo' }.
+		{ 'instantiations-logo.png'. -3. 'VAST' }.
+		{ 'haskell-logo.png'. 7. 'Haskell' }.
 	}.
 
 	specs doWithIndex: [ :spec :i |
@@ -2262,7 +2318,8 @@ coverageToolLogosSlide
 			polaroidFor: spec first
 			photoWidth: photoExtent x
 			height: photoExtent y
-			rotationDegrees: spec last.
+			rotationDegrees: spec second
+			caption: spec last.
 		slide addMorph: polaroid.
 		centerX := leftMargin + ((i - 1) * (cardWidth + gap)) + (cardWidth // 2).
 		library centerMorph: polaroid at: centerX @ centerY ].
@@ -2407,7 +2464,7 @@ notificarSlide
 
 	^ (PipelineRoadmapSlideBuilder on: 'Notificar') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 12:21:33 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:23:16 pm (UTC)'!
 openingSlide
 	
 	 ^ (PolaroidSlideBuilder on: 'Droste916.png')
