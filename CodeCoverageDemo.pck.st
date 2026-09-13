@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 12 September 2026 at 7:47:58 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 10:46:44 am'!
 'Description OBC example 3'!
-!provides: 'CodeCoverageDemo' 1 20!
+!provides: 'CodeCoverageDemo' 1 21!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -980,6 +980,16 @@ m1: aString
 	^ aString = 'foo'
 		ifTrue: [ true ]
 		ifFalse: [ 'oops!!' ]! !
+
+!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 11:12:44 pm (UTC)'!
+returnTrue
+
+	^ true! !
+
+!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 11:12:40 pm (UTC)'!
+sayHello
+
+	^ 'hello'! !
 
 !ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:55:21 pm (UTC)'!
 aBooleanArgument
