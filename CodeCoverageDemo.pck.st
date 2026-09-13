@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 10:46:44 am'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 4:51:04 pm'!
 'Description OBC example 3'!
-!provides: 'CodeCoverageDemo' 1 21!
+!provides: 'CodeCoverageDemo' 1 22!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -973,6 +973,11 @@ statementCoverageExample
 		ifFalse: [ 2 ].
 		
 	self value.! !
+
+!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:31:21 pm (UTC)'!
+instrumentExample
+
+	^ true! !
 
 !CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:45:56 pm (UTC)'!
 m1: aString 
