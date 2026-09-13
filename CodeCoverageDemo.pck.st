@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 4:51:04 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 7:48:20 pm'!
 'Description OBC example 3'!
-!provides: 'CodeCoverageDemo' 1 22!
+!provides: 'CodeCoverageDemo' 1 23!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -905,6 +905,17 @@ OBCExample3: aString
 	
 	self m1: aString! !
 
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 13/Sep/2026, 10:47:42 pm (UTC)'!
+branchCoverageExample: aBoolean
+
+	| result |
+	result := 0.
+	
+	aBoolean ifTrue: [
+		result := result + 1 ].
+	
+	^ result! !
+
 !CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 11/Nov/2022, 9:37:19 am (UTC)'!
 codeCoverageTest: aBoolean and: anotherBoolean
 	
@@ -939,17 +950,6 @@ decisionConditionTest: aBoolean or: anotherBoolean or: yetAnotherBoolean
 	((aBoolean or: anotherBoolean) or: yetAnotherBoolean)
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ]! !
-
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 8/Nov/2022, 5:11:05 am (UTC)'!
-decisionCoverageExample: aBoolean
-
-	| result |
-	result := 0.
-	
-	aBoolean ifTrue: [
-		result := result + 1 ].
-	
-	^ result! !
 
 !CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 8/Nov/2022, 4:48:25 am (UTC)'!
 lineCoverageExample
@@ -1083,7 +1083,7 @@ buildArguments
 	
 	^ { booleanArgument }! !
 
-!Smalltalks2022Presentation methodsFor: 'as yet unclassified' stamp: 'NPM 11/Nov/2022, 9:29:02 am (UTC)'!
+!Smalltalks2022Presentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 10:47:42 pm (UTC)'!
 openInWorld
 	
 	| presentation |
@@ -1109,7 +1109,7 @@ openInWorld
 
 	presentation addSlide: (CodeEditorSlide
 		on: CodeCoverageExamples new
-		selector: #decisionCoverageExample:
+		selector: #branchCoverageExample:
 		creatingReportBuildersWith: DecisionCoverageReportBuilder
 		buildingArgumentsWith: DecisionCoverageArgumentsBuilder new).
 		
