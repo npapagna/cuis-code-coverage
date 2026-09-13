@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 6:00:02 pm'!
-'Description Change embedded aconcagua order'!
-!provides: 'ThesisDefense' 1 106!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 6:20:03 pm'!
+'Description Scale and rotate when dragged'!
+!provides: 'ThesisDefense' 1 109!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -429,6 +429,13 @@ mouseButton1Down: aMouseEvent localPosition: localEventPosition
 clipsSubmorphs
 
 	^ true ! !
+
+!SlidesPresenter methodsFor: 'geometry' stamp: 'NPM 13/Sep/2026, 9:15:51 pm (UTC)'!
+dragEvent: aMouseEvent localPosition: aPoint
+	"Shrink and tilt while being dragged, so it feels like a card being picked up off the desktop."
+
+	super dragEvent: aMouseEvent localPosition: aPoint.
+	self rotation: -45 degreesToRadians scale: 0.5! !
 
 !SlidesPresenter class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 6:14:45 pm (UTC)'!
 on: aCollectionOfSlides
