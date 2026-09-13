@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:58:35 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 6:00:02 pm'!
 'Description Change embedded aconcagua order'!
-!provides: 'ThesisDefense' 1 105!
+!provides: 'ThesisDefense' 1 106!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -483,7 +483,7 @@ setPackageName: aString
 
 	packageName := aString! !
 
-!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:58:08 pm (UTC)'!
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:59:49 pm (UTC)'!
 value
 
 	| slide package browser window content firstCategory firstClass left top bottom |
@@ -529,7 +529,7 @@ value
 	content := window layoutMorph.
 	content
 		borderWidth: 1;
-		borderColor: SlideStyle textSecondary.
+		borderColor: SlideStyle surface.
 	content morphExtent: slide interiorExtent x @ (bottom - top).
 	content morphPosition: left @ top.
 
@@ -575,7 +575,7 @@ setHeading: aString
 
 	heading := aString! !
 
-!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:58:00 pm (UTC)'!
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:59:41 pm (UTC)'!
 value
 
 	| slide workspace window content left top bottom |
@@ -618,7 +618,7 @@ value
 	content := window layoutMorph.
 	content
 		borderWidth: 1;
-		borderColor: SlideStyle textSecondary.
+		borderColor: SlideStyle surface.
 	content morphExtent: slide interiorExtent x @ (bottom - top).
 	content morphPosition: left @ top.
 
