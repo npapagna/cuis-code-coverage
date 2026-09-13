@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:53:24 pm'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 5:56:11 pm'!
 'Description Change embedded aconcagua order'!
-!provides: 'ThesisDefense' 1 103!
+!provides: 'ThesisDefense' 1 104!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2182,11 +2182,6 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:53:10 pm (UTC)'!
-aconcaguaBrowserSlide
-
-	^ (EmbeddedPackageBrowserSlideBuilder on: 'Aconcagua' heading: 'Aconcagua') value! !
-
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:40 pm (UTC)'!
 alcanceSlide
 
@@ -2365,6 +2360,31 @@ methodCoverageSlide
 		heading: 'Method Coverage'
 		creatingReportBuildersWith: MethodCoverageReportBuilder) value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:55:24 pm (UTC)'!
+modoAutomaticoSlide
+
+	^ (EmbeddedPackageBrowserSlideBuilder on: 'Aconcagua' heading: 'Modo Automático') value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:55:32 pm (UTC)'!
+modoManualSlide
+
+	^ (EmbeddedWorkspaceSlideBuilder on: '"Alcance"
+packageToAnalyze := CodePackage installedPackages at: ''Tools-Finder''.
+methodsToAnalyze := packageToAnalyze compiledMethodsInNonTestCaseClasses.
+
+"Creacion del analizador"
+coverageAnalyzer := CodeCoverageAnalyzer toAnalyzeAll: methodsToAnalyze.
+
+"Iniciar el analisis"
+coverageAnalyzer startTrackingCodeCoverage.
+
+"Detener el analisis"
+coverageAnalyzer stopTrackingCodeCoverage.
+
+"Abrir el reporte de cobertura de codigo"
+codeCoverageReport := coverageAnalyzer report.
+CodeCoverageAnalyzerBrowser displayCodeCoverageResultsFrom: codeCoverageReport.' heading: 'Modo Manual') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:43 pm (UTC)'!
 notificarSlide
 
@@ -2390,7 +2410,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:29:30 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:55:32 pm (UTC)'!
 slides
 	
 	^ {
@@ -2411,13 +2431,13 @@ slides
 		self decisionConditionVsBooleanCoverageSlide3.
 		self interaccionEntreCriteriosSlide.
 		self coverageToolLogosSlide.
-		self aconcaguaBrowserSlide.
+		self modoAutomaticoSlide.
 		self alcanceSlide.
 		self instrumentarSlide.
 		self ejercitarSlide.
 		self notificarSlide.
 		self detenerSlide.
-		self workspaceSlide.
+		self modoManualSlide.
 		
 	}! !
 
@@ -2441,26 +2461,6 @@ subsumptionDefinitionSlide
 titleSlide
 	
 	^ TitleSlideBuilder new value! !
-
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:51:52 pm (UTC)'!
-workspaceSlide
-
-	^ (EmbeddedWorkspaceSlideBuilder on: '"Alcance"
-packageToAnalyze := CodePackage installedPackages at: ''Tools-Finder''.
-methodsToAnalyze := packageToAnalyze compiledMethodsInNonTestCaseClasses.
-
-"Creacion del analizador"
-coverageAnalyzer := CodeCoverageAnalyzer toAnalyzeAll: methodsToAnalyze.
-
-"Iniciar el analisis"
-coverageAnalyzer startTrackingCodeCoverage.
-
-"Detener el analisis"
-coverageAnalyzer stopTrackingCodeCoverage.
-
-"Abrir el reporte de cobertura de codigo"
-codeCoverageReport := coverageAnalyzer report.
-CodeCoverageAnalyzerBrowser displayCodeCoverageResultsFrom: codeCoverageReport.' heading: 'Modo Manual') value! !
 
 !ThesisDefensePresentation class methodsFor: 'opening' stamp: 'NPM 5/Sep/2026, 6:48:59 pm (UTC)'!
 present
