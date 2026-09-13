@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 11:34:28 am'!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 2:02:22 pm'!
 'Description Add interaccion entre criterios slide'!
-!provides: 'ThesisDefense' 1 85!
+!provides: 'ThesisDefense' 1 87!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -100,7 +100,7 @@ CodeCoverageComparisonTestCaseSlideBuilder class
 
 !classDefinition: #CodeCoverageMethodSlideBuilder category: #ThesisDefense!
 MethodSlideBuilder subclass: #CodeCoverageMethodSlideBuilder
-	instanceVariableNames: 'executionBlock runButton clearButton coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector secondaryCodeEditorMorph shouldAnalyzeSecondaryClass'
+	instanceVariableNames: 'executionBlock runChip coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector secondaryCodeEditorMorph shouldAnalyzeSecondaryClass topRowTop topRowHeight coverageActive'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -110,7 +110,7 @@ CodeCoverageMethodSlideBuilder class
 
 !classDefinition: #CodeCoverageTestCaseSlideBuilder category: #ThesisDefense!
 CodeCoverageMethodSlideBuilder subclass: #CodeCoverageTestCaseSlideBuilder
-	instanceVariableNames: 'argumentNames testCases testCaseChips selectedTestCases topRowTop topRowHeight testCasesGenerator'
+	instanceVariableNames: 'argumentNames testCases testCaseChips selectedTestCases testCasesGenerator'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -934,10 +934,10 @@ secondaryOn: aClass selector: aSymbol
 	secondaryClass := aClass.
 	secondarySelector := aSymbol! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 12:37:19 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 5:01:49 pm (UTC)'!
 value
 
-	| top rowHeight headingLabel left right bottom |
+	| headingLabel barTop barHeight x panel left right bottom clearAllButton clearAllFont top |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -948,46 +948,53 @@ value
 	heading ifNotNil: [
 		headingLabel := library primaryHeading: heading ].
 
-	runButton := library
-		pillButtonLabeled: 'Run Coverage'
-		target: self
-		action: #runCoverage
-		actionArgument: nil
-		color: SlideStyle accent
-		labelColor: SlideStyle background.
-
-	clearButton := library
-		pillButtonLabeled: 'Clear'
-		target: self
-		action: #clearCoverage
-		actionArgument: nil
-		color: SlideStyle surface
-		labelColor: SlideStyle textSecondary.
-	clearButton disable.
-
-	rowHeight := ((headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ]) max: runButton morphHeight) max: clearButton morphHeight.
+	topRowTop := top.
+	topRowHeight := headingLabel ifNil: [ 0 ] ifNotNil: [ headingLabel morphHeight ].
 
 	headingLabel ifNotNil: [
-		headingLabel morphPosition: left @ (top + ((rowHeight - headingLabel morphHeight) // 2)).
+		headingLabel morphPosition: left @ top.
 		slide addMorph: headingLabel ].
 
-	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
-	slide addMorph: runButton.
+	top := top + topRowHeight + (SlideStyle space: 3).
+	barTop := top.
 
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ (top + ((rowHeight - clearButton morphHeight) // 2)).
-	slide addMorph: clearButton.
+	clearAllFont := (FontFamily familyNamed: (Preferences at: #standardButtonFont) familyName) atPointSize: 18.
+	clearAllButton := ThesisDefenseButtonMorph model: self action: #clearCoverage actionArgument: nil label: nil.
+	library restyleButton: clearAllButton labeled: 'X' font: clearAllFont color: SlideStyle background labelColor: SlideStyle textSecondary.
 
-	top := top + rowHeight + (SlideStyle space: 3).
+	runChip := library
+		pillButtonLabeled: 'Run Coverage'
+		target: self
+		action: #toggleCoverage
+		actionArgument: nil
+		color: SlideStyle background
+		labelColor: SlideStyle textSecondary.
+
+	barHeight := (clearAllButton morphHeight max: runChip morphHeight) + ((SlideStyle space: 2) * 2).
+
+	panel := library panelExtent: (right - left) @ barHeight color: SlideStyle surface.
+	panel morphPosition: left @ barTop.
+	slide addMorph: panel.
+
+	x := left + (SlideStyle space: 2).
+	clearAllButton morphPosition: x @ (barTop + ((barHeight - clearAllButton morphHeight) // 2)).
+	slide addMorph: clearAllButton.
+	x := x + clearAllButton morphWidth + (SlideStyle space: 2).
+
+	runChip morphPosition: x @ (barTop + ((barHeight - runChip morphHeight) // 2)).
+	slide addMorph: runChip.
+
+	top := barTop + barHeight + (SlideStyle space: 3).
 
 	codeEditorMorph := self codeEditor.
 	slide addMorph: (self codeEditorAreaLeft: left top: top right: right bottom: bottom).
 
 	^ slide! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 3:30:09 am (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 5:01:54 pm (UTC)'!
 clearCoverage
 
-	| newEditor right |
+	| newEditor |
 
 	coverageBadge ifNotNil: [
 		slide removeMorph: coverageBadge.
@@ -999,7 +1006,7 @@ clearCoverage
 
 	codeEditorMorph owner replaceSubmorph: codeEditorMorph by: newEditor.
 	codeEditorMorph := newEditor.
-	
+
 	secondaryCodeEditorMorph ifNotNil: [ | newEditor2 |
 		newEditor2 := self secondaryCodeEditor.
 		newEditor2 morphExtent: secondaryCodeEditorMorph morphExtent.
@@ -1009,28 +1016,19 @@ clearCoverage
 		secondaryCodeEditorMorph := newEditor2.
 	].
 
-	runButton ifNotNil: [
-		library restyleButton: runButton labeled: 'Run Coverage' color: SlideStyle accent labelColor: SlideStyle background.
-		right := slide interiorOrigin x + slide interiorExtent x.
-		runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y ].
+	coverageActive := false.
+	runChip ifNotNil: [
+		library restyleButton: runChip labeled: 'Run Coverage' color: SlideStyle background labelColor: SlideStyle textSecondary ]! !
 
-	clearButton ifNotNil: [
-		clearButton disable.
-		clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y ]! !
-
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:36:14 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 5:01:51 pm (UTC)'!
 runCoverage
 
-	| methodReport right |
+	| methodReport |
 
 	methodReport := self runCoverageAnalyzingWith: executionBlock.
 
-	library restyleButton: runButton labeled: 'Re-run' color: SlideStyle surface labelColor: SlideStyle textPrimary.
-	right := slide interiorOrigin x + slide interiorExtent x.
-	runButton morphPosition: (right - runButton morphWidth) @ runButton morphPosition y.
-
-	clearButton enable.
-	clearButton morphPosition: (runButton morphPosition x - (SlideStyle space: 2) - clearButton morphWidth) @ clearButton morphPosition y.
+	coverageActive := true.
+	library restyleButton: runChip labeled: 'Run Coverage' color: SlideStyle accent labelColor: SlideStyle background.
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
@@ -1072,10 +1070,10 @@ showCoverage: report forClass: aClass selector: aSelector in: aCodeEditor
 	aCodeEditor owner replaceSubmorph: aCodeEditor by: newEditor.
 	^ newEditor! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 3:53:27 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 4:49:41 pm (UTC)'!
 updateBadgeFor: aCoverageRatio
 
-	| text anchor |
+	| text right |
 
 	text := (aCoverageRatio * 100) rounded printString , '% covered'.
 
@@ -1085,18 +1083,26 @@ updateBadgeFor: aCoverageRatio
 			slide addMorph: coverageBadge ]
 		ifNotNil: [ coverageBadge contents: text ].
 
-	anchor := clearButton ifNil: [ runButton ] ifNotNil: [ clearButton ].
+	right := slide interiorOrigin x + slide interiorExtent x.
 	coverageBadge morphPosition:
-		(anchor morphPosition x - (SlideStyle space: 2) - coverageBadge morphWidth)
-		@ (anchor morphPosition y + ((anchor morphHeight - coverageBadge morphHeight) // 2))! !
+		(right - coverageBadge morphWidth)
+		@ (topRowTop + ((topRowHeight - coverageBadge morphHeight) // 2))! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 1:41:54 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 5:01:42 pm (UTC)'!
 initialize
 
 	super initialize.
 
 	reportBuilderFactory := DecisionConditionCoverageReportBuilder.
-	shouldAnalyzeSecondaryClass := false.! !
+	shouldAnalyzeSecondaryClass := false.
+	coverageActive := false.! !
+
+!CodeCoverageMethodSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:01:50 pm (UTC)'!
+toggleCoverage
+
+	coverageActive
+		ifTrue: [ self clearCoverage ]
+		ifFalse: [ self runCoverage ]! !
 
 !CodeCoverageMethodSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 5/Sep/2026, 7:17:20 pm (UTC)'!
 on: aClass selector: aSymbol heading: aString executing: aBlock
