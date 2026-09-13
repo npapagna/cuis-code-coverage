@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 10:46:44 am'!
-'Description OBC example 3'!
-!provides: 'ThesisDefense' 1 80!
+'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 11:04:42 am'!
+'Description Add interaccion entre criterios slide'!
+!provides: 'ThesisDefense' 1 81!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'CodeCoverage' nil nil nil!
@@ -1881,6 +1881,16 @@ decisionSelectorsSlide
 		secondaryOn: DecisionCoverageReportBuilder selector: #decisionSelectors)
 		value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:04:31 pm (UTC)'!
+interaccionEntreCriteriosSlide
+
+	^ (CodeCoverageMethodSlideBuilder
+		on: InlineMethod
+		selector: #addParenthesesIfNeededTo:
+		heading: 'Interacción entre Criterios'
+		executing: [ InlineMethodTest buildSuite run ]
+	) value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:42 pm (UTC)'!
 methodCoverageSlide
 
@@ -1910,7 +1920,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 11:09:49 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 2:00:41 pm (UTC)'!
 slides
 	
 	^ {
@@ -1929,6 +1939,7 @@ slides
 		self decisionConditionVsBooleanCoverageSlide2.
 		self decisionConditionVsBooleanCoverageSlide4.
 		self decisionConditionVsBooleanCoverageSlide3.
+		self interaccionEntreCriteriosSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
