@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 4:12:02 pm'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 5:26:43 pm'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 140!
+!provides: 'ThesisDefense' 1 151!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2478,6 +2478,11 @@ spacer: aStepIndex
 
 	^ ColoredBoxMorph new color: Color transparent; morphExtent: 0 @ (SlideStyle space: aStepIndex); yourself! !
 
+!ThesisDefenseMorphLibrary methodsFor: 'text' stamp: 'NPM 14/Sep/2026, 7:51:14 pm (UTC)'!
+accentTitle: aString
+
+	^ (self title: aString) color: SlideStyle accent2! !
+
 !ThesisDefenseMorphLibrary methodsFor: 'text' stamp: 'NPM 14/Sep/2026, 1:48:02 pm (UTC)'!
 headingBadgeFont
 
@@ -2719,6 +2724,23 @@ scaleToCover: aMorph into: aRectangle
 
 	currentBounds := aMorph findFullBoundsInOwner.
 	aMorph morphPosition: aRectangle origin - (currentBounds origin - aMorph morphPosition) + (aRectangle extent - currentBounds extent // 2).! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'shadows' stamp: 'NPM 14/Sep/2026, 8:22:32 pm (UTC)'!
+edgeShadowHeight: aHeight depth: depthPx maxAlpha: maxAlpha
+
+	"A soft shadow strip, darkest at its own left edge and fading to fully
+	transparent over depthPx pixels to the right. Meant to sit immediately to
+	the right of a flush-left image, so the image reads as cast shadow onto
+	the page rather than a flat-cut rectangle."
+
+	| form |
+	form := Form extent: depthPx @ aHeight depth: 32.
+	form fillFromXYColorBlock: [ :xRel :yRel |
+		| t smoothT |
+		t := 1.0 - xRel.
+		smoothT := t * t * (3.0 - (2.0 * t)).
+		Color black alpha: maxAlpha * smoothT ].
+	^ ImageMorph newWith: form! !
 
 !ThesisDefenseMorphLibrary class methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 4:40:30 pm (UTC)'!
 fontsFolder
@@ -3065,6 +3087,18 @@ present
 	
 	^ self new present! !
 
+!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 8:13:42 pm (UTC)'!
+imageFilename
+
+	^ 'Droste916.png'! !
+
+!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 8:13:43 pm (UTC)'!
+imageWidth
+
+	| image |
+	image := library imageNamed: self imageFilename.
+	^ (SlideStyle canvasExtent y / image morphExtent y asFloat) * image morphExtent x! !
+
 !TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 5/Sep/2026, 4:33:19 pm (UTC)'!
 initialize
 	
@@ -3072,18 +3106,18 @@ initialize
 	
 	library := ThesisDefenseMorphLibrary new.! !
 
-!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 6/Sep/2026, 1:36:00 am (UTC)'!
+!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 8:26:23 pm (UTC)'!
 titleColumn
 
-	| titleLines column leftAligned |
+	| titleLines column leftAligned blankLeft blankWidth |
 
 	leftAligned := LayoutSizeSpec keepMorphExtent offAxisEdgeWeight: #columnLeft.
 
 	titleLines := LinearLayoutMorph newColumn.
 	titleLines separation: 0.
 	titleLines color: Color transparent.
-	#('Cobertura de código' 'en lenguajes dinámicamente tipados' 'usando meta-programación')
-		do: [:each | titleLines addMorph: (library primaryTitle: each) layoutSpec: leftAligned].
+	#('Cobertura de código' 'en lenguajes' 'dinámicamente tipados' 'usando meta-programación')
+		do: [:each | titleLines addMorph: (library accentTitle: each) layoutSpec: leftAligned].
 	titleLines morphExtent: titleLines minimumExtent.
 
 	column := LinearLayoutMorph newColumn.
@@ -3091,23 +3125,36 @@ titleColumn
 	column color: Color transparent.
 	column
 		addMorph: titleLines layoutSpec: leftAligned;
-		addMorph: (library spacer: 4) layoutSpec: leftAligned;
+		addMorph: (library spacer: 2) layoutSpec: leftAligned;
 		addMorph: (library secondaryCaption: 'Tesis de Licenciatura en Ciencias de la Computación') layoutSpec: leftAligned;
-		addMorph: (library spacer: 3) layoutSpec: leftAligned;
+		addMorph: (library spacer: 4) layoutSpec: leftAligned;
 		addMorph: (library primaryBody: 'Nicolás Papagna Maldonado') layoutSpec: leftAligned;
-		addMorph: (library spacer: 1) layoutSpec: leftAligned;
-		addMorph: (library secondaryCaption: 'Director: Hernán Wilkinson') layoutSpec: leftAligned.
+		addMorph: (library primaryBody: 'Director: Hernán Wilkinson') layoutSpec: leftAligned.
 	column morphExtent: column minimumExtent.
-	column morphPosition: SlideStyle margin @ ((SlideStyle canvasExtent y - column morphHeight) // 2 - (SlideStyle space: 4)).
+
+	blankLeft := self imageWidth.
+	blankWidth := SlideStyle canvasExtent x - blankLeft.
+	column morphPosition: (blankLeft + ((blankWidth - column morphWidth) // 2)) @ (SlideStyle canvasExtent y - column morphHeight - SlideStyle margin - (SlideStyle space: 5)).
 
 	^ column! !
 
-!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 5/Sep/2026, 6:18:49 pm (UTC)'!
+!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 8:22:36 pm (UTC)'!
 value
 
-	| slide |
+	| slide image scale shadow |
 
 	slide := library blankSlide.
+
+	image := library imageNamed: self imageFilename.
+	scale := SlideStyle canvasExtent y / image morphExtent y asFloat.
+	image scaleBy: scale.
+	image morphPosition: 0 @ 0.
+	slide addMorph: image.
+
+	shadow := library edgeShadowHeight: SlideStyle canvasExtent y depth: 32 maxAlpha: 0.16.
+	shadow morphPosition: self imageWidth @ 0.
+	slide addMorph: shadow.
+
 	slide addMorph: self titleColumn.
 
 	^ slide! !
