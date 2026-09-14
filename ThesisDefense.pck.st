@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:39:14 am'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 11:21:17 am'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 118!
+!provides: 'ThesisDefense' 1 121!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -131,7 +131,7 @@ CodeCoverageComparisonTestCaseSlideBuilder class
 
 !classDefinition: #CodeCoverageMethodSlideBuilder category: #ThesisDefense!
 MethodSlideBuilder subclass: #CodeCoverageMethodSlideBuilder
-	instanceVariableNames: 'executionBlock runChip coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector secondaryCodeEditorMorph shouldAnalyzeSecondaryClass topRowTop topRowHeight coverageActive'
+	instanceVariableNames: 'executionBlock runChip coverageBadge slide codeEditorMorph reportBuilderFactory secondaryClass secondarySelector secondaryCodeEditorMorph shouldAnalyzeSecondaryClass topRowTop topRowHeight coverageActive headingLabel'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -1187,10 +1187,10 @@ secondaryOn: aClass selector: aSymbol
 	secondaryClass := aClass.
 	secondarySelector := aSymbol! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 5:01:49 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 1:55:44 pm (UTC)'!
 value
 
-	| headingLabel barTop barHeight x panel left right bottom clearAllButton clearAllFont top |
+	| barTop barHeight x panel left right bottom clearAllButton clearAllFont top |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -1323,23 +1323,22 @@ showCoverage: report forClass: aClass selector: aSelector in: aCodeEditor
 	aCodeEditor owner replaceSubmorph: aCodeEditor by: newEditor.
 	^ newEditor! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 4:49:41 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 14/Sep/2026, 2:21:13 pm (UTC)'!
 updateBadgeFor: aCoverageRatio
 
-	| text right |
+	| text |
 
-	text := (aCoverageRatio * 100) rounded printString , '% covered'.
+	text := (aCoverageRatio * 100) rounded printString , '%'.
 
 	coverageBadge
 		ifNil: [
-			coverageBadge := library badgeLabeled: text.
+			coverageBadge := library headingBadgeLabeled: text.
 			slide addMorph: coverageBadge ]
 		ifNotNil: [ coverageBadge contents: text ].
 
-	right := slide interiorOrigin x + slide interiorExtent x.
 	coverageBadge morphPosition:
-		(right - coverageBadge morphWidth)
-		@ (topRowTop + ((topRowHeight - coverageBadge morphHeight) // 2))! !
+		(headingLabel morphPosition x + headingLabel morphWidth + (SlideStyle space: 3))
+		@ (headingLabel morphPosition y + ((headingLabel morphHeight - coverageBadge morphHeight) // 2))! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 5:01:42 pm (UTC)'!
 initialize
@@ -1420,10 +1419,10 @@ styleChip: chip for: values
 	chip morphExtent: fixedExtent.
 	chip redrawNeeded! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 12/Sep/2026, 4:37:27 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 1:55:50 pm (UTC)'!
 value
 
-	| headingLabel barTop barHeight x panel left right bottom clearAllButton clearAllFont top |
+	| barTop barHeight x panel left right bottom clearAllButton clearAllFont top |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -1504,23 +1503,22 @@ toggleTestCase: values
 		ifTrue: [ self clearCoverage ]
 		ifFalse: [ self runCoverage ]! !
 
-!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 12/Sep/2026, 4:37:42 pm (UTC)'!
+!CodeCoverageTestCaseSlideBuilder methodsFor: 'running' stamp: 'NPM 14/Sep/2026, 2:21:15 pm (UTC)'!
 updateBadgeFor: aCoverageRatio
 
-	| text right |
+	| text |
 
-	text := (aCoverageRatio * 100) rounded printString , '% covered'.
+	text := (aCoverageRatio * 100) rounded printString , '%'.
 
 	coverageBadge
 		ifNil: [
-			coverageBadge := library badgeLabeled: text.
+			coverageBadge := library headingBadgeLabeled: text.
 			slide addMorph: coverageBadge ]
 		ifNotNil: [ coverageBadge contents: text ].
 
-	right := slide interiorOrigin x + slide interiorExtent x.
 	coverageBadge morphPosition:
-		(right - coverageBadge morphWidth)
-		@ (topRowTop + ((topRowHeight - coverageBadge morphHeight) // 2))! !
+		(headingLabel morphPosition x + headingLabel morphWidth + (SlideStyle space: 3))
+		@ (headingLabel morphPosition y + ((headingLabel morphHeight - coverageBadge morphHeight) // 2))! !
 
 !CodeCoverageTestCaseSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:41:48 pm (UTC)'!
 generateTestsCasesWith: aTestCasesGenerator 
@@ -1968,6 +1966,11 @@ codeEditorOn: aBrowser
 	editor layoutSpec: LayoutSpec useAll.
 	^ editor! !
 
+!ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 14/Sep/2026, 1:48:03 pm (UTC)'!
+headingBadgeLabeled: aString
+
+	^ (LabelMorph contents: aString font: self headingBadgeFont) color: SlideStyle accent2! !
+
 !ThesisDefenseMorphLibrary methodsFor: 'widgets' stamp: 'NPM 12/Sep/2026, 3:45:08 pm (UTC)'!
 panelExtent: anExtent color: aColor
 
@@ -1993,6 +1996,11 @@ restyleButton: aButton labeled: aString color: bgColor labelColor: fgColor
 spacer: aStepIndex
 
 	^ ColoredBoxMorph new color: Color transparent; morphExtent: 0 @ (SlideStyle space: aStepIndex); yourself! !
+
+!ThesisDefenseMorphLibrary methodsFor: 'text' stamp: 'NPM 14/Sep/2026, 1:48:02 pm (UTC)'!
+headingBadgeFont
+
+	^ self fontFamily atPointSize: 42! !
 
 !ThesisDefenseMorphLibrary methodsFor: 'text' stamp: 'NPM 6/Sep/2026, 1:32:55 am (UTC)'!
 primaryBody: aString
