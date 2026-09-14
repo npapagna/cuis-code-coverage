@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 7:48:20 pm'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:00:33 am'!
 'Description OBC example 3'!
-!provides: 'CodeCoverageDemo' 1 23!
+!provides: 'CodeCoverageDemo' 1 24!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -263,7 +263,7 @@ coveredSourceRanges
 	
 	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 12/Sep/2026, 12:59:55 pm (UTC)'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 14/Sep/2026, 12:53:32 pm (UTC)'!
 decisionSelectors
 
 	^ #(
@@ -995,6 +995,31 @@ returnTrue
 sayHello
 
 	^ 'hello'! !
+
+!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 14/Sep/2026, 12:40:32 pm (UTC)'!
+earlyReturnExample
+
+	true ifTrue: [ ^ 1 ].
+	
+	^ 2! !
+
+!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 14/Sep/2026, 12:47:39 pm (UTC)'!
+multipleConditionsExample: aBoolean and: anotherBoolean
+
+	(aBoolean or: anotherBoolean)
+		ifTrue: [ 1 ]
+		ifFalse: [ 2 ]! !
+
+!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 14/Sep/2026, 12:42:39 pm (UTC)'!
+singleDecisionExample: aBoolean
+
+	| result |
+	
+	result := 1.
+	
+	aBoolean ifTrue: [ result := 2 ].
+	
+	^ result! !
 
 !ConditionCoverageArgumentsBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 10/Nov/2022, 8:55:21 pm (UTC)'!
 aBooleanArgument
