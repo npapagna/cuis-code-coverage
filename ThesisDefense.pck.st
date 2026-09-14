@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:00:34 am'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:06:43 am'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 116!
+!provides: 'ThesisDefense' 1 117!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -490,7 +490,7 @@ setPackageName: aString
 
 	packageName := aString! !
 
-!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 13/Sep/2026, 8:59:49 pm (UTC)'!
+!EmbeddedPackageBrowserSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 1:04:46 pm (UTC)'!
 value
 
 	| slide package browser window content firstCategory firstClass left top bottom |
@@ -528,15 +528,11 @@ value
 	Theme current widgetsColorFromToolColor ifTrue: [
 		window widgetsColor: window windowColor ].
 
-	"Only the window's layoutMorph (its content pane) is placed on the slide,
-	not the window itself - that drops the title bar, border and
-	close/collapse/expand/menu buttons, leaving just the browser panes.
-	A thin border replaces the one lost with the window frame, so the panes
-	still read as a distinct embedded tool rather than floating content."
-	content := window layoutMorph.
-	content
-		borderWidth: 1;
-		borderColor: SlideStyle surface.
+	"The whole window - title bar, border, and close/collapse/expand/menu
+	buttons - is placed on the slide, not just its layoutMorph. Embedding
+	only the layoutMorph dropped the frame but also broke the window's
+	context menu, so the full window is embedded instead."
+	content := window.
 	content morphExtent: slide interiorExtent x @ (bottom - top).
 	content morphPosition: left @ top.
 
@@ -582,7 +578,7 @@ setHeading: aString
 
 	heading := aString! !
 
-!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:59:41 pm (UTC)'!
+!EmbeddedWorkspaceSlideBuilder methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 1:04:41 pm (UTC)'!
 value
 
 	| slide workspace window content left top bottom |
@@ -617,15 +613,11 @@ value
 	Theme current widgetsColorFromToolColor ifTrue: [
 		window widgetsColor: window windowColor ].
 
-	"Only the window's layoutMorph (its content pane) is placed on the slide,
-	not the window itself - that drops the title bar, border and
-	close/collapse/expand/menu buttons, leaving just the editable text area.
-	A thin border replaces the one lost with the window frame, so the pane
-	still reads as a distinct embedded tool rather than floating content."
-	content := window layoutMorph.
-	content
-		borderWidth: 1;
-		borderColor: SlideStyle surface.
+	"The whole window - title bar, border, and close/collapse/expand/menu
+	buttons - is placed on the slide, not just its layoutMorph. Embedding
+	only the layoutMorph dropped the frame but also broke the window's
+	context menu, so the full window is embedded instead."
+	content := window.
 	content morphExtent: slide interiorExtent x @ (bottom - top).
 	content morphPosition: left @ top.
 
