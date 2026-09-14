@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 7:39:38 pm'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 7:51:45 pm'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 153!
+!provides: 'ThesisDefense' 1 154!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -654,7 +654,7 @@ runMeasurement
 		forkAt: Processor userSchedulingPriority
 		named: 'CodeCoveragePackageTimingSlideBuilder'.! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running - private' stamp: 'NPM 14/Sep/2026, 7:10:57 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running - private' stamp: 'NPM 14/Sep/2026, 10:51:38 pm (UTC)'!
 performMeasurement
 
 	| package testSuite rawTestSuite methodsToAnalyze analyzer instrumentationMs executionMs reportMs rawMs |
@@ -672,7 +672,6 @@ performMeasurement
 		self registerTestSuiteActions: rawTestSuite.
 		rawMs := [ Time millisecondsToRun: [ rawTestSuite run ] ] ensure: [ rawTestSuite removeAllActions ].
 		self executionFinished.
-		self updateRawRunLabel: rawMs.
 
 		instrumentationMs := Time millisecondsToRun: [ analyzer startTrackingCodeCoverage ].
 		self updateInstrumentationLabel: instrumentationMs.
@@ -857,11 +856,6 @@ updateExecutionLabel: milliseconds
 updateInstrumentationLabel: milliseconds
 
 	instrumentationLegendLabel contents: 'Instrumentation: ', (self formatMilliseconds: milliseconds)! !
-
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 6:59:43 pm (UTC)'!
-updateRawRunLabel: milliseconds
-
-	rawValueLabel contents: (self formatMilliseconds: milliseconds)! !
 
 !CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 6:43:00 pm (UTC)'!
 updateReportLabel: milliseconds
