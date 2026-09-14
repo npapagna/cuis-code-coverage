@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 9:22:39 am'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:00:34 am'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 115!
+!provides: 'ThesisDefense' 1 116!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2274,12 +2274,22 @@ branchCoverageSlide
 
 	^ self branchCoverageSlideBuilder value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 10:47:42 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:48:31 pm (UTC)'!
+branchCoverageSlide2
+
+	^ (CodeCoverageTestCaseSlideBuilder
+		on: CodeCoverageExamples
+		selector: #multipleConditionsExample:and:
+		heading: 'Branch Coverage'
+		creatingReportBuildersWith: DecisionCoverageReportBuilder)
+		value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:44:27 pm (UTC)'!
 branchCoverageSlideBuilder
 
 	^ CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #branchCoverageExample:
+		selector: #singleDecisionExample:
 		heading: 'Branch Coverage'
 		creatingReportBuildersWith: DecisionCoverageReportBuilder! !
 
@@ -2326,12 +2336,12 @@ coverageToolLogosSlide
 
 	^ slide! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 7:07:22 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:49:43 pm (UTC)'!
 decisionConditionCoverageSlide
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #conditionTest:or:
+		selector: #multipleConditionsExample:and:
 		heading: 'Decision/Condition Coverage'
 		creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder) value! !
 
@@ -2425,12 +2435,12 @@ interaccionEntreCriteriosSlide
 		executing: [ InlineMethodTest buildSuite run ]
 	) value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:42 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:40:45 pm (UTC)'!
 methodCoverageSlide
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #methodCoverageExample
+		selector: #earlyReturnExample
 		heading: 'Method Coverage'
 		creatingReportBuildersWith: MethodCoverageReportBuilder) value! !
 
@@ -2484,7 +2494,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:55:32 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:47:53 pm (UTC)'!
 slides
 	
 	^ {
@@ -2492,7 +2502,9 @@ slides
 		self codeCoverageDefinitionSlide.
 		self methodCoverageSlide.
 		self statementCoverageSlide.
+		self statementCoverageSlide2.
 		self branchCoverageSlide.
+		self branchCoverageSlide2.
 		self decisionConditionCoverageSlide.
 		self subsumptionDefinitionSlide.
 		self titleSlide.
@@ -2515,12 +2527,21 @@ slides
 		
 	}! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 4:52:43 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:41:27 pm (UTC)'!
 statementCoverageSlide
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #statementCoverageExample
+		selector: #earlyReturnExample
+		heading: 'Statement Coverage'
+		creatingReportBuildersWith: StatementCoverageReportBuilder) value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:43:26 pm (UTC)'!
+statementCoverageSlide2
+
+	^ (CodeCoverageTestCaseSlideBuilder
+		on: CodeCoverageExamples
+		selector: #singleDecisionExample:
 		heading: 'Statement Coverage'
 		creatingReportBuildersWith: StatementCoverageReportBuilder) value! !
 
