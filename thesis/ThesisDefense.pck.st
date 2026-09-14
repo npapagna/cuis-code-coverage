@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 5:26:43 pm'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 7:39:38 pm'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 151!
+!provides: 'ThesisDefense' 1 153!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2935,6 +2935,15 @@ detenerSlide
 
 	^ (PipelineRoadmapSlideBuilder on: 'Detener') value! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:39:31 pm (UTC)'!
+drosteSlide
+	
+	 ^ (PolaroidSlideBuilder on: 'Droste.jpeg')
+		photoWidth: 387
+		height: 688;
+		rotationDegrees: 5;
+		value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:43 pm (UTC)'!
 ejercitarSlide
 
@@ -2997,15 +3006,6 @@ notificarSlide
 
 	^ (PipelineRoadmapSlideBuilder on: 'Notificar') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:22:23 pm (UTC)'!
-openingSlide
-	
-	 ^ (PolaroidSlideBuilder on: 'Droste.jpeg')
-		photoWidth: 387
-		height: 688;
-		rotationDegrees: 5;
-		value! !
-
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 5/Sep/2026, 6:49:06 pm (UTC)'!
 present
 
@@ -3017,11 +3017,11 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 5:41:06 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:39:31 pm (UTC)'!
 slides
 	
 	^ {
-		self openingSlide.
+		self drosteSlide.
 		self codeCoverageDefinitionSlide.
 		self methodCoverageSlide.
 		self statementCoverageSlide.
@@ -3049,7 +3049,7 @@ slides
 		self modoManualSlide.
 		self cuantoTardaSlide.
 		self cuantoTardaChaltenSlide.
-		
+		self drosteSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:41:27 pm (UTC)'!
