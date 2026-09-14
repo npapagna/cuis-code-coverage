@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 13 September 2026 at 8:29:34 pm'!
-'Description Scale and rotate when dragged'!
-!provides: 'ThesisDefense' 1 113!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 9:22:39 am'!
+'Description Fix droste opening slide'!
+!provides: 'ThesisDefense' 1 115!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2464,12 +2464,12 @@ notificarSlide
 
 	^ (PipelineRoadmapSlideBuilder on: 'Notificar') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:23:16 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:22:23 pm (UTC)'!
 openingSlide
 	
-	 ^ (PolaroidSlideBuilder on: 'Droste916.png')
-		photoWidth: 382
-		height: 680;
+	 ^ (PolaroidSlideBuilder on: 'Droste.jpeg')
+		photoWidth: 387
+		height: 688;
 		rotationDegrees: 5;
 		value! !
 
