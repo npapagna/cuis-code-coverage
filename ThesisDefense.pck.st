@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:06:43 am'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:39:14 am'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 117!
+!provides: 'ThesisDefense' 1 118!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2600,6 +2600,23 @@ value
 	slide addMorph: self titleColumn.
 
 	^ slide! !
+
+!SystemWindow class methodsFor: '*ThesisDefense' stamp: 'NPM 14/Sep/2026, 1:39:02 pm (UTC)'!
+noteTopWindowIn: aWorld but: aWindow
+	| newTop presenter |
+	"TopWindow must be nil or point to the top window in this project."
+	TopWindow := nil.
+	aWorld ifNil: [^ nil].
+	presenter := aWorld submorphs detect: [:m | m isKindOf: SlidesPresenter] ifNone: [nil].
+	presenter ifNotNil: [
+		presenter comeToFront.
+		aWorld activeHand newKeyboardFocus: presenter.
+		^ nil ].
+	newTop := aWorld submorphs 
+				detect: [:m | (m is: #SystemWindow) and: [m visible and: [m ~~ aWindow]]]
+				ifNone: [^nil].
+	newTop activate.
+	^newTop! !
 
 !LayoutEdgesSpec class methodsFor: '*ThesisDefense' stamp: 'NPM 5/Sep/2026, 4:21:30 pm (UTC)'!
 leftColumn
