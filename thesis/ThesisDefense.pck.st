@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 7:51:45 pm'!
+'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 9:12:59 pm'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 154!
+!provides: 'ThesisDefense' 1 157!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -507,10 +507,10 @@ setPackageName: aString
 
 	packageName := aString.! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 6:52:56 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'building' stamp: 'NPM 15/Sep/2026, 12:12:41 am (UTC)'!
 value
 
-	| left top right headingLabel rowHeight comparisonTop captionColumnWidth barGap valueColumnWidth barHeight rawCaptionLabel totalCaptionLabel secondRowTop rawBarTrack totalBarTrack legendTop entryWidth swatchSize swatchGap instrumentationSwatch executionSwatch reportSwatch |
+	| left top right headingLabel rowHeight comparisonTop captionColumnWidth barGap valueColumnWidth barHeight rawCaptionLabel totalCaptionLabel secondRowTop rawBarTrack totalBarTrack legendTop entryWidth swatchSize swatchGap instrumentationSwatch executionSwatch reportSwatch statsGap statsColumnWidth statsBarHeight statsRowHeight |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -537,6 +537,39 @@ value
 	slide addMorph: runButton.
 
 	top := top + rowHeight + (SlideStyle space: 3).
+
+	statsGap := SlideStyle space: 4.
+	statsColumnWidth := (right - left - (statsGap * 2)) // 3.
+	statsBarHeight := SlideStyle space: 1.
+	statsRowHeight := 0.
+
+	{ self classesStatTexts. self methodsStatTexts. self locStatTexts }
+		doWithIndex: [ :texts :index | | columnLeft valueLabel captionLabel barTop leftWidth leftFill rightFill |
+			columnLeft := left + ((index - 1) * (statsColumnWidth + statsGap)).
+
+			valueLabel := library primaryBody: texts first.
+			valueLabel morphPosition: columnLeft @ top.
+			slide addMorph: valueLabel.
+
+			barTop := top + valueLabel morphHeight + (SlideStyle space: 1).
+			leftWidth := (statsColumnWidth * (texts at: 3) / (texts at: 4)) rounded.
+
+			leftFill := library rectExtent: leftWidth @ statsBarHeight color: SlideStyle accent2.
+			leftFill morphPosition: columnLeft @ barTop.
+			slide addMorph: leftFill.
+
+			rightFill := library rectExtent: (statsColumnWidth - leftWidth) @ statsBarHeight color: SlideStyle surface.
+			rightFill morphPosition: (columnLeft + leftWidth) @ barTop.
+			slide addMorph: rightFill.
+
+			captionLabel := library secondaryCaption: texts second.
+			captionLabel morphPosition: columnLeft @ (barTop + statsBarHeight + (SlideStyle space: 1)).
+			slide addMorph: captionLabel.
+
+			statsRowHeight := statsRowHeight max:
+				valueLabel morphHeight + (SlideStyle space: 1) + statsBarHeight + (SlideStyle space: 1) + captionLabel morphHeight ].
+
+	top := top + statsRowHeight + (SlideStyle space: 3).
 
 	progressBar := ProgressBarMorph new.
 	progressBar progressColor: SlideStyle accent.
@@ -912,6 +945,39 @@ reportGenerationStarted
 
 	progressBar progressValue: 0.
 	progressLabel contents: 'Generating report for ', installTotal printString, ' methods'.! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'accessing - private' stamp: 'NPM 14/Sep/2026, 11:43:43 pm (UTC)'!
+package
+
+	^ CodePackage installedPackages at: packageName! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 15/Sep/2026, 12:12:01 am (UTC)'!
+classesStatTexts
+
+	| aPackage classCount testClassCount prodClassCount |
+	aPackage := self package.
+	classCount := aPackage classNames size.
+	testClassCount := aPackage testCaseClasses size.
+	prodClassCount := classCount - testClassCount.
+	^ { classCount printString, ' classes'. prodClassCount printString, ' prod / ', testClassCount printString, ' test'. prodClassCount. classCount }! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 15/Sep/2026, 12:12:04 am (UTC)'!
+locStatTexts
+
+	| aPackage totalLoc instrumentedLoc |
+	aPackage := self package.
+	totalLoc := aPackage linesOfCode.
+	instrumentedLoc := aPackage compiledMethodsInNonTestCaseClasses inject: 0 into: [ :sum :method | sum + method linesOfCode ].
+	^ { totalLoc printString, ' LOC'. instrumentedLoc printString, ' instrumented / ', (totalLoc - instrumentedLoc) printString, ' test'. instrumentedLoc. totalLoc }! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 15/Sep/2026, 12:12:03 am (UTC)'!
+methodsStatTexts
+
+	| aPackage totalCount instrumentedCount |
+	aPackage := self package.
+	totalCount := aPackage methodCount.
+	instrumentedCount := aPackage compiledMethodsInNonTestCaseClasses size.
+	^ { totalCount printString, ' methods'. instrumentedCount printString, ' instrumented / ', (totalCount - instrumentedCount) printString, ' test'. instrumentedCount. totalCount }! !
 
 !CodeCoveragePackageTimingSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 14/Sep/2026, 5:24:49 pm (UTC)'!
 onPackageNamed: aString heading: aHeadingString
