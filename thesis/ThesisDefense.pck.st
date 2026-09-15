@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 9:12:59 pm'!
+'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 8:59:27 am'!
 'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 157!
+!provides: 'ThesisDefense' 1 159!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -167,6 +167,16 @@ MethodSlideBuilder subclass: #PipelineInstrumentSlideBuilder
 	category: 'ThesisDefense'!
 !classDefinition: 'PipelineInstrumentSlideBuilder class' category: #ThesisDefense!
 PipelineInstrumentSlideBuilder class
+	instanceVariableNames: ''!
+
+!classDefinition: #MockupTextSlideBuilder category: #ThesisDefense!
+Object subclass: #MockupTextSlideBuilder
+	instanceVariableNames: 'library text'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ThesisDefense'!
+!classDefinition: 'MockupTextSlideBuilder class' category: #ThesisDefense!
+MockupTextSlideBuilder class
 	instanceVariableNames: ''!
 
 !classDefinition: #PipelineRoadmapSlideBuilder category: #ThesisDefense!
@@ -2129,6 +2139,32 @@ refresh
 	rightEditorMorph owner replaceSubmorph: rightEditorMorph by: newRightEditor.
 	rightEditorMorph := newRightEditor! !
 
+!MockupTextSlideBuilder methodsFor: 'initialization' stamp: 'NPM 15/Sep/2026, 11:54:57 am (UTC)'!
+initialize
+
+	super initialize.
+	library := ThesisDefenseMorphLibrary new! !
+
+!MockupTextSlideBuilder methodsFor: 'initialization' stamp: 'NPM 15/Sep/2026, 11:54:58 am (UTC)'!
+setText: aString
+
+	text := aString! !
+
+!MockupTextSlideBuilder methodsFor: 'building' stamp: 'NPM 15/Sep/2026, 11:54:59 am (UTC)'!
+value
+
+	| slide label |
+	slide := library blankSlide.
+	label := library primaryTitle: text.
+	slide addMorph: label.
+	library centerMorph: label at: SlideStyle canvasExtent // 2.
+	^ slide! !
+
+!MockupTextSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 15/Sep/2026, 11:54:56 am (UTC)'!
+on: aString
+
+	^ self new setText: aString! !
+
 !PipelineRoadmapSlideBuilder methodsFor: 'initialization' stamp: 'NPM 13/Sep/2026, 5:19:20 pm (UTC)'!
 initialize
 
@@ -2827,6 +2863,11 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:59:20 am (UTC)'!
+agradecimientosSlide
+
+	^ (MockupTextSlideBuilder on: 'Agradecimientos') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:40 pm (UTC)'!
 alcanceSlide
 
@@ -2872,6 +2913,11 @@ codeCoverageDefinitionSlide
 	^ (PolaroidSlideBuilder on: 'code-coverage-definition.png')
 		rotationDegrees: -5;
 		value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:55:02 am (UTC)'!
+conclusionesSlide
+
+	^ (MockupTextSlideBuilder on: 'Conclusiones') value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:22:27 pm (UTC)'!
 coverageToolLogosSlide
@@ -3071,13 +3117,18 @@ present
 
 	SlidesPresenter present: self slides! !
 
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:55:04 am (UTC)'!
+qaSlide
+
+	^ (MockupTextSlideBuilder on: 'Q&A') value! !
+
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 1:29:55 pm (UTC)'!
 riceSlide
 	
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:39:31 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:59:20 am (UTC)'!
 slides
 	
 	^ {
@@ -3110,6 +3161,10 @@ slides
 		self cuantoTardaSlide.
 		self cuantoTardaChaltenSlide.
 		self drosteSlide.
+		self conclusionesSlide.
+		self trabajoAFuturoSlide.
+		self agradecimientosSlide.
+		self qaSlide.
 	}! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:41:27 pm (UTC)'!
@@ -3141,6 +3196,11 @@ subsumptionDefinitionSlide
 titleSlide
 	
 	^ TitleSlideBuilder new value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:55:02 am (UTC)'!
+trabajoAFuturoSlide
+
+	^ (MockupTextSlideBuilder on: 'Trabajo a Futuro') value! !
 
 !ThesisDefensePresentation class methodsFor: 'opening' stamp: 'NPM 5/Sep/2026, 6:48:59 pm (UTC)'!
 present
