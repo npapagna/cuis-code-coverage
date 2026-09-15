@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 14 September 2026 at 10:00:33 am'!
+'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 8:59:36 am'!
 'Description OBC example 3'!
-!provides: 'CodeCoverageDemo' 1 24!
+!provides: 'CodeCoverageDemo' 1 25!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -263,7 +263,7 @@ coveredSourceRanges
 	
 	^ self fullyCoveredSourceRanges, self partiallyCoveredBooleanRanges! !
 
-!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 14/Sep/2026, 12:53:32 pm (UTC)'!
+!DecisionCoverageReportBuilder methodsFor: 'accessing' stamp: 'NPM 14/Sep/2026, 9:26:12 pm (UTC)'!
 decisionSelectors
 
 	^ #(
@@ -974,7 +974,7 @@ statementCoverageExample
 		
 	self value.! !
 
-!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:31:21 pm (UTC)'!
+!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:43:18 pm (UTC)'!
 instrumentExample
 
 	^ true! !
@@ -1003,7 +1003,7 @@ earlyReturnExample
 	
 	^ 2! !
 
-!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 14/Sep/2026, 12:47:39 pm (UTC)'!
+!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 14/Sep/2026, 9:24:21 pm (UTC)'!
 multipleConditionsExample: aBoolean and: anotherBoolean
 
 	(aBoolean or: anotherBoolean)

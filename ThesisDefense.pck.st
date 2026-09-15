@@ -1,11 +1,12 @@
-'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 8:59:27 am'!
-'Description Fix droste opening slide'!
-!provides: 'ThesisDefense' 1 159!
+'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 1:26:20 pm'!
+'Description Add chalten as a requirement'!
+!provides: 'ThesisDefense' 1 160!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
 !requires: 'CodeCoverage' nil nil nil!
 !requires: 'Graphics-Files-Additional' nil nil nil!
+!requires: 'Chalten' 1 19 nil!
 SystemOrganization addCategory: #ThesisDefense!
 
 
@@ -517,7 +518,7 @@ setPackageName: aString
 
 	packageName := aString.! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'building' stamp: 'NPM 15/Sep/2026, 12:12:41 am (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'building' stamp: 'NPM 15/Sep/2026, 4:25:41 pm (UTC)'!
 value
 
 	| left top right headingLabel rowHeight comparisonTop captionColumnWidth barGap valueColumnWidth barHeight rawCaptionLabel totalCaptionLabel secondRowTop rawBarTrack totalBarTrack legendTop entryWidth swatchSize swatchGap instrumentationSwatch executionSwatch reportSwatch statsGap statsColumnWidth statsBarHeight statsRowHeight |
@@ -554,7 +555,7 @@ value
 	statsRowHeight := 0.
 
 	{ self classesStatTexts. self methodsStatTexts. self locStatTexts }
-		doWithIndex: [ :texts :index | | columnLeft valueLabel captionLabel barTop leftWidth leftFill rightFill |
+		withIndexDo: [ :texts :index | | columnLeft valueLabel captionLabel barTop leftWidth leftFill rightFill |
 			columnLeft := left + ((index - 1) * (statsColumnWidth + statsGap)).
 
 			valueLabel := library primaryBody: texts first.
@@ -2919,7 +2920,7 @@ conclusionesSlide
 
 	^ (MockupTextSlideBuilder on: 'Conclusiones') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 11:22:27 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 4:25:25 pm (UTC)'!
 coverageToolLogosSlide
 
 	| library slide photoExtent gap cardWidth totalWidth leftMargin centerY specs |
@@ -2941,7 +2942,7 @@ coverageToolLogosSlide
 		{ 'haskell-logo.png'. 7. 'Haskell' }.
 	}.
 
-	specs doWithIndex: [ :spec :i |
+	specs withIndexDo: [ :spec :i |
 		| polaroid centerX |
 		polaroid := library
 			polaroidFor: spec first
