@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 1:26:20 pm'!
+'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 1:31:19 pm'!
 'Description Add chalten as a requirement'!
-!provides: 'ThesisDefense' 1 160!
+!provides: 'ThesisDefense' 1 161!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -3227,7 +3227,7 @@ initialize
 	
 	library := ThesisDefenseMorphLibrary new.! !
 
-!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 14/Sep/2026, 8:26:23 pm (UTC)'!
+!TitleSlideBuilder methodsFor: 'building' stamp: 'NPM 15/Sep/2026, 4:31:12 pm (UTC)'!
 titleColumn
 
 	| titleLines column leftAligned blankLeft blankWidth |
@@ -3250,7 +3250,7 @@ titleColumn
 		addMorph: (library secondaryCaption: 'Tesis de Licenciatura en Ciencias de la Computación') layoutSpec: leftAligned;
 		addMorph: (library spacer: 4) layoutSpec: leftAligned;
 		addMorph: (library primaryBody: 'Nicolás Papagna Maldonado') layoutSpec: leftAligned;
-		addMorph: (library primaryBody: 'Director: Hernán Wilkinson') layoutSpec: leftAligned.
+		addMorph: (library primaryBody: 'Director: Lic. Hernán Wilkinson') layoutSpec: leftAligned.
 	column morphExtent: column minimumExtent.
 
 	blankLeft := self imageWidth.
