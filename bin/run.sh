@@ -6,6 +6,21 @@ CUIS_COMMIT="77a14005b636693f8bb0b91576084b745dfb4787"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CUIS_DIR="$SCRIPT_DIR/../Cuis-Smalltalk-Dev"
 
+rm -rf Cuis-MCPServer
+git clone --depth 1 git@github.com:hernanwilkinson/Cuis-MCPServer.git
+
+rm -rf cuis-finder-asWidget
+git clone --depth 1 https://github.com/hernanwilkinson/cuis-finder-asWidget.git
+
+rm -rf Measures
+git clone --depth 1 git@github.com:Cuis-Smalltalk/Measures.git
+
+rm -rf Calendars
+git clone --depth 1 git@github.com:Cuis-Smalltalk/Calendars.git
+
+rm -rf Cuis-AnimatedGIF
+git clone --depth 1 git@github.com:npapagna/Cuis-AnimatedGIF.git
+
 if [ -d "$CUIS_DIR/.git" ]; then
     if [ "$(git -C "$CUIS_DIR" rev-parse HEAD)" = "$CUIS_COMMIT" ] && [ -z "$(git -C "$CUIS_DIR" status --porcelain)" ]; then
         : # already at the expected commit with a clean working tree
@@ -27,5 +42,10 @@ else
 fi
 
 ./RunCuisOnMac.sh \
+  -r MCPServer \
+  -r Tools-Finder \
+  -r ThesisDefense \
   -r CodeCoverageDemo \
-  -d "Workspace open model actualContents: 'Smalltalks2022Presentation openInWorld.'"
+  -d "Workspace open model actualContents: 'Smalltalks2022Presentation openInWorld.
+ThesisDefensePresentation open.'" \
+  -d "(MCPServer servingOverHttpAtPort: 2358) run"
