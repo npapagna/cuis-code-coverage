@@ -45,5 +45,4 @@ fi
   -r Tools-Finder \
   -r ThesisDefense \
   -r CodeCoverageDemo \
-  -d "Workspace open model actualContents: 'Smalltalks2022Presentation openInWorld.
-ThesisDefensePresentation open.'"
+  -d "ThesisDefensePresentation open.'"
