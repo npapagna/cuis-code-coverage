@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 8:39:04 am'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 4:40:54 pm'!
 'Description Rename example'!
-!provides: 'CodeCoverageDemo' 1 27!
+!provides: 'CodeCoverageDemo' 1 28!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -880,30 +880,30 @@ OBCExample1: aBoolean
 	
 	^ 2! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 12/Sep/2026, 9:09:29 pm (UTC)'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 16/Sep/2026, 6:35:20 pm (UTC)'!
 OBCExample1: aBoolean and: anotherBoolean
 
 	| temp |
 	
-	temp := aBoolean and: anotherBoolean.
+	temp := aBoolean or: anotherBoolean.
 	
 	^ temp! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 12/Sep/2026, 9:23:32 pm (UTC)'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 16/Sep/2026, 6:33:53 pm (UTC)'!
 OBCExample2: aBoolean and: anotherBoolean
 
 	| temp |
 	
-	temp := aBoolean and: anotherBoolean.
+	temp := aBoolean or: anotherBoolean.
 	
 	^ temp
 		ifTrue: [ 1 ]
 		ifFalse: [ 2 ]! !
 
-!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 12/Sep/2026, 10:45:43 pm (UTC)'!
+!CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 16/Sep/2026, 6:56:54 pm (UTC)'!
 OBCExample3: aString
 	
-	self m1: aString! !
+	self inconsistentBooleanExample: aString! !
 
 !CodeCoverageExamples methodsFor: 'coverage criteria examples' stamp: 'NPM 13/Sep/2026, 10:47:42 pm (UTC)'!
 branchCoverageExample: aBoolean
@@ -974,17 +974,17 @@ statementCoverageExample
 		
 	self value.! !
 
-!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:43:18 pm (UTC)'!
-instrumentExample
-
-	^ true! !
-
-!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 10:45:56 pm (UTC)'!
-m1: aString 
+!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 6:56:53 pm (UTC)'!
+inconsistentBooleanExample: aString 
 	
 	^ aString = 'foo'
 		ifTrue: [ true ]
 		ifFalse: [ 'oops!!' ]! !
+
+!CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:43:18 pm (UTC)'!
+instrumentExample
+
+	^ true! !
 
 !CodeCoverageExamples methodsFor: 'as yet unclassified' stamp: 'NPM 12/Sep/2026, 11:12:44 pm (UTC)'!
 returnTrue
