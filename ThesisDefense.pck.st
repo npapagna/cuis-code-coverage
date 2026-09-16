@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 3:29:28 pm'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 4:40:57 pm'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 162!
+!provides: 'ThesisDefense' 1 163!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -3007,14 +3007,14 @@ decisionConditionVsBooleanCoverageSlide2
 		rightLabeled: 'OBC Coverage' creatingReportBuildersWith: DecisionConditionCoverageReportBuilder;
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 1:42:02 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 6:56:54 pm (UTC)'!
 decisionConditionVsBooleanCoverageSlide3
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
 		selector: #OBCExample3:
 		heading: 'Boolean Coverage no subsume a OBC')
-		secondaryOn: CodeCoverageExamples selector: #m1:;
+		secondaryOn: CodeCoverageExamples selector: #inconsistentBooleanExample:;
 		generateTestsCasesWith: [ :argumentNames | { {'foo'}. {'bar'} } ];
 		analyzeSecondaryClass;
 		value! !
