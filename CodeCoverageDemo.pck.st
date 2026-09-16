@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 8:37:13 am'!
-'Description OBC example 3'!
-!provides: 'CodeCoverageDemo' 1 26!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 8:39:04 am'!
+'Description Rename example'!
+!provides: 'CodeCoverageDemo' 1 27!
 !requires: 'Cuis-Base' 79 8149 nil!
 !requires: 'CodeCoverage' 1 95 nil!
 SystemOrganization addCategory: #CodeCoverageDemo!
@@ -1003,8 +1003,8 @@ earlyReturnExample
 	
 	^ 2! !
 
-!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 16/Sep/2026, 11:37:03 am (UTC)'!
-multipleConditionsExample: aBoolean and: anotherBoolean
+!CodeCoverageExamples methodsFor: 'thesis examples' stamp: 'NPM 16/Sep/2026, 11:38:33 am (UTC)'!
+multipleConditionsExample: aBoolean or: anotherBoolean
 
 	^ (aBoolean or: anotherBoolean)
 		ifTrue: [ 1 ]
