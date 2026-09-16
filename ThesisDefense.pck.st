@@ -1,13 +1,13 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 6:24:48 pm'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 7:32:29 pm'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 166!
+!provides: 'ThesisDefense' 1 171!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
 !requires: 'CodeCoverage' nil nil nil!
-!requires: 'Chalten' 1 19 nil!
-!requires: 'RefactoringTests' 1 5 nil!
 !requires: 'Graphics-Files-Additional' nil nil nil!
+!requires: 'RefactoringTests' 1 5 nil!
+!requires: 'Chalten' 1 19 nil!
 SystemOrganization addCategory: #ThesisDefense!
 
 
@@ -73,7 +73,7 @@ BooleanTestCasesGenerator class
 
 !classDefinition: #CodeCoveragePackageTimingSlideBuilder category: #ThesisDefense!
 Object subclass: #CodeCoveragePackageTimingSlideBuilder
-	instanceVariableNames: 'library heading packageName slide runButton progressBar progressLabel elapsedLabel instrumentationLegendLabel executionLegendLabel reportLegendLabel installTotal installDone executionTotal executionDone executionStartMillis multiplierLabel rawBarFill instrumentationSegmentFill executionSegmentFill reportSegmentFill rawValueLabel totalValueLabel barMaxWidth barsColumnLeft'
+	instanceVariableNames: 'library heading packageName slide runButton progressBar progressLabel elapsedLabel scopeLabel instrumentationLegendLabel executionLegendLabel reportLegendLabel installTotal installDone executionTotal executionDone executionStartMillis rawBarFill instrumentationSegmentFill executionSegmentFill reportSegmentFill rawValueLabel totalValueLabel barMaxWidth barsColumnLeft heroCostLabel heroCostCaptionLabel heroTotalLabel'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ThesisDefense'!
@@ -519,10 +519,10 @@ setPackageName: aString
 
 	packageName := aString.! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'building' stamp: 'NPM 15/Sep/2026, 4:25:41 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'building' stamp: 'NPM 16/Sep/2026, 10:14:07 pm (UTC)'!
 value
 
-	| left top right headingLabel rowHeight comparisonTop captionColumnWidth barGap valueColumnWidth barHeight rawCaptionLabel totalCaptionLabel secondRowTop rawBarTrack totalBarTrack legendTop entryWidth swatchSize swatchGap instrumentationSwatch executionSwatch reportSwatch statsGap statsColumnWidth statsBarHeight statsRowHeight |
+	| left top right headingLabel rowHeight barGap valueColumnWidth barHeight rawCaptionLabel totalCaptionLabel secondRowTop rawBarTrack totalBarTrack legendTop entryWidth swatchSize swatchGap instrumentationSwatch executionSwatch reportSwatch captionColumnWidth |
 
 	slide := library blankSlide.
 	left := slide interiorOrigin x.
@@ -548,40 +548,13 @@ value
 	runButton morphPosition: (right - runButton morphWidth) @ (top + ((rowHeight - runButton morphHeight) // 2)).
 	slide addMorph: runButton.
 
-	top := top + rowHeight + (SlideStyle space: 3).
+	top := top + rowHeight + (SlideStyle space: 2).
 
-	statsGap := SlideStyle space: 4.
-	statsColumnWidth := (right - left - (statsGap * 2)) // 3.
-	statsBarHeight := SlideStyle space: 1.
-	statsRowHeight := 0.
+	scopeLabel := library secondaryCaption: self scopeSummaryText.
+	scopeLabel morphPosition: left @ top.
+	slide addMorph: scopeLabel.
 
-	{ self classesStatTexts. self methodsStatTexts. self locStatTexts }
-		withIndexDo: [ :texts :index | | columnLeft valueLabel captionLabel barTop leftWidth leftFill rightFill |
-			columnLeft := left + ((index - 1) * (statsColumnWidth + statsGap)).
-
-			valueLabel := library primaryBody: texts first.
-			valueLabel morphPosition: columnLeft @ top.
-			slide addMorph: valueLabel.
-
-			barTop := top + valueLabel morphHeight + (SlideStyle space: 1).
-			leftWidth := (statsColumnWidth * (texts at: 3) / (texts at: 4)) rounded.
-
-			leftFill := library rectExtent: leftWidth @ statsBarHeight color: SlideStyle accent2.
-			leftFill morphPosition: columnLeft @ barTop.
-			slide addMorph: leftFill.
-
-			rightFill := library rectExtent: (statsColumnWidth - leftWidth) @ statsBarHeight color: SlideStyle surface.
-			rightFill morphPosition: (columnLeft + leftWidth) @ barTop.
-			slide addMorph: rightFill.
-
-			captionLabel := library secondaryCaption: texts second.
-			captionLabel morphPosition: columnLeft @ (barTop + statsBarHeight + (SlideStyle space: 1)).
-			slide addMorph: captionLabel.
-
-			statsRowHeight := statsRowHeight max:
-				valueLabel morphHeight + (SlideStyle space: 1) + statsBarHeight + (SlideStyle space: 1) + captionLabel morphHeight ].
-
-	top := top + statsRowHeight + (SlideStyle space: 3).
+	top := top + scopeLabel morphHeight + (SlideStyle space: 3).
 
 	progressBar := ProgressBarMorph new.
 	progressBar progressColor: SlideStyle accent.
@@ -601,20 +574,31 @@ value
 	slide addMorph: elapsedLabel.
 
 	top := top + progressLabel morphHeight + (SlideStyle space: 5).
-	comparisonTop := top.
 
-	multiplierLabel := library primaryPunch: '--'.
-	multiplierLabel morphPosition: (left + ((right - left - multiplierLabel morphWidth) // 2)) @ comparisonTop.
-	slide addMorph: multiplierLabel.
+	heroCostLabel := library primaryPunch: '--'.
+	heroCostLabel morphPosition: (left + ((right - left - heroCostLabel morphWidth) // 2)) @ top.
+	slide addMorph: heroCostLabel.
+
+	top := top + heroCostLabel morphHeight + (SlideStyle space: 1).
+
+	heroCostCaptionLabel := library secondaryCaption: 'costo fijo por método instrumentado (instrumentación + finalización)'.
+	heroCostCaptionLabel morphPosition: (left + ((right - left - heroCostCaptionLabel morphWidth) // 2)) @ top.
+	slide addMorph: heroCostCaptionLabel.
+
+	top := top + heroCostCaptionLabel morphHeight + (SlideStyle space: 2).
+
+	heroTotalLabel := library primaryBody: '--'.
+	heroTotalLabel morphPosition: (left + ((right - left - heroTotalLabel morphWidth) // 2)) @ top.
+	slide addMorph: heroTotalLabel.
+
+	top := top + heroTotalLabel morphHeight + (SlideStyle space: 5).
 
 	captionColumnWidth := 340.
 	barGap := SlideStyle space: 3.
-	valueColumnWidth := 220.
+	valueColumnWidth := 260.
 	barHeight := SlideStyle space: 4.
 	barsColumnLeft := left + captionColumnWidth + barGap.
 	barMaxWidth := right - barsColumnLeft - barGap - valueColumnWidth.
-
-	top := comparisonTop + multiplierLabel morphHeight + (SlideStyle space: 4).
 
 	rawCaptionLabel := library secondaryCaption: 'Raw Test Run'.
 	rawCaptionLabel morphPosition: left @ (top + ((barHeight - rawCaptionLabel morphHeight) // 2)).
@@ -667,7 +651,7 @@ value
 	instrumentationSwatch morphPosition: barsColumnLeft @ (legendTop + 4).
 	slide addMorph: instrumentationSwatch.
 
-	instrumentationLegendLabel := library secondaryCaption: 'Instrumentation: --'.
+	instrumentationLegendLabel := library secondaryCaption: 'Instrumentación: --'.
 	instrumentationLegendLabel morphPosition: (barsColumnLeft + swatchSize + swatchGap) @ legendTop.
 	slide addMorph: instrumentationLegendLabel.
 
@@ -675,7 +659,7 @@ value
 	executionSwatch morphPosition: (barsColumnLeft + entryWidth) @ (legendTop + 4).
 	slide addMorph: executionSwatch.
 
-	executionLegendLabel := library secondaryCaption: 'Test Execution: --'.
+	executionLegendLabel := library secondaryCaption: 'Ejercitación: --'.
 	executionLegendLabel morphPosition: (barsColumnLeft + entryWidth + swatchSize + swatchGap) @ legendTop.
 	slide addMorph: executionLegendLabel.
 
@@ -683,11 +667,31 @@ value
 	reportSwatch morphPosition: (barsColumnLeft + (entryWidth * 2)) @ (legendTop + 4).
 	slide addMorph: reportSwatch.
 
-	reportLegendLabel := library secondaryCaption: 'Report Generation: --'.
+	reportLegendLabel := library secondaryCaption: 'Finalización: --'.
 	reportLegendLabel morphPosition: (barsColumnLeft + (entryWidth * 2) + swatchSize + swatchGap) @ legendTop.
 	slide addMorph: reportLegendLabel.
 
 	^ slide! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
+resetForRun
+
+	progressBar progressValue: 0.
+	progressLabel contents: ' '.
+	elapsedLabel contents: ' '.
+	instrumentationLegendLabel contents: 'Instrumentación: --'.
+	executionLegendLabel contents: 'Ejercitación: --'.
+	reportLegendLabel contents: 'Finalización: --'.
+	heroCostLabel contents: '--'.
+	heroCostLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - heroCostLabel morphWidth) // 2)) @ heroCostLabel morphPosition y.
+	heroTotalLabel contents: '--'.
+	heroTotalLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - heroTotalLabel morphWidth) // 2)) @ heroTotalLabel morphPosition y.
+	rawBarFill morphExtent: 0 @ rawBarFill morphHeight.
+	instrumentationSegmentFill morphExtent: 0 @ instrumentationSegmentFill morphHeight.
+	executionSegmentFill morphExtent: 0 @ executionSegmentFill morphHeight.
+	reportSegmentFill morphExtent: 0 @ reportSegmentFill morphHeight.
+	rawValueLabel contents: '--'.
+	totalValueLabel contents: '--'.! !
 
 !CodeCoveragePackageTimingSlideBuilder methodsFor: 'running' stamp: 'NPM 14/Sep/2026, 5:25:06 pm (UTC)'!
 runMeasurement
@@ -699,7 +703,13 @@ runMeasurement
 		forkAt: Processor userSchedulingPriority
 		named: 'CodeCoveragePackageTimingSlideBuilder'.! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running - private' stamp: 'NPM 14/Sep/2026, 10:51:38 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running - private' stamp: 'NPM 16/Sep/2026, 10:31:46 pm (UTC)'!
+clearProgressStatus
+
+	progressLabel contents: ' '.
+	elapsedLabel contents: ' '.! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running - private' stamp: 'NPM 16/Sep/2026, 10:31:46 pm (UTC)'!
 performMeasurement
 
 	| package testSuite rawTestSuite methodsToAnalyze analyzer instrumentationMs executionMs reportMs rawMs |
@@ -731,34 +741,20 @@ performMeasurement
 		reportMs := Time millisecondsToRun: [ analyzer stopTrackingCodeCoverage ].
 		self reportGenerationFinished.
 		self updateReportLabel: reportMs.
+		self updateHeroCostLabel: instrumentationMs + reportMs.
+		self updateHeroTotalLabel: instrumentationMs + reportMs.
 
 		self
 			animateRevealRawMs: rawMs
 			instrumentationMs: instrumentationMs
 			executionMs: executionMs
 			reportMs: reportMs.
+
+		self clearProgressStatus.
 	] ensure: [
 		analyzer releaseActionMap.
 		runButton enable.
 	]! !
-
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'running - private' stamp: 'NPM 14/Sep/2026, 6:47:59 pm (UTC)'!
-resetForRun
-
-	progressBar progressValue: 0.
-	progressLabel contents: ' '.
-	elapsedLabel contents: ' '.
-	instrumentationLegendLabel contents: 'Instrumentation: --'.
-	executionLegendLabel contents: 'Test Execution: --'.
-	reportLegendLabel contents: 'Report Generation: --'.
-	rawBarFill morphExtent: 0 @ rawBarFill morphHeight.
-	instrumentationSegmentFill morphExtent: 0 @ instrumentationSegmentFill morphHeight.
-	executionSegmentFill morphExtent: 0 @ executionSegmentFill morphHeight.
-	reportSegmentFill morphExtent: 0 @ reportSegmentFill morphHeight.
-	rawValueLabel contents: '--'.
-	totalValueLabel contents: '--'.
-	multiplierLabel contents: '--'.
-	multiplierLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - multiplierLabel morphWidth) // 2)) @ multiplierLabel morphPosition y.! !
 
 !CodeCoveragePackageTimingSlideBuilder methodsFor: 'instrumentation progress - private' stamp: 'NPM 14/Sep/2026, 5:25:15 pm (UTC)'!
 installationFinished
@@ -799,21 +795,32 @@ formatMilliseconds: milliseconds
 	fraction := tenths \\ 10.
 	^ whole printString, '.', fraction printString, ' s'! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'formatting - private' stamp: 'NPM 14/Sep/2026, 6:15:12 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'formatting - private' stamp: 'NPM 16/Sep/2026, 9:44:15 pm (UTC)'!
+formatMillisecondsPerMethod: milliseconds
+
+	| hundredths whole fraction fractionString |
+	installTotal = 0 ifTrue: [ ^ '-- ms/method' ].
+	hundredths := (milliseconds * 100 / installTotal) rounded.
+	whole := hundredths // 100.
+	fraction := hundredths \\ 100.
+	fractionString := fraction printString.
+	fractionString size = 1 ifTrue: [ fractionString := '0', fractionString ].
+	^ whole printString, '.', fractionString, ' ms/method'! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'formatting - private' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
 formatMultiplierRaw: rawMs total: totalMs
 
 	| tenths whole fraction |
 	tenths := (totalMs * 10 / (rawMs max: 1)) rounded.
 	whole := tenths // 10.
 	fraction := tenths \\ 10.
-	^ whole printString, '.', fraction printString, '× slower'! !
+	^ whole printString, '.', fraction printString, '×'! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 7:10:41 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
 animateRevealRawMs: rawMs instrumentationMs: instrumentationMs executionMs: executionMs reportMs: reportMs
 
-	| widths steps totalMs |
+	| widths steps |
 	widths := self comparisonWidthsRawMs: rawMs instrumentationMs: instrumentationMs executionMs: executionMs reportMs: reportMs.
-	totalMs := instrumentationMs + executionMs + reportMs.
 	steps := 16.
 
 	1 to: steps do: [ :step |
@@ -836,13 +843,9 @@ animateRevealRawMs: rawMs instrumentationMs: instrumentationMs executionMs: exec
 		reportSegmentFill morphPosition: (barsColumnLeft + instrumentationWidth + executionWidth) @ reportSegmentFill morphPosition y.
 		reportSegmentFill morphExtent: reportWidth @ reportSegmentFill morphHeight.
 
-		multiplierLabel contents: (self formatMultiplierRaw: (rawMs max: 1) total: (totalMs * fraction) truncated).
-		multiplierLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - multiplierLabel morphWidth) // 2)) @ multiplierLabel morphPosition y.
-
 		(Delay forMilliseconds: 20) wait ].
 
-	self updateComparisonRawMs: rawMs instrumentationMs: instrumentationMs executionMs: executionMs reportMs: reportMs.
-	self flashMultiplier.! !
+	self updateComparisonRawMs: rawMs instrumentationMs: instrumentationMs executionMs: executionMs reportMs: reportMs! !
 
 !CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 7:10:23 pm (UTC)'!
 comparisonWidthsRawMs: rawMs instrumentationMs: instrumentationMs executionMs: executionMs reportMs: reportMs
@@ -858,16 +861,7 @@ comparisonWidthsRawMs: rawMs instrumentationMs: instrumentationMs executionMs: e
 
 	^ { rawWidth. instrumentationWidth. executionWidth. reportWidth }! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 7:10:46 pm (UTC)'!
-flashMultiplier
-
-	3 timesRepeat: [
-		multiplierLabel color: SlideStyle textPrimary.
-		(Delay forMilliseconds: 80) wait.
-		multiplierLabel color: SlideStyle accent.
-		(Delay forMilliseconds: 80) wait ].! !
-
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 7:10:31 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
 updateComparisonRawMs: rawMs instrumentationMs: instrumentationMs executionMs: executionMs reportMs: reportMs
 
 	| widths totalMs |
@@ -886,26 +880,34 @@ updateComparisonRawMs: rawMs instrumentationMs: instrumentationMs executionMs: e
 	reportSegmentFill morphPosition: (barsColumnLeft + (widths at: 2) + (widths at: 3)) @ reportSegmentFill morphPosition y.
 	reportSegmentFill morphExtent: (widths at: 4) @ reportSegmentFill morphHeight.
 
-	totalValueLabel contents: (self formatMilliseconds: totalMs).
+	totalValueLabel contents: (self formatMilliseconds: totalMs), ' (', (self formatMultiplierRaw: rawMs total: totalMs), ')'! !
 
-	multiplierLabel contents: (self formatMultiplierRaw: rawMs total: totalMs).
-	multiplierLabel color: SlideStyle accent.
-	multiplierLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - multiplierLabel morphWidth) // 2)) @ multiplierLabel morphPosition y.! !
-
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 6:42:59 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 9:51:39 pm (UTC)'!
 updateExecutionLabel: milliseconds
 
-	executionLegendLabel contents: 'Test Execution: ', (self formatMilliseconds: milliseconds)! !
+	executionLegendLabel contents: 'Ejercitación: ', (self formatMilliseconds: milliseconds)! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 6:42:58 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
+updateHeroCostLabel: milliseconds
+
+	heroCostLabel contents: (self formatMillisecondsPerMethod: milliseconds).
+	heroCostLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - heroCostLabel morphWidth) // 2)) @ heroCostLabel morphPosition y! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
+updateHeroTotalLabel: milliseconds
+
+	heroTotalLabel contents: 'Costo fijo total (instrumentación + finalización): ', (self formatMilliseconds: milliseconds), ' — ', installTotal printString, ' métodos instrumentados'.
+	heroTotalLabel morphPosition: (slide interiorOrigin x + ((slide interiorExtent x - heroTotalLabel morphWidth) // 2)) @ heroTotalLabel morphPosition y! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 9:51:39 pm (UTC)'!
 updateInstrumentationLabel: milliseconds
 
-	instrumentationLegendLabel contents: 'Instrumentation: ', (self formatMilliseconds: milliseconds)! !
+	instrumentationLegendLabel contents: 'Instrumentación: ', (self formatMilliseconds: milliseconds)! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 14/Sep/2026, 6:43:00 pm (UTC)'!
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'updating - private' stamp: 'NPM 16/Sep/2026, 9:51:39 pm (UTC)'!
 updateReportLabel: milliseconds
 
-	reportLegendLabel contents: 'Report Generation: ', (self formatMilliseconds: milliseconds)! !
+	reportLegendLabel contents: 'Finalización: ', (self formatMilliseconds: milliseconds)! !
 
 !CodeCoveragePackageTimingSlideBuilder methodsFor: 'test execution progress - private' stamp: 'NPM 14/Sep/2026, 6:36:10 pm (UTC)'!
 executionFinished
@@ -963,25 +965,6 @@ package
 
 	^ CodePackage installedPackages at: packageName! !
 
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 15/Sep/2026, 12:12:01 am (UTC)'!
-classesStatTexts
-
-	| aPackage classCount testClassCount prodClassCount |
-	aPackage := self package.
-	classCount := aPackage classNames size.
-	testClassCount := aPackage testCaseClasses size.
-	prodClassCount := classCount - testClassCount.
-	^ { classCount printString, ' classes'. prodClassCount printString, ' prod / ', testClassCount printString, ' test'. prodClassCount. classCount }! !
-
-!CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 15/Sep/2026, 12:12:04 am (UTC)'!
-locStatTexts
-
-	| aPackage totalLoc instrumentedLoc |
-	aPackage := self package.
-	totalLoc := aPackage linesOfCode.
-	instrumentedLoc := aPackage compiledMethodsInNonTestCaseClasses inject: 0 into: [ :sum :method | sum + method linesOfCode ].
-	^ { totalLoc printString, ' LOC'. instrumentedLoc printString, ' instrumented / ', (totalLoc - instrumentedLoc) printString, ' test'. instrumentedLoc. totalLoc }! !
-
 !CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 15/Sep/2026, 12:12:03 am (UTC)'!
 methodsStatTexts
 
@@ -990,6 +973,13 @@ methodsStatTexts
 	totalCount := aPackage methodCount.
 	instrumentedCount := aPackage compiledMethodsInNonTestCaseClasses size.
 	^ { totalCount printString, ' methods'. instrumentedCount printString, ' instrumented / ', (totalCount - instrumentedCount) printString, ' test'. instrumentedCount. totalCount }! !
+
+!CodeCoveragePackageTimingSlideBuilder methodsFor: 'statistics - private' stamp: 'NPM 16/Sep/2026, 10:00:44 pm (UTC)'!
+scopeSummaryText
+
+	| stats |
+	stats := self methodsStatTexts.
+	^ packageName, ' — ', (stats at: 1), ' (', (stats at: 2), ')'! !
 
 !CodeCoveragePackageTimingSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 14/Sep/2026, 5:24:49 pm (UTC)'!
 onPackageNamed: aString heading: aHeadingString
