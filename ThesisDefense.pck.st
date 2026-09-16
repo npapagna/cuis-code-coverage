@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 4:42:42 pm'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 5:18:32 pm'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 164!
+!provides: 'ThesisDefense' 1 165!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2921,7 +2921,7 @@ conclusionesSlide
 
 	^ (MockupTextSlideBuilder on: 'Conclusiones') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 7:42:17 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 8:16:18 pm (UTC)'!
 coverageToolLogosSlide
 
 	| library slide photoExtent gap cardWidth totalWidth leftMargin centerY specs |
@@ -2939,7 +2939,7 @@ coverageToolLogosSlide
 	specs := {
 		{ 'squeak-logo.png'. -6. 'Squeak' }.
 		{ 'pharo-logo.png'. 4. 'Pharo' }.
-		{ 'instantiations-logo.png'. -3. 'VAST' }.
+		{ 'vast-logo.png'. -3. 'VAST' }.
 		{ 'haskell-logo.png'. 7. 'Haskell' }.
 		{ 'cpp-logo.png'. -5. 'C++' }.
 	}.
