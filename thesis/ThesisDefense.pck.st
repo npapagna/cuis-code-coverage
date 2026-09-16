@@ -1,13 +1,13 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 5:18:32 pm'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 6:24:48 pm'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 165!
+!provides: 'ThesisDefense' 1 166!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
 !requires: 'CodeCoverage' nil nil nil!
-!requires: 'Graphics-Files-Additional' nil nil nil!
-!requires: 'RefactoringTests' 1 5 nil!
 !requires: 'Chalten' 1 19 nil!
+!requires: 'RefactoringTests' 1 5 nil!
+!requires: 'Graphics-Files-Additional' nil nil nil!
 SystemOrganization addCategory: #ThesisDefense!
 
 
@@ -2212,10 +2212,10 @@ value
 
 	^ slide! !
 
-!PipelineRoadmapSlideBuilder class methodsFor: 'accessing' stamp: 'NPM 13/Sep/2026, 5:19:18 pm (UTC)'!
+!PipelineRoadmapSlideBuilder class methodsFor: 'accessing' stamp: 'NPM 16/Sep/2026, 9:23:22 pm (UTC)'!
 steps
 
-	^ #('Alcance' 'Instrumentar' 'Ejercitar' 'Notificar' 'Detener')! !
+	^ #('Alcance' 'Instrumentar' 'Ejercitar' 'Notificar' 'Finalizar')! !
 
 !PipelineRoadmapSlideBuilder class methodsFor: 'instance creation' stamp: 'NPM 13/Sep/2026, 5:19:19 pm (UTC)'!
 on: aStepName
@@ -3039,11 +3039,6 @@ decisionSelectorsSlide
 		secondaryOn: DecisionCoverageReportBuilder selector: #decisionSelectors)
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:44 pm (UTC)'!
-detenerSlide
-
-	^ (PipelineRoadmapSlideBuilder on: 'Detener') value! !
-
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 10:39:31 pm (UTC)'!
 drosteSlide
 	
@@ -3057,6 +3052,11 @@ drosteSlide
 ejercitarSlide
 
 	^ (PipelineRoadmapSlideBuilder on: 'Ejercitar') value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 9:23:19 pm (UTC)'!
+finalizarSlide
+
+	^ (PipelineRoadmapSlideBuilder on: 'Finalizar') value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 7:23:50 pm (UTC)'!
 instrumentarSlide
@@ -3090,7 +3090,7 @@ modoAutomaticoSlide
 
 	^ (EmbeddedPackageBrowserSlideBuilder on: 'Aconcagua' heading: 'Modo Automático') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 8:55:32 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 9:23:04 pm (UTC)'!
 modoManualSlide
 
 	^ (EmbeddedWorkspaceSlideBuilder on: '"Alcance"
@@ -3131,7 +3131,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:59:20 am (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 9:23:19 pm (UTC)'!
 slides
 	
 	^ {
@@ -3159,7 +3159,7 @@ slides
 		self instrumentarSlide.
 		self ejercitarSlide.
 		self notificarSlide.
-		self detenerSlide.
+		self finalizarSlide.
 		self modoManualSlide.
 		self cuantoTardaSlide.
 		self cuantoTardaChaltenSlide.
