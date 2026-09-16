@@ -1,11 +1,12 @@
-'From Cuis7.9 [latest update: #8149] on 15 September 2026 at 1:31:19 pm'!
-'Description Add chalten as a requirement'!
-!provides: 'ThesisDefense' 1 161!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 3:29:28 pm'!
+'Description Add refactoring tersts as a requirement'!
+!provides: 'ThesisDefense' 1 162!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
 !requires: 'CodeCoverage' nil nil nil!
 !requires: 'Graphics-Files-Additional' nil nil nil!
+!requires: 'RefactoringTests' 1 5 nil!
 !requires: 'Chalten' 1 19 nil!
 SystemOrganization addCategory: #ThesisDefense!
 
@@ -2889,12 +2890,12 @@ branchCoverageSlide
 
 	^ self branchCoverageSlideBuilder value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:48:31 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:38:33 am (UTC)'!
 branchCoverageSlide2
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #multipleConditionsExample:and:
+		selector: #multipleConditionsExample:or:
 		heading: 'Branch Coverage'
 		creatingReportBuildersWith: DecisionCoverageReportBuilder)
 		value! !
@@ -2966,12 +2967,12 @@ cuantoTardaSlide
 
 	^ (CodeCoveragePackageTimingSlideBuilder onPackageNamed: 'Aconcagua' heading: '¿Cuánto tarda analizar Aconcagua?') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 14/Sep/2026, 12:49:43 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:38:33 am (UTC)'!
 decisionConditionCoverageSlide
 
 	^ (CodeCoverageTestCaseSlideBuilder
 		on: CodeCoverageExamples
-		selector: #multipleConditionsExample:and:
+		selector: #multipleConditionsExample:or:
 		heading: 'Decision/Condition Coverage'
 		creatingReportBuildersWith: BasicDecisionConditionCoverageReportBuilder) value! !
 
