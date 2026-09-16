@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 4:40:57 pm'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 4:42:42 pm'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 163!
+!provides: 'ThesisDefense' 1 164!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2921,7 +2921,7 @@ conclusionesSlide
 
 	^ (MockupTextSlideBuilder on: 'Conclusiones') value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 4:25:25 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 7:42:17 pm (UTC)'!
 coverageToolLogosSlide
 
 	| library slide photoExtent gap cardWidth totalWidth leftMargin centerY specs |
@@ -2932,7 +2932,7 @@ coverageToolLogosSlide
 	photoExtent := 260 @ 260.
 	gap := 60.
 	cardWidth := photoExtent x + (library polaroidSidePadding * 2).
-	totalWidth := (cardWidth * 4) + (gap * 3).
+	totalWidth := (cardWidth * 5) + (gap * 4).
 	leftMargin := (SlideStyle canvasExtent x - totalWidth) // 2.
 	centerY := SlideStyle canvasExtent y // 2.
 
@@ -2941,6 +2941,7 @@ coverageToolLogosSlide
 		{ 'pharo-logo.png'. 4. 'Pharo' }.
 		{ 'instantiations-logo.png'. -3. 'VAST' }.
 		{ 'haskell-logo.png'. 7. 'Haskell' }.
+		{ 'cpp-logo.png'. -5. 'C++' }.
 	}.
 
 	specs withIndexDo: [ :spec :i |
