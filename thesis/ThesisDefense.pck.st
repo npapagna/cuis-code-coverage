@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 7:32:29 pm'!
+'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 8:31:59 pm'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 171!
+!provides: 'ThesisDefense' 1 174!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -2855,10 +2855,14 @@ imageCache
 
 	^ ImageCache ifNil: [ ImageCache := Dictionary new ]! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:59:20 am (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:20:26 pm (UTC)'!
 agradecimientosSlide
 
-	^ (MockupTextSlideBuilder on: 'Agradecimientos') value! !
+	^ (PolaroidSlideBuilder on: 'agradecimientos.png')
+		photoWidth: 349
+		height: 619;
+		rotationDegrees: 5;
+		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 13/Sep/2026, 5:19:40 pm (UTC)'!
 alcanceSlide
@@ -2910,6 +2914,15 @@ codeCoverageDefinitionSlide
 conclusionesSlide
 
 	^ (MockupTextSlideBuilder on: 'Conclusiones') value! !
+
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:25:02 pm (UTC)'!
+contribucionesSlide
+
+	^ (PolaroidSlideBuilder on: 'contribuciones.png')
+		photoWidth: 387
+		height: 688;
+		rotationDegrees: 5;
+		value! !
 
 !ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 8:16:18 pm (UTC)'!
 coverageToolLogosSlide
@@ -3121,7 +3134,7 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 9:23:19 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:31:28 pm (UTC)'!
 slides
 	
 	^ {
@@ -3154,7 +3167,7 @@ slides
 		self cuantoTardaSlide.
 		self cuantoTardaChaltenSlide.
 		self drosteSlide.
-		self conclusionesSlide.
+		self contribucionesSlide.
 		self trabajoAFuturoSlide.
 		self agradecimientosSlide.
 		self qaSlide.
@@ -3190,13 +3203,17 @@ titleSlide
 	
 	^ TitleSlideBuilder new value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 15/Sep/2026, 11:55:02 am (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:19:59 pm (UTC)'!
 trabajoAFuturoSlide
 
-	^ (MockupTextSlideBuilder on: 'Trabajo a Futuro') value! !
+	^ (PolaroidSlideBuilder on: 'trabajo-a-futuro.png')
+		photoWidth: 387
+		height: 688;
+		rotationDegrees: 5;
+		value! !
 
-!ThesisDefensePresentation class methodsFor: 'opening' stamp: 'NPM 5/Sep/2026, 6:48:59 pm (UTC)'!
-present
+!ThesisDefensePresentation class methodsFor: 'opening' stamp: 'NPM 16/Sep/2026, 10:35:07 pm (UTC)'!
+open
 	
 	^ self new present! !
 
