@@ -1,13 +1,13 @@
-'From Cuis7.9 [latest update: #8149] on 16 September 2026 at 8:41:47 pm'!
+'From Cuis7.9 [latest update: #8149] on 17 September 2026 at 11:20:02 am'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 176!
+!provides: 'ThesisDefense' 1 177!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
 !requires: 'CodeCoverage' nil nil nil!
-!requires: 'Graphics-Files-Additional' nil nil nil!
-!requires: 'RefactoringTests' 1 5 nil!
 !requires: 'Chalten' 1 19 nil!
+!requires: 'RefactoringTests' 1 5 nil!
+!requires: 'Graphics-Files-Additional' nil nil nil!
 SystemOrganization addCategory: #ThesisDefense!
 
 
@@ -3138,8 +3138,11 @@ riceSlide
 	 ^ (ImageSlideBuilder on: 'rice-paper.png')
 		value! !
 
-!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 16/Sep/2026, 11:31:28 pm (UTC)'!
+!ThesisDefensePresentation methodsFor: 'as yet unclassified' stamp: 'NPM 17/Sep/2026, 2:07:53 pm (UTC)'!
 slides
+
+	| riceSandwich |
+	riceSandwich := self decisionConditionCoverageSlide.
 	
 	^ {
 		self drosteSlide.
@@ -3153,7 +3156,9 @@ slides
 		self subsumptionDefinitionSlide.
 		self titleSlide.
 		self decisionSelectorsSlide.
+		riceSandwich.
 		self riceSlide.
+		riceSandwich.
 		self booleSlide.
 		self decisionConditionVsBooleanCoverageSlide.
 		self decisionConditionVsBooleanCoverageSlide2.
