@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 6:55:01 pm'!
+'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 7:15:00 pm'!
 'Description Use #labelForClass: to customize class labels'!
-!provides: 'CodeCoverage' 1 97!
+!provides: 'CodeCoverage' 1 98!
 !requires: 'Cuis-Base' 77 7903 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -1631,12 +1631,12 @@ classListMenuSpecSend
 
 	^ MessageSend receiver: self selector: #classListMenuSpec! !
 
-!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 29/Apr/2025, 11:10:35 am (UTC)'!
+!CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'FJG 28/Sep/2026, 10:13:49 pm (UTC)'!
 menuAndShortcutsSpecs
 
 	^{	{ #systemCatListMenuSpec. self systemCategoriesListMenuSpecSend }.
 		{ #classListMenuSpec. self classListMenuSpecSend }.
-		{ #methodCategoriesListMenuSpec. self methodCategoriesListMenuSpecSend }.
+		{ #messageCatListMenuSpec. self methodCategoriesListMenuSpecSend }.
 		{ #messageListMenuSpec. self messageListMenuSpecSend }}! !
 
 !CodeCoverageBrowserMenues class methodsFor: 'menu & kbd shortcuts' stamp: 'HAW 31/Dec/2024, 9:36:07 pm (UTC)'!
