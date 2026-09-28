@@ -1,7 +1,7 @@
-'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 7:15:00 pm'!
+'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 8:34:01 pm'!
 'Description Use #labelForClass: to customize class labels'!
-!provides: 'CodeCoverage' 1 98!
-!requires: 'Cuis-Base' 77 7903 nil!
+!provides: 'CodeCoverage' 1 99!
+!requires: 'Cuis-Base' 79 8223 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
 SystemOrganization addCategory: #'CodeCoverage-Tests'!
