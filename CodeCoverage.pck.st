@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8239] on 29 September 2026 at 1:01:23 am'!
+'From Cuis7.9 [latest update: #8239] on 29 September 2026 at 1:26:49 am'!
 'Description Use #labelForClass: to customize class labels'!
-!provides: 'CodeCoverage' 1 100!
+!provides: 'CodeCoverage' 1 101!
 !requires: 'Cuis-Base' 79 8223 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -2562,36 +2562,38 @@ textStylerClassFor: textGetter
 	
 	^ SHTextStylerST80! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 29/Sep/2026, 4:01:08 am (UTC)'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 29/Sep/2026, 4:26:41 am (UTC)'!
+label: aLabel withCoverageOf: aReport
+
+	^ aLabel, ' (', (aReport percentCovered asFloat printStringFractionDigits: 2), '%)'! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 29/Sep/2026, 4:26:41 am (UTC)'!
 labelForCategory: aCategory
 
-	| report percentCovered |
-	report := codeCoverageReport reportForMessageCategory: aCategory inClass: self selectedClassOrMetaclass.
-	percentCovered := report percentCovered asFloat printStringFractionDigits: 2.
-	^ (super labelForCategory: aCategory), ' (', percentCovered, '%)'! !
+	^ self
+		label: (super labelForCategory: aCategory)
+		withCoverageOf: (codeCoverageReport reportForMessageCategory: aCategory inClass: self selectedClassOrMetaclass)! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 12/Jul/2026, 2:14:26 am (UTC)'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 29/Sep/2026, 4:26:41 am (UTC)'!
 labelForClass: aClassOrPseudoClass
 	
-	| originalLabel report percentCovered |
+	| originalLabel |
 	
 	originalLabel := super labelForClass: aClassOrPseudoClass.
 	
 	(codeCoverageReport wasClassAnalyzed: aClassOrPseudoClass)
 		ifFalse: [ ^ originalLabel ].
 	
-	report := codeCoverageReport reportForClass: aClassOrPseudoClass.
-	percentCovered := report percentCovered asFloat printStringFractionDigits: 2.
-	
-	^ originalLabel, ' (', percentCovered, '%)'! !
+	^ self
+		label: originalLabel
+		withCoverageOf: (codeCoverageReport reportForClass: aClassOrPseudoClass)! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 12/Jul/2026, 1:58:52 am (UTC)'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 29/Sep/2026, 4:26:41 am (UTC)'!
 labelForSelector: aSelector
 
-	| report percentCovered |
-	report := codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector.
-	percentCovered := report percentCovered asFloat printStringFractionDigits: 2.
-	^ (super labelForSelector: aSelector), ' (', percentCovered, '%)'! !
+	^ self
+		label: (super labelForSelector: aSelector)
+		withCoverageOf: (codeCoverageReport reportForCompiledMethod: self selectedClassOrMetaclass >> aSelector)! !
 
 !CodeCoverageAnalyzerBrowser class methodsFor: 'instance creation' stamp: 'NPM 19/Jan/2021, 11:47:01 pm (UTC)'!
 displayCodeCoverageResultsFrom: aCodeCoverageAnalyzerReport 
