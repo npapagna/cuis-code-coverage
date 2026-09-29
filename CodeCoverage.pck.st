@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 8:34:01 pm'!
+'From Cuis7.9 [latest update: #8239] on 29 September 2026 at 1:01:23 am'!
 'Description Use #labelForClass: to customize class labels'!
-!provides: 'CodeCoverage' 1 99!
+!provides: 'CodeCoverage' 1 100!
 !requires: 'Cuis-Base' 79 8223 nil!
 !requires: 'PackageSnapshot' 1 8 nil!
 SystemOrganization addCategory: #'CodeCoverage-Model'!
@@ -2487,39 +2487,11 @@ initializeDisplayingReportsFrom: aCodeCoverageReport
 
 	codeCoverageReport := aCodeCoverageReport.! !
 
-!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 18/Jan/2021, 11:48:08 pm (UTC)'!
+!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'FJG 29/Sep/2026, 4:01:08 am (UTC)'!
 messageCategoryList
-		
+
 	^ super messageCategoryList
-		select: [ :messageCategory | codeCoverageReport wasMessageCategoryAnalyzed: messageCategory in: self selectedClassOrMetaclass ]
-		thenCollect: [ :messageCategory | self styleMessageCategory: messageCategory ]
-		
-		
-		
-		
-	
-! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'message category list' stamp: 'NPM 6/Nov/2022, 6:26:39 am (UTC)'!
-messageCategoryListIndex: anInteger
-	"Set the selected message category to be the one indexed by anInteger."
-
-	| index messageCategoryList |
-	
-	messageCategoryList _ self messageCategoryList.
-	index _ messageCategoryList ifInBounds: anInteger ifNot: 0.
-
-	selectedMessageCategory _ index = 0 ifFalse: [(messageCategoryList at: index) item ].
-	selectedMessage _ nil.
-	self changed: #messageCategorySelectionChanged.
-	self changed: #messageCategoryListIndex. "update my selection"
-	self changed: #messageList.
-	self editSelection: (index > 0
-		ifTrue: [#newMessage]
-		ifFalse: [self classListIndex > 0
-			ifTrue: [#editClass]
-			ifFalse: [#newClass]]).
-	self acceptedContentsChanged.! !
+		select: [ :messageCategory | codeCoverageReport wasMessageCategoryAnalyzed: messageCategory in: self selectedClassOrMetaclass ]! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'message list' stamp: 'FJG 12/Jul/2026, 1:54:03 am (UTC)'!
 messageList
@@ -2535,15 +2507,6 @@ metaClassIndicated: trueOrFalse
 	"I need to notify the class list changed, as the class labels have to be updated to display
 	either the instance or the class side coverage percentage."
 	self changed: #classList.! !
-
-!CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 20/Jan/2021, 12:02:21 am (UTC)'!
-styleMessageCategory: messageCategory
-
-	^ CodeCoverageResultItem
-		for: messageCategory
-		report: (codeCoverageReport
-				reportForMessageCategory: messageCategory
-				inClass: self selectedClassOrMetaclass)! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'styling - code coverage results' stamp: 'NPM 19/Jan/2021, 12:00:27 am (UTC)'!
 styleSystemCategory: aSystemCategory 
@@ -2598,6 +2561,14 @@ textStylerClassFor: textGetter
 			ifNotAnalyzed: [ super textStylerClassFor: textGetter ] ].
 	
 	^ SHTextStylerST80! !
+
+!CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 29/Sep/2026, 4:01:08 am (UTC)'!
+labelForCategory: aCategory
+
+	| report percentCovered |
+	report := codeCoverageReport reportForMessageCategory: aCategory inClass: self selectedClassOrMetaclass.
+	percentCovered := report percentCovered asFloat printStringFractionDigits: 2.
+	^ (super labelForCategory: aCategory), ' (', percentCovered, '%)'! !
 
 !CodeCoverageAnalyzerBrowser methodsFor: 'private' stamp: 'FJG 12/Jul/2026, 2:14:26 am (UTC)'!
 labelForClass: aClassOrPseudoClass
