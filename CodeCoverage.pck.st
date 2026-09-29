@@ -728,6 +728,11 @@ initializeWithAll: compiledMethodReports
 		indexReportsByClassAndMessageCategory: compiledMethodReports;
 		indexReportsBySystemCategory: compiledMethodReports! !
 
+!CodeCoverageAnalyzerReport methodsFor: 'statistics' stamp: 'NPM 17/Sep/2026, 2:34:52 pm (UTC)'!
+coverageRatio
+	
+	^ summaryReport coverageRatio ! !
+
 !CodeCoverageAnalyzerReport methodsFor: 'statistics' stamp: 'NPM 20/Jan/2021, 12:16:15 am (UTC)'!
 percentCovered
 	
