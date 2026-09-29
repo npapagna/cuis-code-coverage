@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8149] on 17 September 2026 at 11:20:02 am'!
+'From Cuis7.9 [latest update: #8149] on 17 September 2026 at 11:53:36 am'!
 'Description Add refactoring tersts as a requirement'!
-!provides: 'ThesisDefense' 1 177!
+!provides: 'ThesisDefense' 1 178!
 !requires: 'CodeCoverageDemo' nil nil nil!
 !requires: 'Cuis-Base' nil nil nil!
 !requires: 'Aconcagua' 1 25 nil!
@@ -1796,7 +1796,7 @@ runCoverage
 
 	self updateBadgeFor: methodReport coverageRatio! !
 
-!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:41:58 pm (UTC)'!
+!CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 17/Sep/2026, 2:33:34 pm (UTC)'!
 runCoverageAnalyzingWith: aBlock
 
 	| compiledMethod analyzer report methodsToAnalyze |
@@ -1815,6 +1815,8 @@ runCoverageAnalyzingWith: aBlock
 	shouldAnalyzeSecondaryClass ifTrue: [
 		secondaryCodeEditorMorph := self showCoverage: report forClass: secondaryClass selector: secondarySelector in: secondaryCodeEditorMorph ].
 
+	shouldAnalyzeSecondaryClass ifTrue: [ ^  report ].
+	
 	^ report reportForCompiledMethod: compiledMethod! !
 
 !CodeCoverageMethodSlideBuilder methodsFor: 'running' stamp: 'NPM 13/Sep/2026, 1:25:28 pm (UTC)'!
