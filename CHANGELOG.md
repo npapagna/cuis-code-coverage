@@ -10,11 +10,15 @@ Due to the way [Cuis Smalltalk](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 * Fix tests to run them in base Cuis image.
 * Unload registered menues (thanks @hernanwilkinson!).
 * Performance improvement: don't save instrumented code in the changes file.
+* Require Cuis 7.9 update 8223 or later.
 
 ### Fixed
 * Open the Code Coverage Browser when tests fail.
 * Open the Code Coverage Browser when no methods area covered.
 * Bug that caused system categories to display the same coverage percentage.
+* Selecting a message in the Code Coverage Browser, which showed neither its source code nor its coverage in Cuis 7.9.
+* Error when editing the source code of a covered method in the Code Coverage Browser.
+* Missing `Run Tests with Coverage` option in the message category list menu.
 
 ### Removed
 * Unused instance variables, classes, and methods.

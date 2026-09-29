@@ -61,8 +61,8 @@ should never be executed.
 ## Installing
 
 1. Make sure you have the latest updates installed: `World menu > Changes > Install New Updates`.
-The minimum image version required is [Cuis 4527 image](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev/blob/master/CoreUpdates/4527-CuisCore-NicolasPapagnaMaldonado-2021Jan20-17h23m-NPM.001.cs.st),
-where a tiny bug in `BacktickNode` was fixed that prevented `Code Coverage` from analyzing code coverage correctly.
+The minimum image version required is Cuis 7.9 with [update 8223](https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev/blob/master/CoreUpdates/8223-BrowserCategoryAndSelectorListsRefactor%20-2-implement_labelForSelector_for_browser-FJG.001.cs.st),
+which added the `#labelForSelector:` extension point that the Code Coverage Browser uses to display the coverage of each message.
 2. Install the `CodeCoverage.pck.st` package in this repository by dragging and dropping it into your Cuis image, and you'll be good to go.
 
 ## Usage Instructions

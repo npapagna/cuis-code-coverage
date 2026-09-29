@@ -1,4 +1,4 @@
-'From Cuis7.3 [latest update: #7120] on 7 May 2025 at 3:08:23 pm'!
+'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 7:00:59 pm'!
 'Description Initialize class snapshots'!
 !provides: 'PackageSnapshot' 1 10!
 SystemOrganization addCategory: #'PackageSnapshot-Model'!
@@ -47,7 +47,7 @@ PackageSnapshotTest class
 	instanceVariableNames: ''!
 
 
-!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 10/25/2022 02:37:20'!
+!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 25/Oct/2022, 5:37:20 am (UTC)'!
 generateSourceCodeFrom: aMethodNode
 
 	"I have to remove the cached source code so it can be regenerated."
@@ -55,14 +55,14 @@ generateSourceCodeFrom: aMethodNode
 
 	^ aMethodNode sourceText! !
 
-!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 10/22/2022 15:09:31'!
+!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 22/Oct/2022, 6:09:31 pm (UTC)'!
 takeOf: aCompiledMethod
 
 	^ self
 		takeOf: aCompiledMethod
 		beforeGeneratingSourceCodeDo: [ "Do nothing." ]! !
 
-!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'HAW 7/26/2023 17:51:12'!
+!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'HAW 26/Jul/2023, 8:51:12 pm (UTC)'!
 takeOf: aCompiledMethod beforeGeneratingSourceCodeDo: aBlock
 
 	| methodNode |
@@ -73,19 +73,19 @@ takeOf: aCompiledMethod beforeGeneratingSourceCodeDo: aBlock
 
 	^ self generateSourceCodeFrom: methodNode! !
 
-!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 10/22/2022 15:09:31'!
+!SourceCodeSnapshot methodsFor: 'evaluating' stamp: 'NPM 22/Oct/2022, 6:09:31 pm (UTC)'!
 takeOf: aCompiledMethod renamingItTo: newSelector
 
 	^ self
 		takeOf: aCompiledMethod
 		beforeGeneratingSourceCodeDo: [ :methodNode | methodNode selector: newSelector ]! !
 
-!SourceCodeSnapshot methodsFor: 'initialization' stamp: 'NPM 10/22/2022 14:29:11'!
+!SourceCodeSnapshot methodsFor: 'initialization' stamp: 'NPM 22/Oct/2022, 5:29:11 pm (UTC)'!
 initializeUsing: aPackageSnapshot
 
 	packageSnapshot _ aPackageSnapshot.! !
 
-!SourceCodeSnapshot methodsFor: 'visiting' stamp: 'NPM 10/22/2022 14:50:58'!
+!SourceCodeSnapshot methodsFor: 'visiting' stamp: 'NPM 22/Oct/2022, 5:50:58 pm (UTC)'!
 visitLiteralVariableNode: aLiteralVariableNode
 
 	"Replace classes with their snapshot versions, if any."
@@ -105,7 +105,7 @@ visitLiteralVariableNode: aLiteralVariableNode
 		code: aLiteralVariableNode code
 		! !
 
-!SourceCodeSnapshot methodsFor: 'visiting' stamp: 'NPM 10/22/2022 14:51:34'!
+!SourceCodeSnapshot methodsFor: 'visiting' stamp: 'NPM 22/Oct/2022, 5:51:34 pm (UTC)'!
 visitSelectorNode: aSelectorNode
 
 	"Rename the selectors if they happen to be an extension methods."
@@ -115,34 +115,34 @@ visitSelectorNode: aSelectorNode
 		do: [ :snapshotOfSelector | aSelectorNode key: snapshotOfSelector ]
 ! !
 
-!SourceCodeSnapshot class methodsFor: 'evaluating' stamp: 'NPM 10/22/2022 15:09:12'!
+!SourceCodeSnapshot class methodsFor: 'evaluating' stamp: 'NPM 22/Oct/2022, 6:09:12 pm (UTC)'!
 takeOf: aCompiledMethod renamingItTo: newSelector using: aPackageSnapshot
 
 	^ (self using: aPackageSnapshot)
 		takeOf: aCompiledMethod
 		renamingItTo: newSelector! !
 
-!SourceCodeSnapshot class methodsFor: 'evaluating' stamp: 'NPM 10/22/2022 15:09:23'!
+!SourceCodeSnapshot class methodsFor: 'evaluating' stamp: 'NPM 22/Oct/2022, 6:09:23 pm (UTC)'!
 takeOf: aCompiledMethod using: aPackageSnapshot
 
 	^ (self using: aPackageSnapshot)
 		takeOf: aCompiledMethod ! !
 
-!SourceCodeSnapshot class methodsFor: 'instance creation' stamp: 'NPM 10/22/2022 14:29:11'!
+!SourceCodeSnapshot class methodsFor: 'instance creation' stamp: 'NPM 22/Oct/2022, 5:29:11 pm (UTC)'!
 using: aPackageSnapshot
 
 	^ self
 		new
 		initializeUsing: aPackageSnapshot ! !
 
-!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 10/26/2022 01:12:51'!
+!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 26/Oct/2022, 4:12:51 am (UTC)'!
 snapshotOf: aBehavior
 
 	^ self
 		snapshotOf: aBehavior
 		ifAbsent: [ self error: self theBehaviorIsNotIncludedInThisSnapshotErrorMessage ]! !
 
-!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 10/22/2022 01:19:44'!
+!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 22/Oct/2022, 4:19:44 am (UTC)'!
 snapshotOf: aBehavior ifAbsent: aBlock
 
 	| snapshotOfClass |
@@ -154,21 +154,21 @@ snapshotOf: aBehavior ifAbsent: aBlock
 		ifTrue: [ snapshotOfClass class ]
 		ifFalse: [ snapshotOfClass ]! !
 
-!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 10/26/2022 00:52:19'!
+!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 26/Oct/2022, 3:52:19 am (UTC)'!
 snapshotOfClassNamed: aName ifAbsent: aBlock
 
 	^ snapshotOfClassesByOriginalClassName
 		at: aName
 		ifAbsent: aBlock! !
 
-!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 10/22/2022 15:05:05'!
+!PackageSnapshot methodsFor: 'accessing' stamp: 'NPM 22/Oct/2022, 6:05:05 pm (UTC)'!
 withExtensionMethodSelectorOf: originalSelector do: aBlock
 
 	(extensionMethodsToTakeSnapshots
 		anySatisfy: [ :extensionMethod | extensionMethod selector = originalSelector])
 		ifTrue: [ aBlock value: (self extensionMethodSelectorFor: originalSelector)]! !
 
-!PackageSnapshot methodsFor: 'cleaning up' stamp: 'NPM 10/26/2022 01:25:58'!
+!PackageSnapshot methodsFor: 'cleaning up' stamp: 'NPM 26/Oct/2022, 4:25:58 am (UTC)'!
 discard
 
 	"For performance reasons, I avoid triggering system change events.
@@ -178,7 +178,7 @@ discard
 		self removeExtensionMethodSnapshots.
 	]! !
 
-!PackageSnapshot methodsFor: 'cleaning up' stamp: 'NPM 10/26/2022 01:25:58'!
+!PackageSnapshot methodsFor: 'cleaning up' stamp: 'NPM 26/Oct/2022, 4:25:58 am (UTC)'!
 removeClassSnapshots
 
 	"I could use SystemOrganizer>>#removeSystemCategory: to get the job done and remove classes and their categories in one how.
@@ -199,7 +199,7 @@ removeClassSnapshots
 
 	snapshotOfClassesByOriginalClassName removeAll.! !
 
-!PackageSnapshot methodsFor: 'cleaning up' stamp: 'NPM 10/25/2022 02:27:59'!
+!PackageSnapshot methodsFor: 'cleaning up' stamp: 'NPM 25/Oct/2022, 5:27:59 am (UTC)'!
 removeExtensionMethodSnapshots
 
 	snapshotsOfExtensionMethods do: [ :snapshotOfExtensionMethod |
@@ -207,37 +207,37 @@ removeExtensionMethodSnapshots
 
 	snapshotsOfExtensionMethods removeAll.! !
 
-!PackageSnapshot methodsFor: 'error messages' stamp: 'NPM 10/26/2022 01:13:18'!
+!PackageSnapshot methodsFor: 'error messages' stamp: 'NPM 26/Oct/2022, 4:13:18 am (UTC)'!
 takingSnapshotOfClassesWithSharedPoolsIsNotSupportedYetErrorMessage
 
 	^ 'Taking a snapshot of classes with shared pools is not supported yet'.! !
 
-!PackageSnapshot methodsFor: 'error messages' stamp: 'NPM 10/26/2022 01:12:51'!
+!PackageSnapshot methodsFor: 'error messages' stamp: 'NPM 26/Oct/2022, 4:12:51 am (UTC)'!
 theBehaviorIsNotIncludedInThisSnapshotErrorMessage
 
 	^ 'The behavior is not included in this snapshot'! !
 
-!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 10/22/2022 00:25:45'!
+!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 22/Oct/2022, 3:25:45 am (UTC)'!
 classNameFor: originalClassName
 
 	^ (originalClassName, '_Snapshot_', id asString) asSymbol! !
 
-!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 10/26/2022 01:02:07'!
+!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 26/Oct/2022, 4:02:07 am (UTC)'!
 extensionMethodCategoryFor: originalCategory
 
 	^ '*', (self systemCategoryFor: originalCategory allButFirst )! !
 
-!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 10/22/2022 00:26:34'!
+!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 22/Oct/2022, 3:26:34 am (UTC)'!
 extensionMethodSelectorFor: originalSelector
 
 	^ ('snapshot_', id asString, '_', originalSelector) asSymbol! !
 
-!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 10/22/2022 01:22:26'!
+!PackageSnapshot methodsFor: 'generating snapshot names' stamp: 'NPM 22/Oct/2022, 4:22:26 am (UTC)'!
 systemCategoryFor: originalSystemCategory
 
 	^ '_Snapshot_', id asString, '_', originalSystemCategory! !
 
-!PackageSnapshot methodsFor: 'initialization' stamp: 'NPM 10/24/2022 02:00:09'!
+!PackageSnapshot methodsFor: 'initialization' stamp: 'NPM 24/Oct/2022, 5:00:09 am (UTC)'!
 initializeToTakeOf: aCodePackage
 
 	sourcePackage _ aCodePackage.
@@ -246,7 +246,7 @@ initializeToTakeOf: aCodePackage
 	snapshotOfClassesByOriginalClassName _ OrderedDictionary new.
 	snapshotsOfExtensionMethods _ OrderedCollection new.! !
 
-!PackageSnapshot methodsFor: 'migrating instances' stamp: 'NPM 10/26/2022 01:22:59'!
+!PackageSnapshot methodsFor: 'migrating instances' stamp: 'NPM 26/Oct/2022, 4:22:59 am (UTC)'!
 migrateSnapshotInstancesToOriginalClasses
 
 	| snapshotOfClass |
@@ -255,7 +255,7 @@ migrateSnapshotInstancesToOriginalClasses
 		snapshotOfClass _ self snapshotOf: originalClass.
 		snapshotOfClass allInstancesDo: [ :instance | originalClass adoptInstance: instance ]]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots' stamp: 'NPM 5/7/2025 14:54:30'!
+!PackageSnapshot methodsFor: 'taking snapshots' stamp: 'NPM 7/May/2025, 5:54:30 pm (UTC)'!
 take
 
 	self setupClassesToTakeSnapshots.
@@ -266,14 +266,14 @@ take
 	self takeSnapshotOfExtensionMethods.
 	self initializeClassSnapshots.! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/22/2022 01:20:06'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 22/Oct/2022, 4:20:06 am (UTC)'!
 register: aSnapshotOfAClass asSnapshotOf: aClass
 
 	snapshotOfClassesByOriginalClassName
 		at: aClass name
 		put: aSnapshotOfAClass.! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/26/2022 01:13:18'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 26/Oct/2022, 4:13:18 am (UTC)'!
 setupClassesToTakeSnapshots
 
 	classesToTakeSnapshots _ OrderedCollection new.
@@ -285,14 +285,14 @@ setupClassesToTakeSnapshots
 			ifNotEmpty: [
 				self error: self takingSnapshotOfClassesWithSharedPoolsIsNotSupportedYetErrorMessage  ] ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 5/7/2025 15:04:33'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 7/May/2025, 6:04:33 pm (UTC)'!
 takeSnapshotOfClass: aClass
 
 	self
 		takeSnapshotOfInstanceSideOf: aClass;
 		takeSnapshotOfClassSideOf: aClass! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 5/4/2025 12:09:54'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 4/May/2025, 3:09:54 pm (UTC)'!
 takeSnapshotOfClassSideOf: aClass
 
 	| snapshotOfClass |
@@ -305,12 +305,12 @@ takeSnapshotOfClassSideOf: aClass
 	Smalltalk isLiveTypingInstalled
 		ifTrue: [ snapshotOfClass disableLiveTyping; doNotCheckForUnload ].! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 10/22/2022 15:05:11'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 22/Oct/2022, 6:05:11 pm (UTC)'!
 takeSnapshotOfClasses
 
 	classesToTakeSnapshots do: [ :class | self takeSnapshotOfClass: class ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 5/4/2025 12:10:01'!
+!PackageSnapshot methodsFor: 'taking snapshots - classes' stamp: 'NPM 4/May/2025, 3:10:01 pm (UTC)'!
 takeSnapshotOfInstanceSideOf: aClass
 
 	| superclass snapshotOfClass |
@@ -334,12 +334,12 @@ takeSnapshotOfInstanceSideOf: aClass
 		asSnapshotOf: aClass.
 	! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 10/22/2022 15:05:05'!
+!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 22/Oct/2022, 6:05:05 pm (UTC)'!
 setupExtensionMethodsToTakeSnapshots
 
 	extensionMethodsToTakeSnapshots _ sourcePackage extensionMethods! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 10/26/2022 00:56:41'!
+!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 26/Oct/2022, 3:56:41 am (UTC)'!
 takeSnapshotOfExtensionMethod: aCompiledMethod
 
 	|snapshotOfSourceCode snapshotOfSelector snapshotOfCategory snapshotOfExtensionMethod |
@@ -360,13 +360,13 @@ takeSnapshotOfExtensionMethod: aCompiledMethod
 
 			! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 10/22/2022 15:05:05'!
+!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 22/Oct/2022, 6:05:05 pm (UTC)'!
 takeSnapshotOfExtensionMethods
 
 	extensionMethodsToTakeSnapshots do: [ :extensionMethod |
 		self takeSnapshotOfExtensionMethod: extensionMethod ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 10/26/2022 00:57:27'!
+!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 26/Oct/2022, 3:57:27 am (UTC)'!
 takeSnapshotOfMethod: aCompiledMethod
 
 	| snapshotOfMethodClass snapshotOfSourceCode snapshotOfMethodSelector |
@@ -381,7 +381,7 @@ takeSnapshotOfMethod: aCompiledMethod
 	(snapshotOfMethodClass compiledMethodAt: snapshotOfMethodSelector)
 		disableLiveTyping! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 10/22/2022 15:05:11'!
+!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 22/Oct/2022, 6:05:11 pm (UTC)'!
 takeSnapshotOfMethods
 
 	^ classesToTakeSnapshots do: [ :class |
@@ -389,7 +389,7 @@ takeSnapshotOfMethods
 			takeSnapshotsOfMethodsOf: class;
 			takeSnapshotsOfMethodsOf: class class ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 10/21/2022 03:09:52'!
+!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 21/Oct/2022, 6:09:52 am (UTC)'!
 takeSnapshotsOfMethodsOf: aBehavior
 
 	| snapshotOfBehavior |
@@ -398,13 +398,13 @@ takeSnapshotsOfMethodsOf: aBehavior
 	aBehavior methodsDo: [ :method |
 		self takeSnapshotOfMethod: method ]! !
 
-!PackageSnapshot methodsFor: 'as yet unclassified' stamp: 'NPM 5/7/2025 15:04:35'!
+!PackageSnapshot methodsFor: 'as yet unclassified' stamp: 'NPM 7/May/2025, 6:04:35 pm (UTC)'!
 initializeClassSnapshots
 
 	snapshotOfClassesByOriginalClassName values
 		do: [ :aClass | aClass initialize ]! !
 
-!PackageSnapshot class methodsFor: 'instance creation' stamp: 'NPM 10/22/2022 01:29:45'!
+!PackageSnapshot class methodsFor: 'instance creation' stamp: 'NPM 22/Oct/2022, 4:29:45 am (UTC)'!
 toTakeOf: aCodePackage
 
 	^ self
@@ -412,17 +412,17 @@ toTakeOf: aCodePackage
 		initializeToTakeOf: aCodePackage
 		! !
 
-!PackageSnapshot class methodsFor: 'taking snapshots' stamp: 'NPM 10/22/2022 15:06:41'!
+!PackageSnapshot class methodsFor: 'taking snapshots' stamp: 'NPM 22/Oct/2022, 6:06:41 pm (UTC)'!
 takeOf: aCodePackage
 
 	^ (self toTakeOf: aCodePackage) take! !
 
-!ClassFactoryForTesting methodsFor: 'accessing' stamp: 'NPM 10/11/2022 02:18:27'!
+!ClassFactoryForTesting methodsFor: 'accessing' stamp: 'NPM 11/Oct/2022, 5:18:27 am (UTC)'!
 systemCategory
 
 	^ testSystemCategory ! !
 
-!ClassFactoryForTesting methodsFor: 'cleaning up' stamp: 'NPM 10/26/2022 01:24:03'!
+!ClassFactoryForTesting methodsFor: 'cleaning up' stamp: 'NPM 26/Oct/2022, 4:24:03 am (UTC)'!
 tearDown
 
 	createdClasses reverseDo: [ :class | class removeFromSystemUnlogged ].
@@ -432,12 +432,12 @@ tearDown
 	SystemOrganization removeCategory: testExtensionSystemCategory.
 	Smalltalk removeKey: testSharedPool ifAbsent: [ "do nothing" ] .! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 02:13:31'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 25/Oct/2022, 5:13:31 am (UTC)'!
 createClass
 
 	^ self createSubclassOf: Object! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:17:39'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:17:39 pm (UTC)'!
 createClassInCategory: aSystemCategory
 
 	^ self
@@ -445,7 +445,7 @@ createClassInCategory: aSystemCategory
 		category: aSystemCategory.
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 01:31:25'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 25/Oct/2022, 4:31:25 am (UTC)'!
 createClassWithClassAndInstanceVariables
 
 	^ self
@@ -455,7 +455,7 @@ createClassWithClassAndInstanceVariables
 		poolDictionaries: ''
 		category: testSystemCategory.! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:17:54'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:17:54 pm (UTC)'!
 createClassWithClassExtensionMethod: aString
 
 	| newClass |
@@ -466,7 +466,7 @@ createClassWithClassExtensionMethod: aString
 	^ newClass.
 	! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 02:13:50'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 25/Oct/2022, 5:13:50 am (UTC)'!
 createClassWithClassMethod: aString
 
 	| newClass |
@@ -477,7 +477,7 @@ createClassWithClassMethod: aString
 	^ newClass
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 02:13:54'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 25/Oct/2022, 5:13:54 am (UTC)'!
 createClassWithInstanceExtensionMethod: aString
 
 	| newClass |
@@ -493,7 +493,7 @@ createClassWithInstanceExtensionMethod: aString
 	^ newClass.
 	! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 02:14:05'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 25/Oct/2022, 5:14:05 am (UTC)'!
 createClassWithInstanceMethod: aString
 
 	| newClass |
@@ -504,7 +504,7 @@ createClassWithInstanceMethod: aString
 	^ newClass
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 10/25/2022 01:32:55'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 25/Oct/2022, 4:32:55 am (UTC)'!
 createClassWithSharedPool
 
 	Smalltalk
@@ -518,7 +518,7 @@ createClassWithSharedPool
 		poolDictionaries: testSharedPool
 		category: testSystemCategory! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:16:50'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:16:50 pm (UTC)'!
 createSubclassOf: aClass
 
 	^ self
@@ -526,7 +526,7 @@ createSubclassOf: aClass
 		category: testSystemCategory.
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:16:39'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:16:39 pm (UTC)'!
 createSubclassOf: aClass category: aSystemCategory
 
 	^ self createSubclassOf: aClass
@@ -536,7 +536,7 @@ createSubclassOf: aClass category: aSystemCategory
 		category: aSystemCategory.
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:07:53'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:07:53 pm (UTC)'!
 createSubclassOf: aClass instanceVariableNames: instanceVariableNames classVariableNames: classVariableNames poolDictionaries: poolDictionaries category: category
 
 	| newClass |
@@ -553,7 +553,7 @@ createSubclassOf: aClass instanceVariableNames: instanceVariableNames classVaria
 
 	^ newClass.		! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 5/4/2025 12:09:02'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:09:02 pm (UTC)'!
 newClassName
 
 	 | className |
@@ -565,7 +565,7 @@ newClassName
 
 	^ className! !
 
-!ClassFactoryForTesting methodsFor: 'initialization' stamp: 'NPM 10/26/2022 01:24:03'!
+!ClassFactoryForTesting methodsFor: 'initialization' stamp: 'NPM 26/Oct/2022, 4:24:03 am (UTC)'!
 initialize
 
 	| timestamp |
@@ -577,7 +577,7 @@ initialize
 
 	createdClasses _ OrderedCollection new.! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 21/Oct/2022, 6:08:34 am (UTC)'!
 assert: aClass performs: aSelector returningCopyOf: aResult
 
 	| copyOfClass copyOfSelector |
@@ -586,7 +586,7 @@ assert: aClass performs: aSelector returningCopyOf: aResult
 
 	self assert: copyOfClass equals: (aClass perform: copyOfSelector).! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/19/2022 02:53:05'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 19/Oct/2022, 5:53:05 am (UTC)'!
 assert: anObject performsSnapshotOfExtensionMethodNamed: aSelector returning: aResult
 
 	| copyOfSelector |
@@ -595,7 +595,7 @@ assert: anObject performsSnapshotOfExtensionMethodNamed: aSelector returning: aR
 	self assert: aResult equals: (anObject perform: copyOfSelector).
 ! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 21/Oct/2022, 6:08:34 am (UTC)'!
 assertCopyOf: aSubclass isSubclassOfCopyOf: aSuperclass
 
 	| copyOfSubclass copyOfSuperclass |
@@ -604,7 +604,7 @@ assertCopyOf: aSubclass isSubclassOfCopyOf: aSuperclass
 
 	self assert: copyOfSuperclass equals: copyOfSubclass superclass.! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 21/Oct/2022, 6:08:34 am (UTC)'!
 assertCopyOf: aClass performs: aSelector returning: aResult
 
 	| copyOfClass |
@@ -612,7 +612,7 @@ assertCopyOf: aClass performs: aSelector returning: aResult
 
 	self assert: aResult equals: (copyOfClass perform: aSelector).! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 21/Oct/2022, 6:08:34 am (UTC)'!
 assertCopyOf: aClass performs: aSelector returningCopyOf: aResult
 
 	| copyOfClass copyOfResult |
@@ -622,7 +622,7 @@ assertCopyOf: aClass performs: aSelector returningCopyOf: aResult
 	self assert: copyOfResult equals: (copyOfClass perform: #m1).
 	! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 21/Oct/2022, 6:08:34 am (UTC)'!
 assertInstanceOfCopyOf: aClass performs: aSelector returning: aResult
 
 	| copyOfClass |
@@ -630,7 +630,7 @@ assertInstanceOfCopyOf: aClass performs: aSelector returning: aResult
 
 	self assert: aResult equals: (copyOfClass new perform: aSelector).! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/21/2022 03:08:34'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 21/Oct/2022, 6:08:34 am (UTC)'!
 assertInstanceOfCopyOf: aClass performs: aSelector returningCopyOf: aResult
 
 	| copyOfClass copyOfResult |
@@ -639,7 +639,7 @@ assertInstanceOfCopyOf: aClass performs: aSelector returningCopyOf: aResult
 
 	self assert: copyOfResult equals: (copyOfClass new perform: aSelector).! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 01:22:26'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 22/Oct/2022, 4:22:26 am (UTC)'!
 assertNumberOfClassesIn: aString is: aQuantity
 
 
@@ -650,7 +650,7 @@ assertNumberOfClassesIn: aString is: aQuantity
 		assert: aQuantity
 		equals: classes size.! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 15:16:18'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 22/Oct/2022, 6:16:18 pm (UTC)'!
 assertSnapshotOfExtensionMethod: aSelector isClassifiedUnderTheSnapshotExtensionIn: aBehavior
 
 	| snapshotOfM1 snapshotOfM1Selector originalMethodCategory |
@@ -663,7 +663,7 @@ assertSnapshotOfExtensionMethod: aSelector isClassifiedUnderTheSnapshotExtension
 		 equals: snapshotOfM1 category.
 ! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/26/2022 01:09:14'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 26/Oct/2022, 4:09:14 am (UTC)'!
 assertWasCopied: aClass
 
 	| copyOfClass |
@@ -685,7 +685,7 @@ assertWasCopied: aClass
 		equals: aClass class instanceVariablesString.
 	! !
 
-!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 10/22/2022 01:22:26'!
+!PackageSnapshotTest methodsFor: 'assertions' stamp: 'NPM 22/Oct/2022, 4:22:26 am (UTC)'!
 denyAPackageSnapshotWasTaken
 
 	| copyOfTestSustemCategory |
@@ -693,12 +693,12 @@ denyAPackageSnapshotWasTaken
 
 	self deny: (SystemOrganization categories includes: copyOfTestSustemCategory)! !
 
-!PackageSnapshotTest methodsFor: 'exercising' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'exercising' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 takeASnapshotOfTestPackage
 
 	packageSnapshot _ PackageSnapshot takeOf: packageToCopy! !
 
-!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 10/22/2022 01:49:33'!
+!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 22/Oct/2022, 4:49:33 am (UTC)'!
 setUp
 
 	super setUp.
@@ -709,21 +709,21 @@ setUp
 	packageToCopy _ CodePackage new packageName: testSystemCategory.
 	packageSnapshot  _ PackageSnapshot toTakeOf: packageToCopy.! !
 
-!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 10/26/2022 01:25:36'!
+!PackageSnapshotTest methodsFor: 'setUp/tearDown' stamp: 'NPM 26/Oct/2022, 4:25:36 am (UTC)'!
 tearDown
 
 	super tearDown.
 	classFactory tearDown.
 	packageSnapshot discard.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test000_doesNotCreateSystemCategoriesWhenAPackageIsEmpty
 
 	self takeASnapshotOfTestPackage.
 
 	self denyAPackageSnapshotWasTaken.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test001_takesASnapshotOfClassesWithClassAndInstanceVariables
 
 	| classToCopy anotherClassToCopy |
@@ -736,7 +736,7 @@ test001_takesASnapshotOfClassesWithClassAndInstanceVariables
 	self assertWasCopied: classToCopy.
 	self assertWasCopied: anotherClassToCopy.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:13:18'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:13:18 am (UTC)'!
 test003_doesNotTakeASnapshotWhenThereAreClassesWithSharedPools
 
 	classFactory
@@ -750,7 +750,7 @@ test003_doesNotTakeASnapshotWhenThereAreClassesWithSharedPools
 
 	self denyAPackageSnapshotWasTaken.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test004_takesASnapshotOfInstanceMethodsNotReferencingClassesInThePackage
 
 	| classWithInstanceMethod |
@@ -764,7 +764,7 @@ test004_takesASnapshotOfInstanceMethodsNotReferencingClassesInThePackage
 		performs: #m1
 		returning: 1.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test005_takesASnapshotOfClassMethodsNotReferencingClassesInThePackage
 
 	| classToCopy |
@@ -778,7 +778,7 @@ test005_takesASnapshotOfClassMethodsNotReferencingClassesInThePackage
 		performs: #m1
 		returning: 1.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test006_takesASnapshotOfExtensionMethodsNotReferencingClassesInThePackage
 
 	| classWithExtensionMethod |
@@ -792,7 +792,7 @@ test006_takesASnapshotOfExtensionMethodsNotReferencingClassesInThePackage
 		performsSnapshotOfExtensionMethodNamed: #m1
 		returning: 1! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test007_renamesReferencesToClassesInThePackageInInstanceMethods
 
 	| class1 classReferencingClass1 |
@@ -807,7 +807,7 @@ test007_renamesReferencesToClassesInThePackageInInstanceMethods
 		returningCopyOf: class1
 	! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test008_doesNotRenameReferencesToClassesOutsideThePackageInInstanceMethods
 
 	| classReferencingClassesOutsideThePackage |
@@ -820,7 +820,7 @@ test008_doesNotRenameReferencesToClassesOutsideThePackageInInstanceMethods
 		performs: #m1
 		returning: Object! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test009_renamesReferencesToClassesInThePackageInClassMethods
 
 	| class1 classReferencingClass1 |
@@ -834,7 +834,7 @@ test009_renamesReferencesToClassesInThePackageInClassMethods
 		performs: #m1
 		returningCopyOf: class1! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test010_doesNotRenameReferencesToClassesOutsideThePackageInClassMethods
 
 	| classReferencingClassesOutsideThePackage |
@@ -849,7 +849,7 @@ test010_doesNotRenameReferencesToClassesOutsideThePackageInClassMethods
 
 	! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test011_renamesReferencesToClassesInThePackageInExtensionMethods
 
 	| classWithExtensionMethod class1 |
@@ -863,7 +863,7 @@ test011_renamesReferencesToClassesInThePackageInExtensionMethods
 		performs: #m1
 		returningCopyOf: class1 ! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test012_doesNotRenameReferencesToClassesOutsideThePackageInExtensionMethods
 
 	| classReferencingClassesOutsideThePackage |
@@ -876,7 +876,7 @@ test012_doesNotRenameReferencesToClassesOutsideThePackageInExtensionMethods
 		performsSnapshotOfExtensionMethodNamed: #m1
 		returning: Object! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test013_renamesReferencesToExtensionMethodsInInstanceMethods
 
 	| classWithExtensionMethod classCallingExtensionMethod |
@@ -892,7 +892,7 @@ test013_renamesReferencesToExtensionMethodsInInstanceMethods
 		returning: 1.
 	! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test014_renamesReferencesToExtensionMethodsInClassMethods
 
 	| classWithExtensionMethod classCallingExtensionMethod |
@@ -908,7 +908,7 @@ test014_renamesReferencesToExtensionMethodsInClassMethods
 		returning: 1.
 	! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test015_renamesReferencesToExtensionMethodsInExtensionMethods
 
 	| classWithExtensionMethod classCallingExtensionMethod |
@@ -923,7 +923,7 @@ test015_renamesReferencesToExtensionMethodsInExtensionMethods
 		performsSnapshotOfExtensionMethodNamed: #m2
 		returning: 1.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test016_takesSnapshotsOfClassHierarchies
 
 	| classWithExtensionMethod classCallingExtensionMethod |
@@ -936,7 +936,7 @@ test016_takesSnapshotsOfClassHierarchies
 		assertCopyOf: classCallingExtensionMethod
 		isSubclassOfCopyOf: classWithExtensionMethod.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test017_takesSnapshotsOfExtensionMethodsInTheSnapshotCategory
 
 	| classWithExtensionMethod |
@@ -950,7 +950,7 @@ test017_takesSnapshotsOfExtensionMethodsInTheSnapshotCategory
 
 	! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:11:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:11:00 am (UTC)'!
 test018_migratesInstancesOfSnapshotClassesToTheOriginalClasses
 
 	| originalClass snapshotOfOriginalClass snapshotInstance |
@@ -963,7 +963,7 @@ test018_migratesInstancesOfSnapshotClassesToTheOriginalClasses
 
 	self assert: originalClass equals: snapshotInstance class.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:13:00'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:13:00 am (UTC)'!
 test019_doesNotAllowToAskForSnapshotOfClassesOutsideThePackage
 
 	self takeASnapshotOfTestPackage.
@@ -973,7 +973,7 @@ test019_doesNotAllowToAskForSnapshotOfClassesOutsideThePackage
 		raise: Error
 		withMessageText: packageSnapshot theBehaviorIsNotIncludedInThisSnapshotErrorMessage! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 10/26/2022 01:22:25'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 26/Oct/2022, 4:22:25 am (UTC)'!
 test020_keepsReferencesToNonBehaviorLiteralVariableNodes
 
 	| originalClass |
@@ -983,7 +983,7 @@ test020_keepsReferencesToNonBehaviorLiteralVariableNodes
 
 	self assert: Smalltalk equals: originalClass m1.! !
 
-!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 5/7/2025 15:07:10'!
+!PackageSnapshotTest methodsFor: 'tests' stamp: 'NPM 7/May/2025, 6:07:10 pm (UTC)'!
 test021_InitializesSnapshotOfClasses
 
 	| originalClass classSnapshot |
@@ -996,7 +996,12 @@ test021_InitializesSnapshotOfClasses
 	classSnapshot := packageSnapshot snapshotOf: originalClass.
 	self assert: (classSnapshot instVarNamed: 'initializeCalled')! !
 
-!CompiledMethod methodsFor: '*PackageSnapshot' stamp: 'HAW 5/29/2023 23:22:17'!
+!ClassDescription methodsFor: '*PackageSnapshot' stamp: 'HAW 30/May/2023, 2:39:59 am (UTC)'!
+disableLiveTyping
+
+	Smalltalk isLiveTypingInstalled ifTrue: [ instanceVariablesRawTypes := nil ]! !
+
+!CompiledMethod methodsFor: '*PackageSnapshot' stamp: 'HAW 30/May/2023, 2:22:17 am (UTC)'!
 disableLiveTyping
 
 	Smalltalk isLiveTypingInstalled
@@ -1004,8 +1009,3 @@ disableLiveTyping
 			self
 				withPropertiesDo: [:additionalMethodState | additionalMethodState disableLiveTyping ]
 				ifSelector: [ :aSelector | ]]! !
-
-!ClassDescription methodsFor: '*PackageSnapshot' stamp: 'HAW 5/29/2023 23:39:59'!
-disableLiveTyping
-
-	Smalltalk isLiveTypingInstalled ifTrue: [ instanceVariablesRawTypes := nil ]! !
