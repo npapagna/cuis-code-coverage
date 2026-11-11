@@ -1,6 +1,6 @@
-'From Cuis7.9 [latest update: #8239] on 28 September 2026 at 7:00:59 pm'!
-'Description Initialize class snapshots'!
-!provides: 'PackageSnapshot' 1 10!
+'From Cuis7.9 [latest update: #8276] on 11 November 2026 at 10:35:11 am'!
+'Description Does not define #disableLiveTyping because it belongs to LiveTyping package. Only send the message is LiveTyping is installed.'!
+!provides: 'PackageSnapshot' '1.10.2'!
 SystemOrganization addCategory: #'PackageSnapshot-Model'!
 SystemOrganization addCategory: #'PackageSnapshot-Tests'!
 SystemOrganization addCategory: #PackageSnapshot!
@@ -339,7 +339,7 @@ setupExtensionMethodsToTakeSnapshots
 
 	extensionMethodsToTakeSnapshots _ sourcePackage extensionMethods! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'NPM 26/Oct/2022, 3:56:41 am (UTC)'!
+!PackageSnapshot methodsFor: 'taking snapshots - extension methods' stamp: 'HAW 11/Nov/2026, 12:46:02 pm (UTC)'!
 takeSnapshotOfExtensionMethod: aCompiledMethod
 
 	|snapshotOfSourceCode snapshotOfSelector snapshotOfCategory snapshotOfExtensionMethod |
@@ -354,7 +354,8 @@ takeSnapshotOfExtensionMethod: aCompiledMethod
 
 	snapshotOfExtensionMethod := aCompiledMethod methodClass compiledMethodAt:  snapshotOfSelector.
 
-	snapshotOfExtensionMethod disableLiveTyping.
+	Smalltalk isLiveTypingInstalled
+		ifTrue: [ snapshotOfExtensionMethod disableLiveTyping ].
 
 	snapshotsOfExtensionMethods add: (snapshotOfExtensionMethod).
 
@@ -366,7 +367,7 @@ takeSnapshotOfExtensionMethods
 	extensionMethodsToTakeSnapshots do: [ :extensionMethod |
 		self takeSnapshotOfExtensionMethod: extensionMethod ]! !
 
-!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 26/Oct/2022, 3:57:27 am (UTC)'!
+!PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'HAW 11/Nov/2026, 12:46:35 pm (UTC)'!
 takeSnapshotOfMethod: aCompiledMethod
 
 	| snapshotOfMethodClass snapshotOfSourceCode snapshotOfMethodSelector |
@@ -378,8 +379,9 @@ takeSnapshotOfMethod: aCompiledMethod
 		compileSilently: snapshotOfSourceCode
 		classified: aCompiledMethod category.
 
-	(snapshotOfMethodClass compiledMethodAt: snapshotOfMethodSelector)
-		disableLiveTyping! !
+	Smalltalk isLiveTypingInstalled
+		ifTrue: [ (snapshotOfMethodClass compiledMethodAt: snapshotOfMethodSelector)
+			disableLiveTyping ]! !
 
 !PackageSnapshot methodsFor: 'taking snapshots - methods' stamp: 'NPM 22/Oct/2022, 6:05:11 pm (UTC)'!
 takeSnapshotOfMethods
@@ -536,7 +538,7 @@ createSubclassOf: aClass category: aSystemCategory
 		category: aSystemCategory.
 ! !
 
-!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'NPM 4/May/2025, 3:07:53 pm (UTC)'!
+!ClassFactoryForTesting methodsFor: 'creating classes' stamp: 'HAW 11/Nov/2026, 12:46:53 pm (UTC)'!
 createSubclassOf: aClass instanceVariableNames: instanceVariableNames classVariableNames: classVariableNames poolDictionaries: poolDictionaries category: category
 
 	| newClass |
@@ -547,7 +549,8 @@ createSubclassOf: aClass instanceVariableNames: instanceVariableNames classVaria
 		poolDictionaries: poolDictionaries
 		category: category.
 
-	newClass disableLiveTyping.
+	Smalltalk isLiveTypingInstalled
+		ifTrue: [ newClass disableLiveTyping ].
 
 	createdClasses add: newClass.
 
@@ -995,17 +998,3 @@ test021_InitializesSnapshotOfClasses
 
 	classSnapshot := packageSnapshot snapshotOf: originalClass.
 	self assert: (classSnapshot instVarNamed: 'initializeCalled')! !
-
-!ClassDescription methodsFor: '*PackageSnapshot' stamp: 'HAW 30/May/2023, 2:39:59 am (UTC)'!
-disableLiveTyping
-
-	Smalltalk isLiveTypingInstalled ifTrue: [ instanceVariablesRawTypes := nil ]! !
-
-!CompiledMethod methodsFor: '*PackageSnapshot' stamp: 'HAW 30/May/2023, 2:22:17 am (UTC)'!
-disableLiveTyping
-
-	Smalltalk isLiveTypingInstalled
-		ifTrue: [
-			self
-				withPropertiesDo: [:additionalMethodState | additionalMethodState disableLiveTyping ]
-				ifSelector: [ :aSelector | ]]! !
