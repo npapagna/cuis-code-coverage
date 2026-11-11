@@ -1,0 +1,59 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Twice a day (noon and midnight UTC), to catch breakage from new Cuis versions
+    - cron: '0 0,12 * * *'
+
+jobs:
+  Cuis:
+    name: Run tests on Cuis (latest master)
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Cuis Smalltalk
+        uses: actions/checkout@v7
+        with:
+          repository: Cuis-Smalltalk/Cuis-Smalltalk-Dev
+      - name: Checkout Code Coverage
+        uses: actions/checkout@v7
+        with:
+          path: Packages/cuis-code-coverage
+      - name: Install Cuis Smalltalk VM
+        run: .ContinuousIntegrationScripts/installVm.sh
+      - name: Update Cuis Smalltalk
+        run: .ContinuousIntegrationScripts/installUpdates.sh
+      - name: Copy Tools-ConsoleTestRunner package
+        run: cp $GITHUB_WORKSPACE/Packages/cuis-code-coverage/.github/workflows/Tools-ConsoleTestRunner.pck.st Packages
+      - name: Run CodeCoverage tests
+        run: |
+          .ContinuousIntegrationScripts/runCuis.sh \
+            -e \
+            -r CodeCoverage \
+            -r Tools-ConsoleTestRunner \
+            -d "ConsoleTestRunner new runAll: (SystemOrganization testCaseClassesAt: 'CodeCoverage')"
+      - name: Run PackageSnapshot tests
+        run: |
+          .ContinuousIntegrationScripts/runCuis.sh \
+            -e \
+            -r PackageSnapshot \
+            -r Tools-ConsoleTestRunner \
+            -d "ConsoleTestRunner new runAll: (SystemOrganization testCaseClassesAt: 'PackageSnapshot')"
+      - name: Run reflexive coverage tests
+        run: |
+          .ContinuousIntegrationScripts/runCuis.sh \
+            -e \
+            -r CodeCoverage \
+            -r Tools-ConsoleTestRunner \
+            -d "
+              | package analyzer result |
+              package := CodePackage named: 'CodeCoverage' createIfAbsent: false registerIfNew: false.
+              analyzer := CodeCoverageAnalyzer toAnalyzeAll: package compiledMethodsInNonTestCaseClasses.
+              result := analyzer value: [ (TestSuite forCodePackage: package) run ].
+              result printReport.
+              StdIOWriteStream stdout nextPutAll: 'Code coverage: ', analyzer report percentCovered printString, '%'; newLine; flush.
+              ConsoleTestRunner new quitInformingResult: result"

@@ -1,5 +1,9 @@
 # Code Coverage for Cuis Smalltalk
 
+[![Tests](https://github.com/npapagna/cuis-code-coverage/actions/workflows/test.yml/badge.svg)](https://github.com/npapagna/cuis-code-coverage/actions/workflows/test.yml)
+
+CI runs the tests on the latest Cuis Smalltalk master, plus the CodeCoverage tests with CodeCoverage analyzing itself.
+
 ![Code Coverage](assets/cuis-code-coverage.png)
 
 ## Description
