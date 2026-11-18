@@ -1,0 +1,66 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Twice a day (noon and midnight UTC), to catch breakage from new Cuis versions
+    - cron: '0 0,12 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  Cuis:
+    name: Run tests on Cuis (latest master)
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Cuis Smalltalk
+        uses: actions/checkout@v7
+        with:
+          repository: Cuis-Smalltalk/Cuis-Smalltalk-Dev
+      - name: Checkout Code Coverage
+        uses: actions/checkout@v7
+        with:
+          path: Packages/cuis-code-coverage
+      - name: Install Cuis Smalltalk VM
+        run: .ContinuousIntegrationScripts/installVm.sh
+      - name: Update Cuis Smalltalk
+        run: .ContinuousIntegrationScripts/installUpdates.sh
+      # Cuis quits with exit code 0 when -r cannot load a package, so each
+      # step also requires the runner's SUCCESS banner in the output.
+      - name: Run tests
+        run: |
+          .ContinuousIntegrationScripts/runCuis.sh \
+            -e \
+            -r Tools-ConsoleTestRunner \
+            -d "ConsoleTestRunner runAllTestsFromPackages: { 'CodeCoverage'. 'PackageSnapshot' }" \
+            | tee output.log
+          grep -q SUCCESS output.log
+      - name: Run reflexive coverage tests
+        run: |
+          .ContinuousIntegrationScripts/runCuis.sh \
+            -e \
+            -r CodeCoverage \
+            -r Tools-ConsoleTestRunner \
+            -d "
+              ConsoleTestRunner runAndReport: [
+                | package analyzer result |
+                package := CodePackage named: 'CodeCoverage' createIfAbsent: false registerIfNew: false.
+                analyzer := CodeCoverageAnalyzer toAnalyzeAll: package compiledMethodsInNonTestCaseClasses.
+                result := analyzer value: [ (TestSuite forCodePackage: package) run ].
+                StdIOWriteStream stdout nextPutAll: 'Code coverage: ', analyzer report percentCovered printString, '%'; newLine; flush.
+                result ]" \
+            | tee output.log
+          grep -q SUCCESS output.log

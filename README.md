@@ -1,5 +1,9 @@
 # Code Coverage for Cuis Smalltalk
 
+[![Tests](https://github.com/npapagna/cuis-code-coverage/actions/workflows/test.yml/badge.svg)](https://github.com/npapagna/cuis-code-coverage/actions/workflows/test.yml)
+
+CI runs the tests on the latest Cuis Smalltalk master, plus the CodeCoverage tests with CodeCoverage analyzing itself.
+
 ![Code Coverage](assets/cuis-code-coverage.png)
 
 ## Description
@@ -147,8 +151,7 @@ The source code is well documented, and together with the automated tests, are a
 works.
 
 ## Warnings
-For the moment `Code Coverage` cannot analyze the classes used to implement it (either the ones in the `CodeCoverage`
-package or others like `Set`).
+`Code Coverage` can analyze its own `CodeCoverage` package, but not the core classes it relies on, like `Set`.
 
 Attempting to run coverage on those classes will have unexpected results, like image hangs or VM crashes.
 
